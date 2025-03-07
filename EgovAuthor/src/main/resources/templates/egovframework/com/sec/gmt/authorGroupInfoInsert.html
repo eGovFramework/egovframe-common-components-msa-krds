@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopSecGmt.title}+' '+#{title.list}"></title>
+    <div th:replace="sec/gmt/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sec.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comCopSecGmt.title}+' '+#{title.create}"></span></h2>
+
+    <form id="insertForm" name="insertForm" th:object="${authorGroupInfoVO}">
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="groupNm" th:text="#{comCopSecGmt.regist.groupNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="groupNm" name="groupNm" class="krds-input"
+                               th:field="*{groupNm}"
+                               th:placeholder="#{comCopSecGmt.regist.groupNm}+' '+#{input.input}">
+                    </div>
+                    <p class="form-hint-invalid" id="groupNmError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="groupDc" th:text="#{comCopSecGmt.regist.groupDc}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="groupDc" name="groupDc" maxlength="200" class="krds-input"
+                                      th:field="*{groupDc}"
+                                      th:placeholder="#{comCopSecGmt.regist.groupDc}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/200</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="authorGroupInfoList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="authorGroupInfoInsert()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        const groupDc = document.getElementById('groupDc');
+        const textCount = document.getElementById('textCount');
+        groupDc.addEventListener('input', function() {
+            textCount.textContent = groupDc.value.length;
+        });
+    });
+
+    function authorGroupInfoList() {
+        window.location.href = '/sec/gmt/authorGroupInfoListView';
+    }
+
+    function authorGroupInfoInsert() {
+        const insertForm = document.getElementById('insertForm');
+        const formData = new FormData(insertForm);
+
+        if (confirm('[(#{common.save.msg})]')) {
+            document.getElementById('groupNmError').textContent = '';
+            document.getElementById('groupNmError').style.display="none";
+
+            fetch('/sec/gmt/authorGroupInfoInsert', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                        document.getElementById(`${key}Error`).style.display="block";
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.insert})]');
+                    authorGroupInfoList();
+                } else {
+                    alert('[(#{success.common.insert})]');
+                    authorGroupInfoList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopBbs.articleVO.title}+' '+#{title.list}"></title>
+    <div th:replace="cop/brd/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.cop.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:id="boardTitle" th:text="${bbsVO.bbsNm}+' '+#{comCopBbs.articleVO.title}+' '+#{title.list}"></span></h2>
+
+    <form id="listForm" name="listForm">
+        <input type="hidden" th:id="nttId" th:name="nttId"/>
+        <input type="hidden" th:id="bbsId" th:name="bbsId" th:value="${bbsVO.bbsId}"/>
+        <input type="hidden" th:id="bbsNm" th:name="bbsNm" th:value="${bbsVO.bbsNm}"/>
+        <input type="hidden" th:id="blogId" th:name="blogId" th:value="${bbsVO.blogId}"/>
+        <input type="hidden" th:id="blogNm" th:name="blogNm" th:value="${bbsVO.blogNm}"/>
+        <input type="hidden" th:id="cmmntyId" th:name="cmmntyId" th:value="${bbsVO.cmmntyId}"/>
+        <input type="hidden" th:id="cmmntyNm" th:name="cmmntyNm" th:value="${bbsVO.cmmntyNm}"/>
+        <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+
+        <div class="form-group">
+            <div class="search-wrap">
+                <div class="search-body">
+                    <div class="form-conts searchOption">
+                        <select id="searchCondition" name="searchCondition" class="krds-form-select" th:title="#{title.searchCondition}">
+                            <option th:text="#{comCopBbs.articleVO.list.nttSj}" value="1" ></option>
+                            <option th:text="#{comCopBbs.articleVO.list.nttCn}" value="2" ></option>
+                            <option th:text="#{table.reger}" value="3"></option>
+                        </select>
+                    </div>
+                    <div class="form-conts btn-ico-wrap searchKeyword">
+                        <input type="text" id="searchKeyword" name="searchKeyword" class="krds-input" th:placeholder="#{title.search} + #{search.placeholder}">
+                        <button type="button" class="krds-btn medium icon"  th:onclick="boardSearch()">
+                            <span class="sr-only" th:value="#{button.search}"></span>
+                            <i class="svg-icon ico-sch"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="page-btn-wrap">
+                    <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="boardCreate()"></button>
+                    <button type="button" class="krds-btn medium tertiary" th:text="#{comCopBbs.boardMasterVO.title}" th:onclick="bbsMasterList()"></button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    <div class="krds-table-wrap">
+        <table class="tbl col data">
+<!--            <caption>게시물을 등록하고 등록된 게시물의 목록을 조회할 수 있는 기능을 제공하는 컴포넌트</caption>-->
+            <colgroup>
+                <col style="width: 10%;">
+                <col>
+                <col style="width: 13%;">
+                <col style="width: 13%;">
+                <col style="width: 13%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center"><span th:text="#{table.num}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopBbs.articleVO.list.nttSj}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{table.reger}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{table.regdate}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopBbs.articleVO.list.inqireCo}"></span></th>
+                </tr>
+            </thead>
+            <tbody id="board-list-container"></tbody>
+        </table>
+    </div>
+
+    <div id="pagination-container" class="krds-pagination w-page"></div>
+</div>
+
+<script th:inline="javascript" defer>
+    boardList();
+    // var userId = "USRCNFRM_00000000001";
+
+    function boardSearch() {
+        if (notNullCheck($('#searchKeyword').val())) {
+            boardList();
+        } else {
+            alert('[(#{title.search})][(#{search.placeholder})]');
+            boardList();
+        }
+    }
+
+    function boardList() {
+        const boardList_container = document.getElementById('board-list-container');
+        boardList_container.innerHTML="";
+        $.ajax({
+            url: '/cop/brd/boardList',
+            method: 'POST',
+            data: $('#listForm').serialize()
+        }).done(function(response) {
+            let noticeList = response.noticeList;
+            let boardList = response.content;
+            let pagination = response.pagination;
+            let totalElements = response.totalElements;
+            let userId = response.userId;
+
+            let html = '';
+            if (boardList.length > 0 || noticeList.length > 0) {
+                noticeList.forEach(function(notice,index){
+                    const noticeItem = `<tr>
+                                            <td class="text-center"><span class='krds-btn svg-icon ico-notice'></span></td>
+                                            <td>
+                                                <a class="krds-btn text medium" onclick="boardDetail(${notice.nttId})">${notice.nttSj}</a>
+                                            </td>
+                                            <td class="text-center">${notice.ntcrNm}</td>
+                                            <td class="text-center">${notice.frstRegistPnttm}</td>
+                                            <td class="text-center">${notice.rdcnt}</td>
+                                        </tr>`;
+                    $('#board-list-container').append(noticeItem);
+                })
+                boardList.forEach(function(board, index) {
+                    const isOwner = board.frstRegisterId === userId;
+                    const isSecret = board.secretAt === "Y";
+                    const isBold = board.sjBoldAt === "Y";
+                    const isAnswer = board.answerAt === "Y";
+
+                    html = `<tr>
+                                <td class="text-center">${totalElements - ((response.number * response.size) + index)}</span></td>
+                                <td>
+                                    ${isAnswer ? Array('${board.answerLc}').fill("&nbsp&nbsp&nbsp&nbsp").join(' ') + "<span class='krds-btn svg-icon ico-reply'></span>" : ""}
+                                    ${isSecret ? "<span class='krds-btn svg-icon ico-secret'></span>" : ""}
+                                    <a class="krds-btn text medium" ${isBold ? "style='font-weight:bold'" : ""}
+                                    ${isSecret ? (isOwner ? `onclick="boardDetail('${board.nttId}')"`:"") : `onclick="boardDetail('${board.nttId}')"`}
+                                    >${board.nttSj}</a>
+                                </td>
+                                <td class="text-center">${board.ntcrNm}</td>
+                                <td class="text-center">${board.frstRegistPnttm}</td>
+                                <td class="text-center">${board.rdcnt}</td>
+                            </tr>`;
+                    $('#board-list-container').append(html);
+                });
+            } else {
+                let noDataMsg = '[(#{common.nodata.msg})]';
+                html += '<tr><td class="text-center" colspan="5">'+noDataMsg+'</td></tr>';
+            }
+
+            $('#pagination-container').html(pagination);
+
+        });
+    }
+
+    function linkPage(pageIndex) {
+        $('#pageIndex').val(pageIndex);
+        boardList();
+    }
+
+    function boardDetail(nttId) {
+        $('#nttId').val(nttId);
+        $('#listForm').attr('method', 'post').attr('action', '/cop/brd/boardDetailView').submit();
+    }
+
+    function boardCreate() {
+        $('#listForm').attr('method', 'post').attr('action', '/cop/brd/boardInsertView').submit();
+    }
+
+    function bbsMasterList() {
+        let bbsId = $('#bbsId').val();
+        let blogId = $('#blogId').val();
+        let cmmntyId = $('#cmmntyId').val();
+        if (notNullCheck(cmmntyId)) {
+            $('#listForm').attr('method', 'post').attr('action', '/cop/cmy/bbsMasterListView').submit();
+        } else if (notNullCheck(blogId)) {
+            $('#listForm').attr('method', 'post').attr('action', '/cop/bls/bbsMasterListView').submit();
+        } else if (notNullCheck(bbsId)) {
+            $('#listForm').attr('method', 'post').attr('action', '/cop/bbs/bbsMasterListView').submit();
+        } else {
+            $('#listForm').reload();
+        }
+    }
+</script>
+
+</body>
+</html>

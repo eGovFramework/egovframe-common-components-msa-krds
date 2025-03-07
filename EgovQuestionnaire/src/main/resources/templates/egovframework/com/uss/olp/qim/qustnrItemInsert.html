@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQim.title}+' '+#{title.create}"></title>
+    <div th:replace="uss/olp/qim/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-l" style="margin-bottom: 2rem;"><span th:text="#{comUssOlpQim.title}+' '+#{title.create}"></span></h2>
+
+    <form id="insertForm" name="insertForm" th:object="${qustnrIemVO}">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId"/>
+    <input type="hidden" th:id="qestnrId" th:name="qestnrId"/>
+    <input type="hidden" th:id="qustnrQesitmId" th:name="qustnrQesitmId"/>
+    <input type="hidden" th:id="etcAnswerAt" th:name="etcAnswerAt" th:value="N"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrSj" th:text="#{comUssOlpQim.regist.qestnrCn}"></label>
+                    </div>
+                    <div class="form-conts modal-wrap" style="flex-direction: row">
+                        <input type="text" id="qustnrSj" name="qustnrSj" class="krds-input" readonly="readonly">
+                        <button type="button" class="krds-btn medium tertiary open-modal" data-target="qestnrInfoModal" id="qestnrInfoBtn" th:text="#{button.search}"></button>
+                    </div>
+                    <p class="form-hint-invalid" id="qestnrIdError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qestnCn" th:text="#{comUssOlpQim.regist.qestnrQesitmCn}"></label>
+                    </div>
+                    <div class="form-conts modal-wrap" style="flex-direction: row">
+                        <input type="text" id="qestnCn" name="qestnCn" class="krds-input" readonly="readonly">
+                        <button type="button" class="krds-btn medium tertiary open-modal" data-target="qustnrQesitmModal" id="qestnrQesitmBtn" th:text="#{button.search}"></button>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrQesitmIdError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="iemSn" th:text="#{comUssOlpQim.regist.iemSn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="iemSn" name="iemSn" class="krds-input" maxlength="5"
+                               th:placeholder="#{comUssOlpQim.regist.iemSn}+' '+#{input.input}" th:field="*{iemSn}">
+                    </div>
+                    <p class="form-hint-invalid" id="iemSnError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="iemCn" th:text="#{comUssOlpQim.regist.iemCn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="iemCn" name="iemCn" maxlength="500" class="krds-input"
+                                      th:field="*{iemCn}"
+                                      th:placeholder="#{comUssOlpQim.regist.iemCn}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/500</span></p>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="iemCnError" style="display:none"></p>
+                </div>
+
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qustnrItemList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="qustnrItemInsert()"></button>
+            </div>
+        </div>
+
+    </form>
+</div>
+<!-- Modal Start -->
+<section id="qestnrInfoModal" class="krds-modal fade" aria-hidden="true" role="dialog" aria-labelledby="tit_qestnrInfoModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tit_qestnrInfoModal" class="modal-title">
+                    <span th:text="#{comUssOlpQmc.title}+' '+#{title.list}"></span></h2>
+            </div>
+            <div class="modal-conts">
+                <div class="conts-area">
+                    <div th:insert="~{uss/olp/qim/qestnrInfoListPopup::modalContents}"></div>
+                </div>
+            </div>
+<!--            <div class="modal-btn btn-wrap"></div>-->
+            <button type="button" class="krds-btn medium icon btn-close close-modal">
+                <span class="sr-only" th:text="#{button.close}"></span>
+                <i class="svg-icon ico-popup-close"></i>
+            </button>
+        </div>
+    </div>
+    <div class="modal-back"></div>
+</section>
+<!-- Modal End -->
+
+<!-- Modal Start -->
+<section id="qustnrQesitmModal" class="krds-modal fade" aria-hidden="true" role="dialog" aria-labelledby="tit_qustnrQesitmModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tit_qustnrQesitmModal" class="modal-title">
+                    <span th:text="#{comUssOlpQqm.title}+' '+#{title.list}"></span></h2>
+            </div>
+            <div class="modal-conts">
+                <div class="conts-area">
+                    <div th:insert="~{uss/olp/qim/qustnrQesitmListPopup::modalContents}"></div>
+                </div>
+            </div>
+<!--            <div class="modal-btn btn-wrap"></div>-->
+            <button type="button" class="krds-btn medium icon btn-close close-modal">
+                <span class="sr-only" th:text="#{button.close}"></span>
+                <i class="svg-icon ico-popup-close"></i>
+            </button>
+        </div>
+    </div>
+    <div class="modal-back"></div>
+</section>
+<!-- Modal End -->
+
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        const qestnrId = document.getElementById('qestnrId');
+        const qestnrQesitmBtn = document.getElementById('qestnrQesitmBtn');
+        const iemCn = document.getElementById('iemCn');
+        const textCount = document.getElementById('textCount');
+        const qestnrBtn = document.getElementById('qestnrInfoBtn');
+
+        if (!notNullCheck(qestnrId.value)) {
+            qestnrQesitmBtn.disabled = true;
+        }
+
+        qestnrQesitmBtn.addEventListener('click', function() {
+            qustnrQesitmList();
+        });
+        qestnrBtn.addEventListener('click',function(){
+            qestnrInfoList();
+        })
+
+        iemCn.addEventListener('input', function() {
+            textCount.textContent = iemCn.value.length;
+        });
+    });
+
+    function qustnrItemList() {
+        window.location.href = '/uss/olp/qim/qusntrItemListView';
+    }
+
+    function qustnrItemInsert() {
+        if (confirm('[(#{common.save.msg})]')) {
+            const errors = ['qestnrIdError', 'qustnrQesitmIdError', 'iemSnError', 'iemCnError'];
+            errors.forEach(error => {
+                document.getElementById(error).textContent = '';
+                document.getElementById(error).style.display="none";
+            });
+
+            const insertForm = document.getElementById('insertForm');
+            const formData = new FormData(insertForm);
+
+            fetch('/uss/olp/qim/qustnrItemInsert', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                        document.getElementById(`${key}Error`).style.display="block";
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.insert})]');
+                    qustnrItemList();
+                } else {
+                    alert('[(#{success.common.insert})]');
+                    qustnrItemList();
+                }
+            });
+        }
+    }
+
+    function qestnrInfoSelect(tid, id, sj) {
+        // document.getElementById('qestnrInfoSearchCondition').value = '';
+        document.getElementById('qestnrInfoSearchKeyword').value = '';
+        document.getElementById('qustnrTmplatId').value = tid;
+        document.getElementById('qestnrId').value = id;
+        document.getElementById('qustnrSj').value = sj;
+        document.getElementById('qustnrQesitmId').value = '';
+        document.getElementById('qestnCn').value = '';
+        document.getElementById('qestnrIdError').textContent = '';
+        document.getElementById('qestnrInfoModal').classList.remove('shown');
+        document.getElementById('qestnrQesitmBtn').disabled = false;
+        document.querySelector("body").classList.remove("scroll-no");
+    }
+
+    function qustnrQesitmSelect(qid, cn) {
+        // document.getElementById('qustnrQesitmSearchCondition').value = '';
+        document.getElementById('qustnrQesitmSearchKeyword').value = '';
+        document.getElementById('qustnrQesitmId').value = qid;
+        document.getElementById('qestnCn').value = cn;
+        document.getElementById('qustnrQesitmIdError').textContent = '';
+        document.getElementById('qustnrQesitmModal').classList.remove('shown');
+        document.querySelector("body").classList.remove("scroll-no");
+    }
+
+    function qustnrQesitmSelectCancel() {
+        document.getElementById('qustnrQesitmModal').classList.remove('shown');
+        document.querySelector("body").classList.remove("scroll-no");
+        alert('[(#{comUssOlpQim.alert.noSelect})]');
+        return false;
+    }
+</script>
+
+</body>
+</html>

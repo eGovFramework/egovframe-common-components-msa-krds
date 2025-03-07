@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="format-detection" content="telephone=no"/>
+    <title>eGovFrame 공통 컴포넌트</title>
+    <div th:replace="fragment/linkFragment"></div>
+    <style>
+        .iframe-container{
+            position: relative;
+            width: 100%;
+            height: 0;
+        }
+        #mainContent {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+        <!-- 헤더 영역 시작 -->
+        <header id="krds-header" th:replace="header.html"></header>
+        <!-- 헤더 영역 끝 -->
+        <main id="wrap">
+            <div id="container">
+                <div class="inner in-between layout">
+                    <nav class="krds-side-navigation">
+                        <div th:replace="menu.html"></div>
+                    </nav>
+                    <div class="contents">
+                        <div class="conts-area iframe-container">
+                            <iframe id="mainContent" name="mainContent"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- 푸터 영역 시작 -->
+        <footer id="krds-footer" th:replace="footer.html"></footer>
+        <!-- 푸터 영역 끝 -->
+
+    <script th:inline="javascript" defer>
+
+        document.addEventListener('DOMContentLoaded',function (){
+            loadContent('/uat/uia/loginView');
+        });
+
+        function loadContent(menuUrl) {
+            const listForm = document.getElementById('listForm');
+            if (listForm) {
+                listForm.setAttribute('method', 'post');
+                listForm.setAttribute('target', 'mainContent');
+                listForm.setAttribute('action', menuUrl);
+                listForm.submit();
+            }
+            observeIframeHeight();
+        }
+
+        function observeIframeHeight() {
+            const iframe = document.getElementById('mainContent');
+
+            iframe.onload = function() {
+                const windowBody = iframe.contentWindow.document.body;
+                const iframeContainer = document.querySelector('.iframe-container');
+
+                function updateHeight() {
+                    const container = windowBody.querySelector('#container');
+
+                    // requestAnimationFrame을 사용하여 정확한 높이 계산
+                    requestAnimationFrame(() => {
+                        setTimeout(() => { // 비동기 요소 반영 후 높이 가져오기
+                            let newHeight = container ? container.clientHeight : windowBody.scrollHeight;
+                            iframeContainer.style.paddingTop = newHeight + "px";
+                        }, 50); // 50ms 정도 지연을 두고 실행 (필요하면 조정)
+                    });
+                }
+
+                // MutationObserver 설정
+                const observer = new MutationObserver(() => {
+                    updateHeight();
+                });
+
+                if (windowBody) {
+                    observer.observe(windowBody, { childList: true, subtree: true, attributes: true });
+                }
+
+                // #container 내부 변화 감지를 위해 별도 MutationObserver 추가
+                const container = windowBody.querySelector('#container');
+                if (container) {
+                    observer.observe(container, { childList: true, subtree: true, attributes: true });
+                }
+
+                // 초기에 한 번 실행
+                updateHeight();
+            };
+        }
+
+        // 실행
+        observeIframeHeight();
+
+
+
+
+    </script>
+
+    <form id="listForm" name="listForm"></form>
+
+</body>
+</html>

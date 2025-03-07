@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopBbs.boardMasterVO.title}+' '+#{title.update}"></title>
+    <div th:replace="cop/bls/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt">홈</a></li>
+            <li>협업</li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comCopBbs.boardMasterVO.title}+' '+#{title.update}+' - '+${bbsMasterVO.blogNm}"></span></h2>
+
+    <form id="updateForm" name="updateForm" th:object="${bbsMasterVO}">
+    <input type="hidden" th:id="bbsId" th:name="bbsId" th:value="${bbsMasterVO.bbsId}"/>
+    <input type="hidden" th:id="blogId" th:name="blogId" th:value="${bbsMasterVO.blogId}"/>
+    <input type="hidden" th:id="blogNm" th:name="blogNm" th:value="${bbsMasterVO.blogNm}"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${bbsMasterVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${bbsMasterVO.searchKeyword}"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="bbsNm" th:text="#{comCopBbs.boardMasterVO.regist.bbsNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="bbsNm" name="bbsNm" class="krds-input" maxlength="120"
+                               th:field="*{bbsNm}"
+                               th:placeholder="#{comCopBbs.boardMasterVO.regist.bbsNm}+' '+#{input.input}">>
+                    </div>
+                    <p class="form-hint-invalid" id="bbsNmError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="bbsIntrcn" th:text="#{comCopBbs.boardMasterVO.regist.bbsIntrcn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="bbsIntrcn" name="bbsIntrcn" maxlength="2000" class="krds-input"
+                                      th:field="*{bbsIntrcn}"
+                                      th:placeholder="#{comCopBbs.boardMasterVO.regist.bbsIntrcn}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/2000</span></p>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="bbsIntrcnError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="bbsTyCodes" th:text="#{comCopBbs.boardMasterVO.regist.bbsTyCode}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="bbsTyCodes" name="bbsTyCodes" th:title="#{comCopBbs.boardMasterVO.regist.bbsTyCode}"></select>
+                        <input type="hidden" id="bbsTyCode" name="bbsTyCode"/>
+                    </div>
+                    <p class="form-hint-invalid" id="bbsTyCodeError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="replyPosblAts" th:text="#{comCopBbs.boardMasterVO.regist.replyPosblAt}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="replyPosblAts" name="replyPosblAts" th:title="#{comCopBbs.boardMasterVO.regist.replyPosblAt}">
+                            <option th:text="#{input.select}" value=""></option>
+                            <option th:text="#{input.yes}" value="Y"></option>
+                            <option th:text="#{input.no}" value="N"></option>
+                        </select>
+                        <input type="hidden" id="replyPosblAt" name="replyPosblAt"/>
+                    </div>
+                    <p class="form-hint-invalid" id="replyPosblAtError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="fileAtchPosblAts" th:text="#{comCopBbs.boardMasterVO.regist.fileAtchPosblAt}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="fileAtchPosblAts" name="fileAtchPosblAts" th:title="#{comCopBbs.boardMasterVO.regist.fileAtchPosblAt}">
+                            <option th:text="#{input.select}" value=""></option>
+                            <option th:text="#{input.yes}" value="Y"></option>
+                            <option th:text="#{input.no}" value="N"></option>
+                        </select>
+                        <input type="hidden" id="fileAtchPosblAt" name="fileAtchPosblAt"/>
+                    </div>
+                    <p class="form-hint-invalid" id="fileAtchPosblAtError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="atchPosblFileNumbers" th:text="#{comCopBbs.boardMasterVO.regist.atchPosblFileNumber}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="atchPosblFileNumbers" name="atchPosblFileNumbers" th:title="#{comCopBbs.boardMasterVO.regist.atchPosblFileNumber}">
+                            <option th:text="#{comCopBbs.boardMasterVO.detail.option1}" value="0"></option>
+                            <option th:text="1" value="1"></option>
+                            <option th:text="2" value="2"></option>
+                            <option th:text="3" value="3"></option>
+                        </select>
+                        <input type="hidden" id="atchPosblFileNumber" name="atchPosblFileNumber"/>
+                    </div>
+                    <p class="form-hint-invalid" id="atchPosblFileNumberError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="bbsOptions" th:text="#{comCopBbs.boardMasterVO.detail.option}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="bbsOptions" name="bbsOptions" th:title="#{comCopBbs.boardMasterVO.detail.option}">
+                            <option th:text="#{comCopBbs.boardMasterVO.detail.option1}" value="1"></option>
+                            <option th:text="#{comCopBbs.boardMasterVO.detail.option2}" value="2"></option>
+                            <option th:text="#{comCopBbs.boardMasterVO.detail.option3}" value="3"></option>
+                        </select>
+                        <input type="hidden" id="bbsOption" name="bbsOption"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="useAt" th:text="#{comCopBbs.boardMasterVO.regist.useAt}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="useAt" name="useAt" th:title="#{comCopBbs.boardMasterVO.regist.useAt}">
+                            <option th:text="#{input.yes}" value="Y"></option>
+                            <option th:text="#{input.no}" value="N"></option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="bbsMasterList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="bbsMasterUpdate()"></button>
+            </div>
+        </div>
+
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    $(document).ready(function() {
+        bbsMasterDetail();
+
+        $('#bbsIntrcn').on('input', function() {
+            $('#textCount').text($(this).val().length);
+        });
+
+        $('#bbsTyCodes').change(function() {
+            if ($('#bbsOption').val() !== '1') {
+                if ($(this).val() === 'BBST03') {
+                    const bbsOptionAlert = '[(#{comCopBbs.boardMasterVO.detail.bbsTyCode.unabledToModify})]';
+                    alert(bbsOptionAlert);
+                    $('#bbsTyCodes').val($('#bbsTyCode').val()).prop('selected', true);
+                } else {
+                    $('#bbsTyCode').val('').val($('#bbsTyCodes option:selected').val());
+                }
+            } else {
+                if ($(this).val() === 'BBST03') {
+                    $('#replyPosblAts, #fileAtchPosblAts, #atchPosblFileNumbers, #bbsOptions').each(function() {
+                        $(this).prop('selectedIndex', 0).prop('disabled', true);
+                    });
+                    $('#replyPosblAt').val('N');
+                    $('#fileAtchPosblAt').val('N');
+                    $('#atchPosblFileNumber').val('0');
+                    $('#bbsOption').val('1');
+                } else {
+                    $('#replyPosblAts, #fileAtchPosblAts, #atchPosblFileNumbers, #bbsOptions').each(function() {
+                        $(this).prop('selectedIndex', 0).prop('disabled', false);
+                    });
+                    $('#replyPosblAt').val('');
+                    $('#fileAtchPosblAt').val('');
+                    $('#atchPosblFileNumber').val('');
+                    $('#bbsOption').val('1');
+                }
+                $('#bbsTyCode').val('').val($('#bbsTyCodes option:selected').val());
+            }
+        });
+
+        $('#replyPosblAts').change(function() {
+            $('#replyPosblAt').val('').val($('#replyPosblAts option:selected').val());
+        });
+
+        $('#fileAtchPosblAts').change(function() {
+            if ($('#fileAtchPosblAts').val() === 'N') {
+                $('#atchPosblFileNumbers').prop('selectedIndex', 0).prop('disabled', true);
+                $('#fileAtchPosblAt').val('N');
+                $('#atchPosblFileNumber').val('0');
+            } else {
+                $('#atchPosblFileNumbers').prop('selectedIndex', 0).prop('disabled', false);
+                $('#fileAtchPosblAt').val($('#fileAtchPosblAts option:selected').val());
+                $('#atchPosblFileNumber').val('');
+            }
+        });
+
+        $('#atchPosblFileNumbers').change(function() {
+            $('#atchPosblFileNumber').val('').val($('#atchPosblFileNumbers option:selected').val());
+        });
+
+        $('#bbsOptions').change(function() {
+            $('#bbsOption').val('').val($('#bbsOptions option:selected').val());
+        });
+    });
+
+    function bbsMasterList() {
+        $('#updateForm').attr('method', 'post').attr('action', '/cop/bls/bbsMasterListView').submit();
+    }
+
+    function bbsMasterDetail() {
+        $.ajax({
+            url: '/cop/bls/bbsMasterDetail',
+            method: 'POST',
+            data: $('#updateForm').serialize()
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                bbsMasterList();
+            } else {
+                $('#bbsNm').val(response.result.bbsNm);
+
+                let bbsIntrcn = $('#bbsIntrcn');
+                bbsIntrcn.val(response.result.bbsIntrcn).css('white-space', 'pre-line');
+                $('#textCount').text(bbsIntrcn.val().length);
+
+                let bbsTyCode = response.result.bbsTyCode;
+                let cmmnDetailCodeList = response.cmmnDetailCodeList;
+                let defaultText = '[(#{input.select})]';
+                let html = '';
+                html += '<option value="">'+defaultText+'</option>';
+                cmmnDetailCodeList.forEach(function (cmmnDetailCode, index) {
+                    if (cmmnDetailCode.code !== 'BBST01') {
+                        if (bbsTyCode === cmmnDetailCode.code) {
+                            html += '<option value="'+cmmnDetailCode.code+'" selected>'+cmmnDetailCode.codeNm+'</option>';
+                        } else {
+                            html += '<option value="'+cmmnDetailCode.code+'">'+cmmnDetailCode.codeNm+'</option>';
+                        }
+                    }
+                });
+                $('#bbsTyCodes').html(html);
+                $('#bbsTyCode').val(bbsTyCode);
+
+                $('#replyPosblAt').val(response.result.replyPosblAt);
+                if ($('#bbsTyCode').val() !== 'BBST03') {
+                    $('#replyPosblAts').val(response.result.replyPosblAt).prop('selected', true);
+                } else {
+                    $('#replyPosblAts').prop('selectedIndex', 0).prop('disabled', true);
+                }
+
+                $('#fileAtchPosblAt').val(response.result.fileAtchPosblAt);
+                if ($('#bbsTyCode').val() !== 'BBST03') {
+                    $('#fileAtchPosblAts').val(response.result.fileAtchPosblAt).prop('selected', true);
+                } else {
+                    $('#fileAtchPosblAts').prop('selectedIndex', 0).prop('disabled', true);
+                }
+
+                $('#atchPosblFileNumber').val(response.result.atchPosblFileNumber);
+                if ($('#bbsTyCode').val() !== 'BBST03') {
+                    $('#atchPosblFileNumbers').val(response.result.atchPosblFileNumber).prop('selected', true);
+                } else {
+                    $('#atchPosblFileNumbers').prop('selectedIndex', 0).prop('disabled', true);
+                }
+
+                let answerAt = response.result.answerAt;
+                let stsfdgAt = response.result.stsfdgAt;
+                let bbsOptionMessage = '[(#{comCopBbs.boardMasterVO.detail.option.unabledToModify})]';
+                if (answerAt === 'Y' && stsfdgAt === 'N') {
+                    $('#bbsOption').val('2');
+                    $('#bbsOptions').val('2').prop('selected', true).prop('disabled', true);
+                    $('#bbsOptionMessage').text(bbsOptionMessage);
+                } else if (answerAt === 'N' && stsfdgAt === 'Y') {
+                    $('#bbsOption').val('3');
+                    $('#bbsOptions').val('3').prop('selected', true).prop('disabled', true);
+                    $('#bbsOptionMessage').text(bbsOptionMessage);
+                } else {
+                    $('#bbsOption').val('1');
+                    if ($('#bbsTyCode').val() !== 'BBST03') {
+                        $('#bbsOptions').val('1').prop('selected', true);
+                    } else {
+                        $('#bbsOptions').prop('selectedIndex', 0).prop('disabled', true);
+                    }
+                }
+            }
+        });
+    }
+
+    function bbsMasterUpdate() {
+        if (confirm('[(#{common.save.msg})]')) {
+            $('#bbsNmError, #bbsIntrcnError, #bbsTyCodeError, #replyPosblAtError, #fileAtchPosblAtError, #atchPosblFileNumberError').text('');
+            $('#bbsNmError, #bbsIntrcnError, #bbsTyCodeError, #replyPosblAtError, #fileAtchPosblAtError, #atchPosblFileNumberError').css("display","none");
+
+            $.ajax({
+                url: '/cop/bls/bbsMasterUpdate',
+                method: 'POST',
+                data: $('#updateForm').serialize()
+            }).done(function(response) {
+                if(response.status === 'valid') {
+                    $.each(response.errors, function(key, value) {
+                        $('#'+key+'Error').text(value);
+                        $('#'+key+'Error').css("display","block");
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    bbsMasterList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    bbsMasterList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

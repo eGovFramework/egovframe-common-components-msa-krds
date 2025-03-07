@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopSecRam.title}+' '+#{title.update}"></title>
+    <div th:replace="sec/ram/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sec.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comCopSecRam.title}+' '+#{title.update}"></span></h2>
+
+    <form id="updateForm" name="updateForm" th:object="${authorInfoVO}">
+    <input type="hidden" th:id="originalAuthorCode" th:name="originalAuthorCode" th:value="${authorInfoVO.authorCode}"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${authorInfoVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${authorInfoVO.searchKeyword}"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="authorCode" th:text="#{comCopSecRam.regist.authorCode}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="authorCode" name="authorCode" class="krds-input" maxlength="30"
+                               th:field="*{authorCode}"
+                               th:placeholder="#{comCopSecRam.regist.authorCode}+' '+#{input.input}">
+                    </div>
+                    <p class="form-hint-invalid" id="authorCodeError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="authorNm" th:text="#{comCopSecRam.regist.authorNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="authorNm" name="authorNm" class="krds-input" maxlength="60"
+                               th:field="*{authorNm}"
+                               th:placeholder="#{comCopSecRam.regist.authorNm}+' '+#{input.input}">
+                    </div>
+                    <p class="form-hint-invalid" id="authorNmError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="authorDc" th:text="#{comCopSecRam.regist.authorDc}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="authorDc" name="authorDc" maxlength="200" class="krds-input"
+                                      th:field="*{authorDc}"
+                                      th:placeholder="#{comCopSecRam.regist.authorDc}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/200</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="authorInfoList()"></button>
+                <div class="btn-wrap">
+                    <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="authorInfoDelete()"></button>
+                    <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="authorInfoUpdate()"></button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        authorInfoDetail();
+
+        const authorDc = document.getElementById('authorDc');
+        const textCount = document.getElementById('textCount');
+        authorDc.addEventListener('input', function() {
+            textCount.textContent = authorDc.value.length;
+        });
+    });
+
+    function authorInfoList() {
+        window.location.href = '/sec/ram/authorInfoListView';
+    }
+
+    function authorInfoDetail() {
+        const updateForm = document.getElementById('updateForm');
+        const formData = new FormData(updateForm);
+
+        fetch('/sec/ram/authorInfoDetail', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                authorInfoList();
+            } else {
+                document.getElementById('authorCode').value = response.result.authorCode;
+                document.getElementById('authorNm').value = response.result.authorNm;
+                const authorDc = document.getElementById('authorDc');
+                if (response.result.authorDc === '') {
+                    authorDc.value = response.result.authorNm;
+                } else {
+                    authorDc.value = response.result.authorDc;
+                }
+                document.getElementById('textCount').textContent = authorDc.value.length;
+            }
+        });
+    }
+
+    function authorInfoUpdate() {
+        const updateForm = document.getElementById('updateForm');
+        const formData = new FormData(updateForm);
+
+        if (confirm('[(#{common.update.msg})]')) {
+            const errors = ['authorCodeError', 'authorNmError'];
+            errors.forEach(error => {
+                document.getElementById(error).textContent = '';
+                document.getElementById(error).style.display="none";
+            });
+
+            fetch('/sec/ram/authorInfoUpdate', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                        document.getElementById(`${key}Error`).style.display="block";
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    authorInfoList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    authorInfoList();
+                }
+            });
+        }
+    }
+
+    function authorInfoDelete() {
+        const updateForm = document.getElementById('updateForm');
+        const formData = new FormData(updateForm);
+
+        if (confirm('[(#{common.delete.msg})]')) {
+            fetch('/sec/ram/authorInfoDelete', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.delete})]');
+                    authorInfoList();
+                } else {
+                    alert('[(#{success.common.delete})]');
+                    authorInfoList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

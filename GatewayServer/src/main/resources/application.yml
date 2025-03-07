@@ -1,0 +1,261 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: GatewayServer
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
+  config:
+    import: optional:configserver:http://localhost:8888
+  profiles:
+    active: local
+
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials # 헤더 중복 제거
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins:
+              - http://localhost:9000
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+
+      routes:
+        - id: RedirectToMain
+          uri: http://localhost:9000
+          predicates:
+            - Path=/ # 루트 경로("/")로 접근할 때
+          filters:
+            - RedirectTo=302, /main/ # 302 리다이렉트 수행
+
+        - id: EgovMain
+          uri: lb://EGOVMAIN
+          predicates:
+            - Path=/main/**
+          filters:
+            - RewritePath=/main/(?<segment>.*), /${segment}
+
+        - id: EgovLogin
+          uri: lb://EGOVLOGIN
+          predicates:
+            - Path=/uat/uia/**
+          filters:
+            - RewritePath=/uat/uia/(?<segment>.*), /uat/uia/${segment}
+
+        - id: EgovLoginPolicy
+          uri: lb://EGOVLOGIN
+          predicates:
+            - Path=/uat/uap/**
+          filters:
+            - RewritePath=/uat/uap/(?<segment>.*), /uat/uap/${segment}
+            - name: Auth
+
+        - id: EgovAuthorInfo
+          uri: lb://EGOVAUTHOR
+          predicates:
+            - Path=/sec/ram/**
+          filters:
+            - RewritePath=/sec/ram/(?<segment>.*), /sec/ram/${segment}
+            - name: Auth
+
+        - id: EgovAuthorGroup
+          uri: lb://EGOVAUTHOR
+          predicates:
+            - Path=/sec/rgm/**
+          filters:
+            - RewritePath=/sec/rgm/(?<segment>.*), /sec/rgm/${segment}
+            - name: Auth
+
+        - id: EgovAuthorGroupInfo
+          uri: lb://EGOVAUTHOR
+          predicates:
+            - Path=/sec/gmt/**
+          filters:
+            - RewritePath=/sec/gmt/(?<segment>.*), /sec/gmt/${segment}
+            - name: Auth
+
+        - id: EgovRoleInfo
+          uri: lb://EGOVAUTHOR
+          predicates:
+            - Path=/sec/rmt/**
+          filters:
+            - RewritePath=/sec/rmt/(?<segment>.*), /sec/rmt/${segment}
+            - name: Auth
+
+        - id: EgovMobileId
+          uri: lb://EGOVMOBILEID
+          predicates:
+            - Path=/mip/**
+          filters:
+            - RewritePath=/mip/(?<segment>.*), /mip/${segment}
+            - name: Auth
+
+        - id: EgovBlog
+          uri: lb://EGOVBOARD
+          predicates:
+            - Path=/cop/bls/**
+          filters:
+            - RewritePath=/cop/bls/(?<segment>.*), /cop/bls/${segment}
+            - name: Auth
+
+        - id: EgovBbs
+          uri: lb://EGOVBOARD
+          predicates:
+            - Path=/cop/bbs/**
+          filters:
+            - RewritePath=/cop/bbs/(?<segment>.*), /cop/bbs/${segment}
+            - name: Auth
+
+        - id: EgovBoard
+          uri: lb://EGOVBOARD
+          predicates:
+            - Path=/cop/brd/**
+          filters:
+            - RewritePath=/cop/brd/(?<segment>.*), /cop/brd/${segment}
+            - name: Auth
+
+        - id: EgovCommunity
+          uri: lb://EGOVBOARD
+          predicates:
+            - Path=/cop/cmy/**
+          filters:
+            - RewritePath=/cop/cmy/(?<segment>.*), /cop/cmy/${segment}
+            - name: Auth
+
+        - id: EgovTemplate
+          uri: lb://EGOVBOARD
+          predicates:
+            - Path=/cop/tpl/**
+          filters:
+            - RewritePath=/cop/tpl/(?<segment>.*), /cop/tpl/${segment}
+            - name: Auth
+
+        - id: EgovQestnrInfo
+          uri: lb://EGOVQUESTIONNAIRE
+          predicates:
+            - Path=/uss/olp/qmc/**
+          filters:
+            - RewritePath=/uss/olp/qmc/(?<segment>.*), /uss/olp/qmc/${segment}
+            - name: Auth
+
+        - id: EgovQustnrRspnsResult
+          uri: lb://EGOVQUESTIONNAIRE
+          predicates:
+            - Path=/uss/olp/qri/**
+          filters:
+            - RewritePath=/uss/olp/qri/(?<segment>.*), /uss/olp/qri/${segment}
+            - name: Auth
+
+        - id: EgovQustnrTmplat
+          uri: lb://EGOVQUESTIONNAIRE
+          predicates:
+            - Path=/uss/olp/qtm/**
+          filters:
+            - RewritePath=/uss/olp/qtm/(?<segment>.*), /uss/olp/qtm/${segment}
+            - name: Auth
+
+        - id: EgovQustnrRespondInfo
+          uri: lb://EGOVQUESTIONNAIRE
+          predicates:
+            - Path=/uss/olp/qrm/**
+          filters:
+            - RewritePath=/uss/olp/qrm/(?<segment>.*), /uss/olp/qrm/${segment}
+            - name: Auth
+
+        - id: EgovQustnrQesitm
+          uri: lb://EGOVQUESTIONNAIRE
+          predicates:
+            - Path=/uss/olp/qqm/**
+          filters:
+            - RewritePath=/uss/olp/qqm/(?<segment>.*), /uss/olp/qqm/${segment}
+            - name: Auth
+
+        - id: EgovQusntrItem
+          uri: lb://EGOVQUESTIONNAIRE
+          predicates:
+            - Path=/uss/olp/qim/**
+          filters:
+            - RewritePath=/uss/olp/qim/(?<segment>.*), /uss/olp/qim/${segment}
+            - name: Auth
+
+        - id: EgovCmmnClCode
+          uri: lb://EGOVCMMNCODE
+          predicates:
+            - Path=/sym/ccm/ccc/**
+          filters:
+            - RewritePath=/sym/ccm/ccc/(?<segment>.*), /sym/ccm/ccc/${segment}
+            - name: Auth
+
+        - id: EgovCmmnDetailCode
+          uri: lb://EGOVCMMNCODE
+          predicates:
+            - Path=/sym/ccm/cde/**
+          filters:
+            - RewritePath=/sym/ccm/cde/(?<segment>.*), /sym/ccm/cde/${segment}
+            - name: Auth
+
+        - id: EgovCmmnCode
+          uri: lb://EGOVCMMNCODE
+          predicates:
+            - Path=/sym/ccm/cca/**
+          filters:
+            - RewritePath=/sym/ccm/cca/(?<segment>.*), /sym/ccm/cca/${segment}
+            - name: Auth
+
+        - id: EgovSearch
+          uri: lb://EGOVSEARCH
+          predicates:
+            - Path=/ext/ops/**
+          filters:
+            - RewritePath=/ext/ops/(?<segment>.*), /ext/ops/${segment}
+            - name: Auth
+
+logging:
+  level:
+    org:
+      egovframe:
+        rte: debug
+      springframework:
+        boot:
+          autoconfigure: error
+          web: debug
+    egovframework:
+      com: debug
+      rte: debug
+
+eureka:
+  client:
+    register-with-eureka: true # Eureka 등록 여부
+    fetch-registry: true # Eureka 조회 여부
+    registry-fetch-interval-seconds: 5 # 클라이어트 측에서 eureka registry를 캐싱하는 시간
+    initial-instance-info-replication-interval-secondsL: 5 # 서버 재시작 후 즉시 등록 시도
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    leaseRenewalIntervalInSeconds: 5  # 기본값 30초 → 5초로 변경 (더 자주 heartbeat 전송)
+    leaseExpirationDurationInSeconds: 10  # 기본값 90초 → 10초로 변경 (서비스 제거 시간 단축)
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, refresh, env
+
+org:
+  egovframe:
+    crypto:
+      algorithm: SHA-256
+      algorithmKey: egovframe
+      algorithmKeyHash: gdyYs/IZqY86VcWhT8emCYfqY1ahw2vtLG+/FzNqtrQ=
+      plainDigest: false

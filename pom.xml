@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>egovframework</groupId>
+	<artifactId>ncc</artifactId>
+	<version>4.3.0</version>
+	<packaging>pom</packaging>
+	<name>ncc</name>
+
+	<modules>
+		<module>ConfigServer</module>
+		<module>EgovAuthor</module>
+		<module>EgovBoard</module>
+		<module>EgovCmmnCode</module>
+		<module>EgovLogin</module>
+		<module>EgovMain</module>
+		<module>EgovMobileId</module>
+		<module>EgovQuestionnaire</module>
+		<module>EgovSearch</module>
+		<module>EurekaServer</module>
+		<module>GatewayServer</module>
+	</modules>
+
+</project>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopTpl.template.title}+' '+#{title.update}"></title>
+    <div th:replace="cop/tpl/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt">홈</a></li>
+            <li>협업</li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comCopTpl.template.title}+' '+#{title.update}"></span></h2>
+
+    <form id="updateForm" name="updateForm" th:object="${templateVO}">
+    <input type="hidden" th:id="tmplatId" th:name="tmplatId" th:value="${templateVO.tmplatId}"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${templateVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${templateVO.searchKeyword}"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="tmplatNm" th:text="#{comCopTpl.template.name}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="tmplatNm" name="tmplatNm" class="krds-input" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="tmplatSeCode" th:text="#{comCopTpl.template.type}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="tmplatSeCode" name="tmplatSeCode"
+                                th:title="#{comCopTpl.template.type}" th:field="*{tmplatSeCode}"></select>
+                    </div>
+                    <p class="form-hint-invalid" id="tmplatSeCodeError" style="display:none"></p>
+                </div>
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="tmplatCours" th:text="#{comCopTpl.template.path}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="tmplatCours" name="tmplatCours" class="krds-input" maxlength="70"
+                               th:field="*{tmplatCours}"
+                               th:placeholder="#{comCopTpl.template.path}+' '+#{input.input}">
+                    </div>
+                    <p class="form-hint-invalid" id="tmplatCoursError" style="display:none"></p>
+                </div>
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="useAt" th:text="#{comCopTpl.template.useYN}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="useAt" name="useAt" th:title="#{comCopTpl.template.useYN}"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="templateList()"></button>
+                <div class="btn-wrap">
+                    <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="templateDelete()"></button>
+                    <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="templateUpdate()"></button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    $(document).ready(function() {
+        templateDetail();
+    });
+
+    function templateList() {
+        $(location).attr('href', '/cop/tpl/templateListView');
+    }
+
+    function templateDetail() {
+        $.ajax({
+            url: '/cop/tpl/templateDetail',
+            method: 'POST',
+            data: $('#updateForm').serialize()
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                templateList();
+            } else {
+                $('#tmplatNm').val(response.result.tmplatNm);
+                let tmplatSeCode = response.result.tmplatSeCode;
+                let cmmnDetailCodeList = response.cmmnDetailCodeList;
+                let defaultText = '[(#{input.select})]';
+                let html = '';
+                html += '<option value="">'+defaultText+'</option>';
+                cmmnDetailCodeList.forEach(function (cmmnDetailCode, index) {
+                    if (tmplatSeCode === cmmnDetailCode.code) {
+                        html += '<option value="'+cmmnDetailCode.code+'" selected>'+cmmnDetailCode.codeNm+'</option>';
+                    } else {
+                        html += '<option value="'+cmmnDetailCode.code+'">'+cmmnDetailCode.codeNm+'</option>';
+                    }
+                });
+                $('#tmplatSeCode').html(html);
+                $('#tmplatCours').val(response.result.tmplatCours);
+                let useAtHtml = '';
+                if (response.result.useAt === 'Y') {
+                    useAtHtml += '<option value="Y" selected>[(#{input.yes})]</option>';
+                    useAtHtml += '<option value="N">[(#{input.no})]</option>';
+                } else {
+                    useAtHtml += '<option value="Y">[(#{input.yes})]</option>';
+                    useAtHtml += '<option value="N" selected>[(#{input.no})]</option>';
+                }
+                $('#useAt').html(useAtHtml);
+            }
+        });
+    }
+
+    function templateUpdate() {
+        if (confirm('[(#{common.update.msg})]')) {
+            $('#tmplatSeCodeError, #tmplatCoursError').text('');
+            $('#tmplatSeCodeError, #tmplatCoursError').css('display','none')
+            $.ajax({
+                url: '/cop/tpl/templateUpdate',
+                method: 'POST',
+                data: $('#updateForm').serialize()
+            }).done(function(response) {
+                if(response.status === 'valid') {
+                    $.each(response.errors, function(key, value) {
+                        $('#'+key+'Error').text(value);
+                        $('#'+key+'Error').css('display','block');
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    templateList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    templateList();
+                }
+            });
+        }
+    }
+
+    function templateDelete() {
+        if (confirm('[(#{common.delete.msg})]')) {
+            $.ajax({
+                url: '/cop/tpl/templateDelete',
+                method: 'POST',
+                data: $('#updateForm').serialize()
+            }).done(function(response) {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.delete})]');
+                    templateList();
+                } else {
+                    alert('[(#{success.common.delete})]');
+                    templateList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

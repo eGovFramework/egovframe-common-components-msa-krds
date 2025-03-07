@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopBbs.articleVO.title}+' '+#{title.create}"></title>
+    <div th:replace="cop/brd/fragment/linkFragment"></div>
+    <style>
+        .textarea-wrap .ck-content{
+            height:300px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.cop.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:id="boardTitle" th:text="${bbsVO.bbsNm}+' '+#{comCopBbs.articleVO.title}+' '+#{title.create}"></span></h2>
+
+    <form id="insertForm" name="insertForm" th:object="${bbsVO}" enctype="multipart/form-data">
+        <input type="hidden" th:id="nttId" th:name="nttId" th:value="${bbsVO.nttId}"/>
+        <input type="hidden" th:id="bbsId" th:name="bbsId" th:value="${bbsVO.bbsId}"/>
+        <input type="hidden" th:id="bbsNm" th:name="bbsNm" th:value="${bbsVO.bbsNm}"/>
+        <input type="hidden" th:id="blogId" th:name="blogId" th:value="${bbsVO.blogId}"/>
+        <input type="hidden" th:id="blogNm" th:name="blogNm" th:value="${bbsVO.blogNm}"/>
+        <input type="hidden" th:id="cmmntyId" th:name="cmmntyId" th:value="${bbsVO.cmmntyId}"/>
+        <input type="hidden" th:id="cmmntyNm" th:name="cmmntyNm" th:value="${bbsVO.cmmntyNm}"/>
+        <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+        <input type="hidden" th:id="answerAt" th:name="answerAt" th:value="${bbsVO.getAnswerAt()}">
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="krds-check-area">
+                        <div class="krds-form-chip">
+                            <!--공지신청 여부-->
+                            <input type="checkbox" class="checkbox" id="noticeAt" name="noticeAt" th:title="#{comCopBbs.articleVO.regist.noticeAt}">
+                            <label class="krds-form-chip-outline" for="noticeAt" th:text="#{comCopBbs.articleVO.regist.noticeAt}"></label>
+                        </div>
+                        <div class="krds-form-chip">
+                            <!--비밀글 여부-->
+                            <input type="checkbox" class="checkbox" id="secretAt" name="secretAt" th:title="#{comCopBbs.articleVO.regist.secretAt}">
+                            <label class="krds-form-chip-outline" for="secretAt" th:text="#{comCopBbs.articleVO.regist.secretAt}"></label>
+                        </div>
+                        <div class="krds-form-chip">
+                            <!--익명등록 여부-->
+                            <input type="checkbox" class="checkbox" id="anonymousAt" name="anonymousAt" th:title="#{comCopBbs.articleVO.regist.anonymousAt}">
+                            <label class="krds-form-chip-outline" for="anonymousAt" th:text="#{comCopBbs.articleVO.regist.anonymousAt}"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="nttSj" th:text="#{comCopBbs.articleVO.regist.nttSj}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="nttSj" name="nttSj" class="krds-input" maxlength="70"
+                               th:field="*{nttSj}"
+                               th:placeholder="#{comCopBbs.articleVO.regist.nttSj}+' '+#{input.input}">
+                        <div class="krds-form-chip">
+                            <!--제목 진하게 여부-->
+                            <input type="checkbox" class="checkbox" id="sjBoldAt" name="sjBoldAt" th:title="#{comCopBbs.articleVO.regist.sjBoldAt}">
+                            <label class="krds-form-chip-outline" for="sjBoldAt" th:text="#{comCopBbs.articleVO.regist.sjBoldAt}"></label>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="nttSjError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="editor" th:text="#{comCopBbs.articleVO.regist.nttCn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap"><div id="editor"></div></div>
+                        <input type="hidden" id="nttCn" name="nttCn"/>
+                    </div>
+                    <p class="form-hint-invalid" id="nttCnError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-conts">
+                        <div class="form-tit">
+                            <label for="startDate" th:text="#{comCopBbs.articleVO.regist.ntceBgnde}"></label>
+                        </div>
+                        <div class="form-conts datepicker-conts">
+                            <input type="date" id="startDate" name="ntceBgnde" class="krds-input">
+                        </div>
+                    </div>
+                    <div class="form-conts">
+                        <div class="form-tit">
+                            <label for="endDate" th:text="#{comCopBbs.articleVO.regist.ntceEndde}"></label>
+                        </div>
+                        <div class="form-conts datepicker-conts">
+                            <input type="date" id="endDate" name="ntceEndde" class="krds-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="krds-file-upload" id="fileAtchFrm">
+                    <div class="form-tit" th:text="#{comCopBbs.articleVO.regist.atchFile}"></div>
+                    <div class="file-upload">
+                        <p class="txt">첨부할 파일을 여기에 끌어다 놓거나,</br> 파일 선택 버튼을 눌러 파일을 직접 선택해주세요.</p>
+                        <div class="file-upload-btn-wrap">
+                            <input type="file" name="atchFile" id="fileUpload" class="sr-only" multiple="multiple">
+                            <label for="fileUpload">
+                                <button type="button" class="krds-btn medium" th:text="#{input.cSelect}"><i class="svg-icon ico-upload"></i></button>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="file-list" style="display: none">
+                        <div class="total"></div>
+                        <ul class="upload-list" id="upload-list"></ul>
+                    </div>
+                </div>
+
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="boardList()"></button>
+                <button type="button" class="krds-btn medium" id="insertBtn" th:text="#{button.create}"></button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript" th:type="module">
+/*********************************************************
+* Ckeditor5 Script 적용
+******************************************************** */
+import {EditorConfig} from "/cop/brd/js/ckEditor_simple-main.js";
+import {ClassicEditor} from "/cop/brd/ckeditor5_simple/ckeditor5.js";
+
+let nttCn = document.getElementById('nttCn');
+
+ClassicEditor
+    .create(document.getElementById('editor'), EditorConfig)
+    .then(editor => {
+        document.getElementById("insertBtn").addEventListener("click", function () {
+            nttCn.value = editor.getData();
+            boardCreate();
+        });
+    })
+    .catch(error => {
+        console.error(error);
+    });
+</script>
+
+<script th:inline="javascript" defer>
+    const sjBoldAt = document.getElementById('sjBoldAt');
+    const noticeAt = document.getElementById('noticeAt');
+    const secretAt = document.getElementById('secretAt');
+    const anonymousAt = document.getElementById('anonymousAt');
+
+    // 제목 진하게 속성 이벤트 설정
+    sjBoldAt.addEventListener('change', function () {
+        secretAt.disabled = !!this.checked;
+    });
+
+    // 공지사항 속성 이벤트 설정
+    noticeAt.addEventListener('change', function () {
+        anonymousAt.disabled = !!this.checked;
+        secretAt.disabled = !!this.checked;
+    });
+
+    // 비밀글 속성 이벤트 설정
+    secretAt.addEventListener('change', function () {
+        anonymousAt.disabled = !!this.checked;
+        noticeAt.disabled = !!this.checked;
+        sjBoldAt.disabled = !!this.checked;
+    });
+
+    // 익명글 속성 이벤트 설정
+    anonymousAt.addEventListener('change', function () {
+        noticeAt.disabled = !!this.checked;
+        secretAt.disabled = !!this.checked;
+    });
+
+    $.ajax({
+        url: '/cop/brd/bbsMasterDetail',
+        method: 'POST',
+        data: $('#insertForm').serialize()
+    }).done(function(response) {
+        if (response.status === 'error') {
+            alert('[(#{fail.request.msg})]');
+            boardList();
+        } else {
+            if (response.result.atchPosblFileNumber == null || response.result.atchPosblFileNumber === 0 || response.result.fileAtchPosblAt === "N") {
+                document.getElementById("fileUploadArea").style.display='none';
+            } else {
+                const total = document.querySelector(".total");
+                const html = `<span class='current'>0</span>개 / <span class='total-size'>${response.result.atchPosblFileNumber}</span>개`;
+                total.insertAdjacentHTML("beforeend", html);
+            }
+
+            if (response.result.bbsTyCode === "BBST03") {
+                const uploadElement = document.querySelector(".krds-file-upload");
+                if (uploadElement) uploadElement.remove();
+            }
+
+            maxFiles = response.result.atchPosblFileNumber;
+        }
+    });
+
+    // Byte 단위 변경
+    function formatBytes(bytes, decimals = 2) {
+        if (bytes === 0) return '0 Bytes';
+
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+
+    const fileList = [];
+    const fileUpload = document.getElementById("fileUpload");
+
+    var fileMaxSize = 1048576
+    var fileExtensions =".gif.jpg.jpeg.png.xls.xlsx";
+
+    // 파일 크기, 확장자 Validaiton
+    fileUpload.addEventListener("change", function (e) {
+        if (fileList.length + e.target.files.length > parseInt(document.querySelector(".total-size").textContent)) {
+            alert("첨부파일 최대 갯수를 초과하였습니다.");
+        } else {
+            Array.from(e.target.files).forEach(file => {
+                if (file.size > fileMaxSize) {
+                    alert(`첨부파일의 크기는 ${formatBytes(fileMaxSize)}까지만 가능합니다.`);
+                } else if (!fileExtensions.includes(file.name.split(".").pop().toLowerCase())) {
+                    alert(`첨부파일의 확장자는 ${fileExtensions.join(", ")}만 가능합니다.`);
+                } else {
+                    fileList.push(file);
+                    document.querySelector(".file-list").style.display = "block";
+                    fileAppend(fileList);
+                }
+            });
+        }
+    });
+
+    // 추가된 파일의 리스트 생성
+    function fileAppend(fileList) {
+        const uploadList = document.getElementById("upload-list");
+        uploadList.innerHTML = "";
+
+        fileList.forEach((item, index) => {
+            const li = document.createElement("li");
+            li.id = `file_${index}`;
+            li.innerHTML = `
+                <div class="file-info">
+                    <div class="file-name">${item.name} [${item.type.split("/")[1]}, ${formatBytes(item.size)}]</div>
+                    <div class="btn-wrap" onclick="fileDel(${index}, 1)">
+                        <button type="button" class="krds-btn medium text">삭제<i class='svg-icon ico-delete-fill'></i></button>
+                    </div>
+                </div>
+            `;
+            uploadList.appendChild(li);
+        });
+
+        document.querySelector(".current").textContent = fileList.length;
+    }
+
+    // 파일 목록에 있는 파일 삭제
+    function fileDel(index, sn) {
+        fileList.splice(index, 1);
+        document.getElementById(`file_${index}`).remove();
+        document.querySelector(".current").textContent = fileList.length;
+        fileAppend(fileList);
+    }
+
+    // 파일 추가 (드래그 앤 드롭)
+    document.addEventListener("dragover", event => event.preventDefault());
+    document.addEventListener("drop", event => event.preventDefault());
+
+    document.querySelector(".file-upload").addEventListener("drop", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (fileList.length + e.dataTransfer.files.length > parseInt(document.querySelector(".total-size").textContent)) {
+            alert("첨부파일 최대 갯수를 초과하였습니다.");
+        } else {
+            Array.from(e.dataTransfer.files).forEach(file => {
+                if (file.size > fileMaxSize) {
+                    alert(`첨부파일의 크기는 ${formatBytes(fileMaxSize)}까지만 가능합니다.`);
+                } else if (!fileExtensions.includes(file.name.split(".").pop().toLowerCase())) {
+                    alert(`첨부파일의 확장자는 ${fileExtensions.join(", ")}만 가능합니다.`);
+                } else {
+                    fileList.push(file);
+                    document.querySelector(".file-list").style.display = "block";
+                    fileAppend(fileList);
+                }
+            });
+        }
+    });
+
+    function boardList() {
+        const insertForm = document.getElementById('insertForm');
+        insertForm.method = 'POST';
+        insertForm.action = '/cop/brd/boardListView';
+        insertForm.submit();
+    }
+
+    function boardCreate() {
+        if (confirm('[(#{common.save.msg})]')) {
+            $('#nttSjError, #nttCnError').text('');
+            $('#nttSjError, #nttCnError').css('display','none');
+
+            const checkboxes = ['sjBoldAt', 'noticeAt', 'secretAt', 'anonymousAt'];
+            checkboxes.forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox) {
+                    checkbox.addEventListener('change', function () {
+                        checkbox.value = checkbox.checked ? 'Y' : 'N';
+                    });
+                    checkbox.value = checkbox.checked ? 'Y' : 'N';
+                }
+            });
+
+            let startDateInput = document.getElementById('startDate');
+            let endDateInput = document.getElementById('endDate');
+            let startDate = startDateInput.value.trim();
+            let endDate = endDateInput.value.trim();
+            if (!startDate) {
+                startDateInput.value = '1900-01-01';
+                startDate = '1900-01-01';
+            }
+            if (!endDate) {
+                endDateInput.value = '9999-12-31';
+                endDate = '9999-12-31';
+            }
+            if (startDate > endDate) {
+                alert('[(#{comCopBbs.articleVO.ntceDeError})]');
+                return false;
+            }
+
+            const from = document.getElementById('insertForm');
+            const formData = new FormData(from);
+
+            fileList.forEach((file) => {
+                formData.append("fileList",file);
+            });
+
+            console.log("답글 > " + document.getElementById("answerAt").value);
+
+            $.ajax({
+                url: '/cop/brd/boardInsert',
+                method: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false
+            }).done(function(response) {
+                if(response.status === 'valid') {
+                    $.each(response.errors, function(key, value) {
+                        $('#'+key+'Error').text(value);
+                        $('#'+key+'Error').css('display','block');
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.insert})]');
+                    boardList();
+                } else {
+                    alert('[(#{success.common.insert})]');
+                    boardList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQnn.title}+' '+#{title.create}"></title>
+    <div th:replace="uss/olp/qri/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <form id="insertForm" name="insertForm" th:object="${qustnrRspnsResultVO}">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId" th:value="${qustnrRspnsResultVO.qustnrTmplatId}"/>
+    <input type="hidden" th:id="qestnrId" th:name="qestnrId" th:value="${qustnrRspnsResultVO.qestnrId}"/>
+    <input type="hidden" th:id="qustnrItemList" th:name="qustnrItemList"/>
+
+    <h2 class="heading-large"><span th:text="#{comUssOlpQnn.title}+' '+#{title.create}"></span></h2>
+
+        <div class="form-group">
+            <h3 class="sec-tit" th:text="#{comUssOlpQnn.regist.qestnrInfo}"></h3>
+            <div class="form-group-wrap">
+                <div class="def-list-wrap">
+                    <dl class="def-list">
+                        <dt th:text="#{comUssOlpQnn.regist.qestnrSj}"></dt>
+                        <dd id="qustnrSj"></dd>
+                        <dt th:text="#{comUssOlpQnn.regist.qestnrPurps}"></dt>
+                        <dd id="qustnrPurps"></dd>
+                        <dt th:text="#{comUssOlpQnn.regist.qestnrWritngGuidanceCn}"></dt>
+                        <dd id="qustnrWritingGuidanceCn"></dd>
+                        <dt th:text="#{comUssOlpQnn.regist.qestnrTrget}"></dt>
+                        <dd id="qustnrTrget"></dd>
+                        <dt th:text="#{comUssOlpQnn.regist.qestnrDate}"></dt>
+                        <dd id="qustnrDe"></dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="form-group-wrap input-form">
+                <h3 class="sec-tit" th:text="#{comUssOlpQnn.regist.respondInfo}"></h3>
+                <div class="form-group" style="flex-direction: row;">
+                    <div class="form-conts">
+                        <div class="form-tit">
+                            <label for="sexdstnCode" th:text="#{comUssOlpQnn.regist.sexdstnCode}"></label>
+                        </div>
+                        <select class="krds-form-select" id="sexdstnCode" name="sexdstnCode" th:title="#{comUssOlpQnn.regist.sexdstnCode}">
+                            <option th:text="#{input.select}" value="" selected></option>
+                        </select>
+                        <p class="form-hint-invalid" id="sexdstnCodeError" style="display:none"></p>
+                    </div>
+                    <div class="form-conts">
+                        <div class="form-tit">
+                            <label for="occpTyCode" th:text="#{comUssOlpQnn.regist.occpTyCode}"></label>
+                        </div>
+                        <select class="krds-form-select" id="occpTyCode" name="occpTyCode" th:title="#{comUssOlpQnn.regist.occpTyCode}">
+                            <option th:text="#{input.select}" value="" selected></option>
+                        </select>
+                        <p class="form-hint-invalid" id="occpTyCodeError" style="display:none"></p>
+                    </div>
+                    <div class="form-conts">
+                        <div class="form-tit">
+                            <label for="respondNm" th:text="#{comUssOlpQnn.regist.respondNm}"></label>
+                        </div>
+                        <input type="text" id="respondNm" name="respondNm" class="krds-input">
+                        <p class="form-hint-invalid" id="respondNmError" style="display:none"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group-wrap input-form">
+                <h3 class="sec-tit" th:text="#{comUssOlpQnn.regist.qestnrTmplatCours}"></h3>
+                <div class="form-group" id="template-layout"></div>
+            </div>
+        </div>
+        <div class="page-btn-wrap">
+            <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qustnrRspnsResultList()"></button>
+            <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="qustnrRspnsResultInsert()"></button>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        cmmnDetailCodeList();
+        qestnrInfoDetail();
+        templatLayout();
+    });
+
+    function qustnrRspnsResultList() {
+        window.location.href = '/uss/olp/qri/qustnrRspnsResultListView';
+    }
+
+    // 공통코드 설정
+    function cmmnDetailCodeList() {
+        fetch('/uss/olp/qri/cmmnDetailCodeList', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            const sexdstnList = data.sexdstnList;
+            const occpTyList = data.occpTyList;
+            let buttonText = '[(#{input.select})]';
+            let sexdstnHtml = '';
+            sexdstnHtml += '<option value="">' + buttonText + '</option>';
+            sexdstnList.forEach(function(sexdstn, index) {
+                sexdstnHtml += '<option value="' + sexdstn.code + '">' + sexdstn.codeNm + '</option>';
+            });
+            let occpTyHtml = '';
+            occpTyHtml += '<option value="">' + buttonText + '</option>';
+            occpTyList.forEach(function(occpTy, index) {
+                occpTyHtml += '<option value="' + occpTy.code + '">' + occpTy.codeNm + '</option>';
+            });
+            document.getElementById('sexdstnCode').innerHTML = sexdstnHtml;
+            document.getElementById('occpTyCode').innerHTML = occpTyHtml;
+        });
+    }
+
+    // 설문관리 상세
+    function qestnrInfoDetail() {
+        const insertForm = document.getElementById('insertForm');
+        const formData = new FormData(insertForm);
+
+        fetch('/uss/olp/qri/qestnrInfoDetail', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                qustnrRspnsResultList();
+            } else {
+                document.getElementById('qustnrSj').textContent = response.result.qustnrSj;
+                document.getElementById('qustnrPurps').textContent = response.result.qustnrPurps;
+                document.getElementById('qustnrWritingGuidanceCn').textContent = response.result.qustnrWritingGuidanceCn;
+                document.getElementById('qustnrTrget').textContent = response.result.qustnrTrgetNm;
+                document.getElementById('qustnrDe').textContent = response.result.qustnrBgnde+' ~ '+response.result.qustnrEndde;
+            }
+        });
+    }
+
+    // 설문조사 저장
+    function qustnrRspnsResultInsert() {
+        if (confirm("[(#{common.save.msg})]")) {
+            const errors = ['sexdstnCodeError', 'occpTyCodeError', 'respondNmError'];
+            errors.forEach(error => {
+                document.getElementById(error).textContent = '';
+                document.getElementById(error).style.display= 'none';
+            });
+
+            // 설문항목 확인
+            const validationErrors = [];
+
+            // 설문항목 Radio/Checkbox/Textarea 검증
+            const questionGroups = document.querySelectorAll(".form-conts");
+            questionGroups.forEach(group => {
+                const radiosOrCheckboxes = group.querySelectorAll("input[type=radio], input[type=checkbox]");
+                const textarea = group.querySelector("textarea");
+                const hasSelection = Array.from(radiosOrCheckboxes).some(input => input.checked);
+
+                if (radiosOrCheckboxes.length > 0 && !hasSelection) {
+                    validationErrors.push(`${group.querySelector('.box-tit2').textContent} 선택해주세요.`);
+                }
+
+                if (textarea && textarea.value.trim() === '') {
+                    validationErrors.push(`${group.querySelector('.box-tit2').textContent} 내용을 입력해주세요.`);
+                }
+            });
+
+            // 설문항목 경고메시지 출력
+            if (validationErrors.length > 0) {
+                alert(validationErrors.join('\n'));
+                return;
+            }
+
+            const insertForm = document.getElementById('insertForm');
+            const formData = new FormData(insertForm);
+
+            // checkedItems()로부터 선택된 설문항목 수집
+            const checkedItem = checkedItems();
+            if (checkedItem.length > 0) {
+                checkedItem.forEach(function(item, index) {
+                    console.log(item);
+                    formData.append(`qustnrItemList[${index}]`, item);
+                });
+            }
+
+            fetch('/uss/olp/qri/qustnrRspnsResultInsert', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                        document.getElementById(`${key}Error`).style.display="block";
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.insert})]');
+                    qustnrRspnsResultList();
+                } else {
+                    alert('[(#{success.common.insert})]');
+                    qustnrRspnsResultList();
+                }
+            });
+        }
+    }
+
+    // 선택한 설문항목 가져오기
+    function checkedItems(){
+        const itemList = [];
+        const inputs = document.querySelectorAll("input[type=checkbox], input[type=radio], textarea");
+
+        inputs.forEach((item) => {
+            // Radio와 Checkbox가 선택된 경우 처리
+            if ((item.type === "checkbox" || item.type === "radio") && item.checked) {
+                const checkList = [item.dataset.tycode, item.name, item.value];
+                itemList.push(checkList);
+            }
+
+            // Textarea의 값이 존재하는 경우 처리
+            if (item.tagName === "TEXTAREA" && item.value.trim() !== "") {
+                const textAreaItem = [item.dataset.tycode, item.name, item.value];
+                itemList.push(textAreaItem);
+            }
+        });
+
+        return itemList;
+    }
+
+    // 설문문항/설문항목 설정
+    function templatLayout() {
+        const param = {
+            qustnrTmplatId: document.getElementById('qustnrTmplatId').value,
+            qestnrId: document.getElementById('qestnrId').value
+        };
+
+        fetch('/uss/olp/qri/qustnrQesitmItemList', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(param)
+        })
+        .then(response => response.json())
+        .then(response => {
+            document.getElementById('template-layout').innerHTML = '';
+            const qesitmItemList = response.qustnrQesitmItemList;
+            const groupedData = groupByQuestion(qesitmItemList);
+            renderGroupedData(groupedData, qesitmItemList);
+        });
+    }
+
+    // 설문문항 설정
+    function groupByQuestion(qesitmItemList) {
+        const qesitmList = [];
+        const idSet = new Set();
+
+        qesitmItemList.forEach(function(qesitm) {
+            if (!idSet.has(qesitm.qustnrQesitmId)) {
+                idSet.add(qesitm.qustnrQesitmId);
+                qesitmList.push({
+                    id: qesitm.qustnrQesitmId,
+                    type: qesitm.qestnTyCode,
+                    name: qesitm.qestnCn
+                });
+            }
+        });
+
+        return qesitmList;
+    }
+
+    // 설문항목 설정
+    function renderGroupedData(groupedData, qesitmItemList) {
+        let html = '';
+
+        let message = '[(#{comUssOlpQnn.alert.qustnrIem})]';
+        if (groupedData.length === 0) {
+            html += '<div class="form-conts"><span>'+message+'</span></div>';
+        } else {
+            groupedData.forEach(function(item, index) {
+                const itemNum = index + 1;
+                html += '<div class="form-conts">';
+                html += '<h3 class="box-tit2" id="qustnrCn">'+itemNum+'. '+item.name+'</h3>';
+                html += '<input type="hidden" name="qestnTyCode" value="'+item.type+'">';
+                qesitmItemList.forEach(function(iem, index2) {
+                    const iemNum = index2 + 1;
+                    if (item.id === iem.qustnrQesitmId) {
+                        if (Number(iem.qestnTyCode) === 1) {
+                            if (Number(iem.mxmmChoiseCo) === 1) {
+                                html += '<div class="krds-check-area">';
+                                html += '<div class="krds-form-check medium">';
+                                html += '<input type="radio" name="'+iem.qustnrQesitmId+'" id="rdo_'+iemNum+'" value="'+iem.qustnrIemId+
+                                    '" data-tyCode="'+iem.qestnTyCode+'" data-mxmmChoice="'+iem.mxmmChoiseCo+'">';
+                                html += '<label for="rdo_'+iemNum+'">'+iem.iemCn+'</label>';
+                                html += '</div>';
+                                html += '</div>';
+                            } else {
+                                html += '<div class="krds-check-area">';
+                                html += '<div class="krds-form-check medium">';
+                                html += '<input type="checkbox" name="'+iem.qustnrQesitmId+'" id="chk_'+itemNum+'_'+iemNum+
+                                    '" value="'+iem.qustnrIemId+'" data-tyCode="'+iem.qestnTyCode+'" data-mxmmChoice="'+iem.mxmmChoiseCo+
+                                    '" onclick="checkboxAmount('+iem.qustnrQesitmId+','+iem.mxmmChoiseCo+')">';
+                                html += '<label for="chk_'+itemNum+'_'+iemNum+'">'+iem.iemCn+'</label>';
+                                html += '</div>';
+                                html += '</div>';
+                            }
+                        } else {
+                            html += '<div class="textarea-wrap">';
+                            html += '<textarea class="krds-input" name="'+iem.qustnrQesitmId+'" id="txt_'+itemNum+'" data-tyCode="2" data-mxmmChoice="1"></textarea>';
+                            html += '</div>';
+                        }
+                    }
+                });
+                html += '</div>';
+            });
+        }
+
+        document.getElementById('template-layout').innerHTML = html;
+    }
+
+    // 선택한 설문항목 최대개수 확인
+    function checkboxAmount(checkedId, mxmmChoiseCo) {
+        const totalCheckedId = checkedId.length;
+        let checkedCount = 0;
+        for (let i = 0; i < totalCheckedId; i++) {
+            if (checkedId[i].checked) {
+                checkedCount++;
+            }
+            if (checkedCount > mxmmChoiseCo) {
+                alert('[(#{comUssOlpQnn.alert.mxmmChoiseCo})] '+mxmmChoiseCo+'[(#{comUssOlpQnn.alert.exceed})]');
+                checkedId[i].checked = false;
+                return;
+            }
+        }
+    }
+</script>
+
+</body>
+</html>

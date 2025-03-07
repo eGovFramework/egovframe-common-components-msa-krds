@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopCmy.commuMasterVO.title}+' '+#{title.create}"></title>
+    <div th:replace="cop/cmy/fragment/linkFragment"></div>
+</head>
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt">홈</a></li>
+            <li>협업</li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comCopCmy.commuMasterVO.title}+' '+#{title.create}"></span></h2>
+    <form id="insertForm" name="insertForm" th:object="${communityVO}">
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="cmmntyNm" th:text="#{comCopCmy.commuMasterVO.regist.cmmntyNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="cmmntyNm" name="cmmntyNm" class="krds-input" maxlength="70"
+                               th:field="*{cmmntyNm}"
+                               th:placeholder="#{comCopCmy.commuMasterVO.regist.cmmntyNm}+' '+#{input.input}">
+                    </div>
+                    <p class="form-hint-invalid" id="cmmntyNmError" style="display:none"></p>
+                </div>
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="cmmntyIntrcn" th:text="#{comCopCmy.commuMasterVO.regist.cmmntyIntrcn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="cmmntyIntrcn" name="cmmntyIntrcn" maxlength="200" class="krds-input"
+                                      th:field="*{cmmntyIntrcn}"
+                                      th:placeholder="#{comCopCmy.commuMasterVO.regist.cmmntyIntrcn}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/200</span></p>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="cmmntyIntrcnError" style="display:none"></p>
+                </div>
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="useAt" th:text="#{comCopCmy.commuMasterVO.regist.useAt}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="useAt" name="useAt" th:title="#{comCopCmy.commuMasterVO.regist.useAt}">
+                            <option th:text="#{input.yes}" value="Y"></option>
+                            <option th:text="#{input.no}" value="N"></option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="communityList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="communityInsert()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript" defer>
+    $(document).ready(function() {
+        $('#cmmntyIntrcn').on('input', function() {
+            $('#textCount').text($(this).val().length);
+        });
+    });
+
+    function communityList() {
+        $(location).attr('href', '/cop/cmy/communityListView');
+    }
+
+    function communityInsert() {
+        if (confirm('[(#{common.save.msg})]')) {
+            $('#cmmntyNmError, #cmmntyIntrcnError').text('');
+            $('#cmmntyNmError, #cmmntyIntrcnError').css('display','none');
+            $.ajax({
+                url: '/cop/cmy/communityInsert',
+                method: 'POST',
+                data: $('#insertForm').serialize()
+            }).done(function(response) {
+                if(response.status === 'valid') {
+                    $.each(response.errors, function(key, value) {
+                        $('#'+key+'Error').text(value);
+                        $('#'+key+'Error').css('display','block');
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.insert})]');
+                    communityList();
+                } else {
+                    alert('[(#{success.common.insert})]');
+                    communityList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,128 @@
+server:
+    port: 9992 # random port
+    tomcat:
+      connection:
+        timeout: -1
+
+spring:
+  application:
+        name: EgovSearch
+  main:
+    allow-bean-definition-overriding: true
+  config:
+    import: optional:configserver:http://localhost:8888
+  profiles:
+    active: local
+  datasource:
+    driver-class-name: ${datasource.driver-class-name:com.mysql.cj.jdbc.Driver}
+    url: ${datasource.url:jdbc:mysql://localhost:3306/com}
+    username: ${datasource.username:com}
+    password: ${datasource.password:com01}
+    hikari:
+      maximum-pool-size: ${datasource.hikari.maximum-pool-size:20}
+      connection-timeout: ${datasource.hikari.connection-timeout:20000}
+      idle-timeout: ${datasource.hikari.idle-timeout:30000}
+      minimum-idle: ${datasource.hikari.minimum-idle:5}
+      max-lifetime: ${datasource.hikari.max-lifetime:180000}
+  jpa:
+    hibernate:
+      ddl-auto: ${jpa.hibernate.ddl-auto:update}
+    open-in-view: ${jpa.open-in-view:false}
+    show-sql: ${jpa.show-sql:true}
+    properties:
+      hibernate:
+        format_sql: ${jpa.properties.hibernate.format_sql:true}
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  cloud:
+    stream:
+      bindings:
+        searchConsumer-in-0:
+          destination: board-topic
+          group: search-service
+          binder: rabbit
+      binders:
+        rabbit:
+          type: rabbit
+    function:
+      definition: searchConsumer
+
+logging:
+  level:
+    org:
+      egovframe:
+        rte: debug
+      springframework:
+        boot:
+          autoconfigure: error
+        web: debug
+    egovframework:
+      com: debug
+      rte: debug
+
+eureka:
+  client:
+    register-with-eureka: true # Eureka 등록 여부
+    fetch-registry: true # Eureka 조회 여부
+    registry-fetch-interval-seconds: 5 # 클라이어트 측에서 레지스트리를 캐싱하는 시간
+    initial-instance-info-replication-interval-secondsL: 5 # 서버 재시작 후 즉시 등록 시도
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    instance:
+      leaseRenewalIntervalInSeconds: 5  # 기본값 30초 → 5초로 변경 (더 자주 heartbeat 전송)
+      leaseExpirationDurationInSeconds: 10  # 기본값 90초 → 10초로 변경 (서비스 제거 시간 단축)
+      instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+springdoc:
+  version: v4.3.0
+  packages-to-scan: egovframework
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: alpha
+    doc-expansion: none
+  api-docs:
+    path: /v3/api-docs
+    groups:
+      enabled: true
+  cache:
+    disabled: true
+
+opensearch:
+  protocol: https
+  url: localhost
+  port: 9200
+  username: admin
+  password: yourStrongPassword123!
+  keystore:
+    path: C:\Program Files\Java\jdk-11.0.5\lib\security\cacerts
+    password: changeit
+  text:
+    indexname: text-bbs-index
+  vector:
+    indexname: vector-bbs-index
+
+index:
+  batch:
+    size: 1000
+
+egov:
+  textsearch:
+    count: 10
+    page:
+      size: 5
+  vectorsearch:
+    count: 5
+    page:
+      size: 5
+
+app:
+  search-config-path: ./searchConfig.json

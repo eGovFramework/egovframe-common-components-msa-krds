@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopTpl.template.title}+' '+#{title.list}"></title>
+    <div th:replace="cop/tpl/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt">홈</a></li>
+            <li>협업</li>
+        </ol>
+    </nav>
+    <h2 class="heading-large"><span th:text="#{comCopTpl.template.title}+' '+#{title.list}"></span></h2>
+    <form id="listForm" name="listForm">
+    <input type="hidden" th:id="tmplatId" th:name="tmplatId"/>
+    <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+
+        <div class="form-group">
+            <div class="search-wrap">
+                <div class="search-body">
+                    <div class="form-conts searchOption">
+                        <select id="searchCondition" name="searchCondition" class="krds-form-select" th:title="#{title.searchCondition}">
+                            <option th:text="#{comCopTpl.template.name}" value="1" ></option>
+                            <option th:text="#{comCopTpl.template.type}" value="2" ></option>
+                        </select>
+                    </div>
+                    <div class="form-conts btn-ico-wrap searchKeyword">
+                        <input type="text" id="searchKeyword" name="searchKeyword" class="krds-input" placeholder="검색어를 입력하세요.">
+                        <button type="button" class="krds-btn medium icon"  th:onclick="templateSearch()">
+                            <span class="sr-only" th:value="#{button.search}"></span>
+                            <i class="svg-icon ico-sch"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="templateCreate()"></button>
+            </div>
+        </div>
+
+    </form>
+
+    <div class="krds-table-wrap">
+        <table class="tbl col data">
+            <caption>게시판에 대한 디자인을 적용할 수 있는 기능을 제공하는 컴포넌트</caption>
+            <colgroup>
+                <col style="width: 3%;">
+                <col style="width: 15%;">
+                <col style="width: 17%;">
+                <col>
+                <col style="width: 5%;">
+                <col style="width: 10%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center"><span th:text="#{table.num}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopTpl.template.name}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopTpl.template.type}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopTpl.template.path}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopTpl.template.useYN}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopTpl.template.registDt}"></span></th>
+                </tr>
+            </thead>
+            <tbody id="template-list-container"></tbody>
+        </table>
+    </div>
+    <div id="pagination-container" class="krds-pagination w-page"></div>
+</div>
+<script th:inline="javascript" defer>
+    templateList();
+
+    function templateSearch() {
+        if (notNullCheck($('#searchKeyword').val())) {
+            templateList();
+        } else {
+            alert('검색어를 입력하세요.');
+        }
+    }
+
+    function templateList() {
+        $.ajax({
+            url: '/cop/tpl/templateList',
+            method: 'POST',
+            data: $('#listForm').serialize()
+        }).done(function(response) {
+            let templateList = response.templateList;
+            let pagination = response.pagination;
+            let lineNumber = response.lineNumber;
+
+            let html = '';
+            if (templateList.length > 0) {
+                templateList.forEach(function (list, index) {
+                    let number = lineNumber + (index + 1);
+                    html += '<tr>';
+                    html += '<td class="text-center">' + number + '</td>';
+                    html += '<td class="text-center">' +
+                        '<a class="krds-btn text medium" onclick="templateDetail(\'' + list.tmplatId + '\')">' +
+                        list.tmplatNm + '</a></td>';
+                    html += '<td class="text-center">' + list.tmplatSeCodeNm + '</td>';
+                    html += '<td class="text-center">' + list.tmplatCours + '</td>';
+                    html += '<td class="text-center">' + list.useAt + '</td>';
+                    html += '<td class="text-center">' + list.frstRegistPnttm + '</td>';
+                    html += '</tr>';
+                });
+            } else {
+                let noDataMsg = '[(#{common.nodata.msg})]';
+                html += '<tr><td class="text-center" colspan="6">'+noDataMsg+'</td></tr>';
+            }
+
+            $('#template-list-container').html(html);
+            $('#pagination-container').html(pagination);
+        });
+    }
+
+    function linkPage(pageIndex) {
+        $('#pageIndex').val(pageIndex);
+        templateList();
+    }
+
+    function templateDetail(tmplatId) {
+        $('#tmplatId').val(tmplatId);
+        $('#listForm').attr('method', 'post').attr('action', '/cop/tpl/templateDetailView').submit();
+    }
+
+    function templateCreate() {
+        $('#listForm').attr('method', 'post').attr('action', '/cop/tpl/templateInsertView').submit();
+    }
+</script>
+
+</body>
+</html>

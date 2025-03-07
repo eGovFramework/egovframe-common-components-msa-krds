@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopBlog.blogMasterVO.title}+' '+#{title.list}"></title>
+    <div th:replace="cop/bls/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt">홈</a></li>
+            <li>협업</li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comCopBlog.blogMasterVO.title}+' '+#{title.list}"></span></h2>
+
+    <form id="listForm" name="listForm">
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="1"/>
+    <input type="hidden" th:id="blogId" th:name="blogId"/>
+    <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+
+        <div class="form-group">
+            <div class="search-wrap">
+                <h3 class="search-tit" th:text="#{comCopBlog.blogMasterVO.list.blogNm}"></h3>
+                <div class="form-conts btn-ico-wrap searchKeyword">
+                    <input type="text" id="searchKeyword" name="searchKeyword" class="krds-input medium" placeholder="검색어를 입력하세요.">
+                    <button type="button" class="krds-btn medium icon"  th:onclick="blogSearch()">
+                        <span class="sr-only" th:value="#{button.search}"></span>
+                        <i class="svg-icon ico-sch"></i>
+                    </button>
+                </div>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="blogCreate()"></button>
+            </div>
+        </div>
+
+    </form>
+
+    <div class="krds-table-wrap">
+        <table class="tbl col data">
+            <caption>블로그를 생성하고 등록된 블로그들에 대하여 관련된 속성정보를 관리할 수 있는 기능을 제공하는 컴포넌트</caption>
+            <colgroup>
+                <col style="width: 10%;">
+                <col>
+                <col style="width: 13%;">
+                <col style="width: 13%;">
+                <col style="width: 13%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center"><span th:text="#{table.num}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopBlog.blogMasterVO.list.blogNm}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{table.reger}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{table.regdate}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopBlog.blogMasterVO.list.useAt}"></span></th>
+                </tr>
+            </thead>
+            <tbody id="blog-list-container"></tbody>
+        </table>
+    </div>
+    <div id="pagination-container" class="krds-pagination w-page"></div>
+</div>
+
+<script th:inline="javascript" defer>
+    blogList();
+
+    function blogSearch() {
+        if (notNullCheck($('#searchKeyword').val())) {
+            blogList();
+        } else {
+            alert('블로그명을 입력하세요.');
+        }
+    }
+
+    function blogList() {
+        $.ajax({
+            url: '/cop/bls/blogList',
+            method: 'POST',
+            data: $('#listForm').serialize()
+        }).done(function(response) {
+            let blogList = response.blogList;
+            let pagination = response.pagination;
+            let lineNumber = response.lineNumber;
+
+            let html = '';
+            if (blogList.length > 0) {
+                blogList.forEach(function (blog, index) {
+                    let number = lineNumber + (index + 1);
+                    html += '<tr>';
+                    html += '<td class="text-center">' + number + '</td>';
+                    html += '<td class="text-center">' +
+                        '<a class="krds-btn text medium" onclick="blogDetail(\'' + blog.blogId + '\')">' +
+                        blog.blogNm + '</a></td>';
+                    html += '<td class="text-center">' + blog.userNm + '</td>';
+                    html += '<td class="text-center">' + blog.frstRegistPnttm + '</td>';
+                    html += '<td class="text-center">' + blog.useAt + '</td>';
+                    html += '</tr>';
+                });
+            } else {
+                let noDataMsg = '[(#{common.nodata.msg})]';
+                html += '<tr><td class="text-center" colspan="5">'+noDataMsg+'</td></tr>';
+            }
+
+            $('#blog-list-container').html(html);
+            $('#pagination-container').html(pagination);
+        });
+    }
+
+    function linkPage(pageIndex) {
+        $('#pageIndex').val(pageIndex);
+        blogList();
+    }
+
+    function blogDetail(blogId) {
+        $('#blogId').val(blogId);
+        $('#listForm').attr('method', 'post').attr('action', '/cop/bls/blogDetailView').submit();
+    }
+
+    function blogCreate() {
+        $('#listForm').attr('method', 'post').attr('action', '/cop/bls/blogInsertView').submit();
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopSecRmt.title}+' '+#{title.update}"></title>
+    <div th:replace="sec/rmt/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sec.title}"></li>
+        </ol>
+    </nav>
+    <h2 class="heading-large"><span th:text="#{comCopSecRmt.title}+' '+#{title.update}"></span></h2>
+
+    <form id="updateForm" name="updateForm" th:object="${roleInfoVO}">
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${roleInfoVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${roleInfoVO.searchKeyword}"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="roleCode" th:text="#{comCopSecRam.regist.rollId}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="roleCode" name="roleCode" class="krds-input"
+                               th:value="${roleInfoVO.roleCode}" readonly="readonly">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="roleNm" th:text="#{comCopSecRam.regist.rollNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="roleNm" name="roleNm" class="krds-input" maxlength="60"
+                               th:field="*{roleNm}"
+                               th:placeholder="#{comCopSecRam.regist.rollNm}+' '+#{input.input}">
+                    </div>
+                    <p class="form-hint-invalid" id="roleNmError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="rolePttrn" th:text="#{comCopSecRam.regist.rollPtn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="rolePttrn" name="rolePttrn" class="krds-input" maxlength="300"
+                               th:field="*{rolePttrn}"
+                               th:placeholder="#{comCopSecRam.regist.rollPtn}+' '+#{input.input}">
+                    </div>
+                    <p class="form-hint-invalid" id="rolePttrnError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="roleDc" th:text="#{comCopSecRam.regist.rollDc}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="roleDc" name="roleDc" maxlength="200" class="krds-input"
+                                      th:field="*{roleDc}"
+                                      th:placeholder="#{comCopSecRam.regist.rollDc}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/200</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="roleTy" th:text="#{comCopSecRam.regist.rollType}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="roleTy" name="roleTy" th:field="*{roleTy}" th:title="#{comCopSecRam.regist.rollType}"></select>
+                    </div>
+                    <p class="form-hint-invalid" id="roleTyError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="roleSort" th:text="#{comCopSecRam.regist.rollSort}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="roleSort" name="roleSort" class="krds-input" maxlength="10"
+                               th:field="*{roleSort}"
+                               th:placeholder="#{comCopSecRam.regist.rollSort}+' '+#{input.input}">
+                    </div>
+                    <p class="form-hint-invalid" id="roleSortError" style="display:none"></p>
+                </div>
+            </div>
+
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="roleInfoList()"></button>
+                <div class="btn-wrap">
+                    <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="roleInfoDelete()"></button>
+                    <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="roleInfoUpdate()"></button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        roleInfoDetail();
+
+        const roleDc = document.getElementById('roleDc');
+        const textCount = document.getElementById('textCount');
+        roleDc.addEventListener('input', function() {
+            textCount.textContent = roleDc.value.length;
+        });
+    });
+
+    function roleInfoList() {
+        window.location.href = '/sec/rmt/roleInfoListView';
+    }
+
+    function roleInfoDetail() {
+        const updateForm = document.getElementById('updateForm');
+        const formData = new FormData(updateForm);
+
+        fetch('/sec/rmt/roleInfoDetail', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                roleInfoList();
+            } else {
+                document.getElementById('roleCode').value = response.result.roleCode;
+                document.getElementById('roleNm').value = response.result.roleNm;
+                document.getElementById('rolePttrn').value = response.result.rolePttrn;
+
+                const roleDc = document.getElementById('roleDc');
+                roleDc.value = response.result.roleDc;
+                document.getElementById('textCount').textContent = roleDc.value.length;
+
+                let roleTy = response.result.roleTy;
+                let cmmnDetailCodeList = response.cmmnDetailCodeList;
+                let defaultText = '[(#{input.select})]';
+                let html = '';
+                html += '<option value="">'+defaultText+'</option>';
+                cmmnDetailCodeList.forEach(function (cmmnDetailCode, index) {
+                    if (cmmnDetailCode.code === 'url') {
+                        if (roleTy === cmmnDetailCode.code) {
+                            html += '<option value="' + cmmnDetailCode.code + '" selected>' + cmmnDetailCode.codeNm + '</option>';
+                        } else {
+                            html += '<option value="' + cmmnDetailCode.code + '">' + cmmnDetailCode.codeNm + '</option>';
+                        }
+                    }
+                });
+
+                document.getElementById('roleTy').innerHTML = html;
+                document.getElementById('roleSort').value = response.result.roleSort;
+            }
+        });
+    }
+
+    function roleInfoUpdate() {
+        const updateForm = document.getElementById('updateForm');
+        const formData = new FormData(updateForm);
+
+        if (confirm('[(#{common.update.msg})]')) {
+            const errors = ['roleNmError', 'rolePttrnError', 'roleTyError', 'roleSortError'];
+            errors.forEach(error => {
+                document.getElementById(error).textContent = '';
+                document.getElementById(error).style.display="none";
+            });
+
+            fetch('/sec/rmt/roleInfoUpdate', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                        document.getElementById(`${key}Error`).style.display="block";
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    roleInfoList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    roleInfoList();
+                }
+            });
+        }
+    }
+
+    function roleInfoDelete() {
+        const updateForm = document.getElementById('updateForm');
+        const formData = new FormData(updateForm);
+
+        if (confirm('[(#{common.delete.msg})]')) {
+            fetch('/sec/rmt/roleInfoDelete', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.delete})]');
+                    roleInfoList();
+                } else {
+                    alert('[(#{success.common.delete})]');
+                    roleInfoList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

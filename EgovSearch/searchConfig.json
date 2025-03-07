@@ -1,0 +1,7 @@
+{
+  "modelPath": "C:\\workspace_git_opensearch\\EgovSearch\\model\\model.onnx",
+  "tokenizerPath": "C:\\workspace_git_opensearch\\EgovSearch\\model\\tokenizer.json",
+  "stopTagsPath": "C:\\workspace_git_opensearch\\EgovSearch\\example\\stoptags.txt",
+  "synonymsPath": "C:\\workspace_git_opensearch\\EgovSearch\\example\\synonyms.txt",
+  "dictionaryRulesPath": "C:\\workspace_git_opensearch\\EgovSearch\\example\\dictionaryRules.txt"
+}

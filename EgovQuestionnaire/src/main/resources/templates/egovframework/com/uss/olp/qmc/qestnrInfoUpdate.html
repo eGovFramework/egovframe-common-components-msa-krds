@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQmc.title}+' '+#{title.update}"></title>
+    <div th:replace="uss/olp/qmc/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comUssOlpQmc.title}+' '+#{title.update}"></span></h2>
+
+    <form id="updateForm" name="updateForm" th:object="${qestnrInfoVO}">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId" th:value="${qestnrInfoVO.qustnrTmplatId}"/>
+    <input type="hidden" th:id="qestnrId" th:name="qestnrId" th:value="${qestnrInfoVO.qestnrId}"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrSj" th:text="#{comUssOlpQmc.regist.qestnrSj}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="qustnrSj" name="qustnrSj" class="krds-input">
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrSjError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrPurps" th:text="#{comUssOlpQmc.regist.qestnrPurps}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="qustnrPurps" name="qustnrPurps" maxlength="1000" class="krds-input"
+                                      th:placeholder="#{comUssOlpQmc.regist.qestnrPurps}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="qustnrPurpsCount" class="text-primary">0</span>
+                                <span class="text-num">/1000</span></p>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrPurpsError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrWritingGuidanceCn" th:text="#{comUssOlpQmc.regist.qestnrWritngGuidanceCn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="qustnrWritingGuidanceCn" name="qustnrWritingGuidanceCn" maxlength="2000" class="krds-input"
+                                      th:placeholder="#{comUssOlpQmc.regist.qestnrWritngGuidanceCn}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="qustnrWritingGuidanceCnCount" class="text-primary">0</span>
+                                <span class="text-num">/2000</span></p>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrWritingGuidanceCnError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrTrget" th:text="#{comUssOlpQmc.regist.qestnrTrget}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="qustnrTrget" name="qustnrTrget" th:title="#{comUssOlpQmc.regist.qestnrTrget}"></select>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrTrgetError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-conts">
+                        <div class="form-tit">
+                            <label for="startDate" th:text="#{comUssOlpQmc.title.startDay}"></label>
+                        </div>
+                        <div class="form-conts datepicker-conts">
+                            <input type="date" id="startDate" name="qustnrBgnde" class="krds-input">
+                        </div>
+                        <p class="form-hint-invalid" id="qustnrBgndeError" style="display:none"></p>
+                    </div>
+                    <div class="form-conts">
+                        <div class="form-tit">
+                            <label for="endDate" th:text="#{comUssOlpQmc.title.endDay}"></label>
+                        </div>
+                        <div class="form-conts datepicker-conts">
+                            <input type="date" id="endDate" name="qustnrEndde" class="krds-input">
+                        </div>
+                        <p class="form-hint-invalid" id="qustnrEnddeError" style="display:none"></p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrTmplatImage" th:text="#{comUssOlpQmc.regist.qestnrTmplatTy}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="krds-check-area" id="qustnrTmplatImage" style="flex-direction:row;"></div>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrTmplatIdError" style="display:none"></p>
+                </div>
+
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qestnrInfoList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="qestnrInfoUpdate()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        qestnrInfoDetail();
+
+        const qustnrPurps = document.getElementById('qustnrPurps');
+        const qustnrPurpsCount = document.getElementById('qustnrPurpsCount');
+        const qustnrWritingGuidanceCn = document.getElementById('qustnrWritingGuidanceCn');
+        const qustnrWritingGuidanceCnCount = document.getElementById('qustnrWritingGuidanceCnCount');
+
+        qustnrPurps.addEventListener('input', function() {
+            qustnrPurpsCount.textContent = qustnrPurps.value.length;
+        });
+
+        qustnrWritingGuidanceCn.addEventListener('input', function() {
+            qustnrWritingGuidanceCnCount.textContent = qustnrWritingGuidanceCn.value.length;
+        });
+    });
+
+    function qestnrInfoList() {
+        window.location.href = '/uss/olp/qmc/qestnrInfoListView';
+    }
+
+    function qestnrInfoDetail() {
+        const updateForm = document.getElementById('updateForm');
+        const formData = new FormData(updateForm);
+
+        fetch('/uss/olp/qmc/qestnrInfoDetail', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                qestnrInfoList();
+            } else {
+                document.getElementById('qustnrSj').value = response.result.qustnrSj;
+
+                document.getElementById('qustnrPurps').value = response.result.qustnrPurps;
+                const qustnrPurps = document.getElementById('qustnrPurps');
+                qustnrPurps.value = response.result.qustnrPurps;
+                document.getElementById('qustnrPurpsCount').textContent = qustnrPurps.value.length;
+
+                document.getElementById('qustnrWritingGuidanceCn').value = response.result.qustnrWritingGuidanceCn;
+                const qustnrWritingGuidanceCn = document.getElementById('qustnrWritingGuidanceCn');
+                qustnrWritingGuidanceCn.value = response.result.qustnrWritingGuidanceCn;
+                document.getElementById('qustnrWritingGuidanceCnCount').textContent = qustnrWritingGuidanceCn.value.length;
+
+                let qustnrTrget = response.result.qustnrTrget;
+                let cmmnDetailCodeList = response.cmmnDetailCodeList;
+                let cmmnDetailCodeHtml = '';
+                let buttonText = '[(#{comUssOlpQmc.value.view})]';
+                cmmnDetailCodeHtml += '<option value="">' + buttonText + '</option>';
+                cmmnDetailCodeList.forEach(function(cmmnDetailCode, index) {
+                    if (qustnrTrget === cmmnDetailCode.code) {
+                        cmmnDetailCodeHtml += '<option value="'+cmmnDetailCode.code+'" selected>'+cmmnDetailCode.codeNm+'</option>';
+                    } else {
+                        cmmnDetailCodeHtml += '<option value="'+cmmnDetailCode.code+'">'+cmmnDetailCode.codeNm+'</option>';
+                    }
+                });
+                document.getElementById('qustnrTrget').innerHTML = cmmnDetailCodeHtml;
+
+                document.getElementById('startDate').value = response.result.qustnrBgnde;
+                document.getElementById('endDate').value = response.result.qustnrEndde;
+
+                let qustnrTmplatId = response.result.qustnrTmplatId;
+                let qustnrTmplatList = response.qustnrTmplatList;
+                let qustnrTmplatHtml = '';
+                qustnrTmplatList.forEach(function(qustnrTmplat, index) {
+                    const number = index + 1;
+                    if (qustnrTmplatId === qustnrTmplat.qustnrTmplatId) {
+                        qustnrTmplatHtml += '<div class="krds-form-check" style="display:flex; flex-direction: column;">'+
+                            '<input type="radio" name="qustnrTmplatId" id="rdo_'+number+'" value="'+qustnrTmplat.qustnrTmplatId+'" disabled checked>'+
+                            '<label for="rdo_'+number+'">'+qustnrTmplat.qustnrTmplatDc+'</label>'+
+                            '<img id="previewImage" src="/uss/olp/qmc/qustnrTmplatImage?qustnrTmplatId='+qustnrTmplat.qustnrTmplatId+'" alt="'+qustnrTmplat.qustnrTmplatDc+'" width="100">'+
+                            '</div>';
+                    } else {
+                        qustnrTmplatHtml += '<div class="krds-form-check" style="display:flex; flex-direction: column;">'+
+                            '<input type="radio" name="qustnrTmplatId" id="rdo_'+number+'" value="'+qustnrTmplat.qustnrTmplatId+'" disabled>'+
+                            '<label for="rdo_'+number+'">'+qustnrTmplat.qustnrTmplatDc+'</label>'+
+                            '<img id="previewImage" src="/uss/olp/qmc/qustnrTmplatImage?qustnrTmplatId='+qustnrTmplat.qustnrTmplatId+'" alt="'+qustnrTmplat.qustnrTmplatDc+'" width="100">'+
+                            '</div>';
+                    }
+                });
+                document.getElementById('qustnrTmplatImage').innerHTML = qustnrTmplatHtml;
+            }
+        });
+    }
+
+    function qestnrInfoUpdate() {
+        if (confirm('[(#{common.update.msg})]')) {
+            const errors = [
+                'qustnrSjError', 'qustnrPurpsError', 'qustnrWritingGuidanceCnError',
+                'qustnrTrgetError', 'qustnrBgndeError', 'qustnrEnddeError'
+            ];
+            errors.forEach(error => {
+                document.getElementById(error).textContent = '';
+                document.getElementById(error).style.display="none";
+            });
+
+            const updateForm = document.getElementById('updateForm');
+            const formData = new FormData(updateForm);
+
+            fetch('/uss/olp/qmc/qestnrInfoUpdate', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                        document.getElementById(`${key}Error`).style.display="block";
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    qestnrInfoList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    qestnrInfoList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

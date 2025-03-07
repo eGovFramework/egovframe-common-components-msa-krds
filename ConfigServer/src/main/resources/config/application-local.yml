@@ -1,0 +1,30 @@
+datasource:
+  driver-class-name: com.mysql.cj.jdbc.Driver
+  url: jdbc:mysql://localhost:3306/com
+  username: com
+  password: com01
+  hikari:
+    maximum-pool-size: 20 # 각 서비스의 최대 연결 수 제한
+    connection-timeout: 20000 # 연결을 얻기 위한 최대 대기 시간 (밀리초)
+    idle-timeout: 30000 # 유휴 상태에서 연결을 유지할 시간 (밀리초)
+    minimum-idle: 5 # 유휴 상태로 유지할 연결 수
+    max-lifetime: 1800000 # 연결의 최대 수명 (밀리초)
+
+jpa:
+  hibernate:
+    ddl-auto: update
+  open-in-view: false
+  show-sql: true
+  properties:
+    hibernate:
+      format_sql: true
+
+token:
+  accessSecret: "7FB814B9D7FFB3D675EF1F525C1D61B254227B3B0A771DDDBDFE4112A1F42F66" # sha256(egovframework)
+  refreshSecret: "7FB814B9D7FFB3D675EF1F525C1D61B254227B3B0A771DDDBDFE4112A1F42F66" # sha256(egovframework)
+  accessExpiration: 1200000 # TTL (millisecond, 1 Min)
+  refreshExpiration: 3600000 # TTL (millisecond, 5 Min)
+
+roles:
+  roleAdmin: "/uat/uap/**, /sec/ram/**, /sec/rgm/**, /sec/gmt/**, /sec/rmt/**, /cop/tpl/**, /uss/olp/qmc/**, /uss/olp/qtm/**, /uss/olp/qqm/**, /uss/olp/qim/**, /sym/ccm/cca/**, /sym/ccm/ccc/**, /sym/ccm/cde/**, /ext/ops/**"
+  roleUser: "/cop/bls/**, /cop/bbs/**, /cop/cmy/**, /cop/brd/**, /mip/**, /uss/olp/qri/**, /uss/olp/qrm/**"

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comSymCcmCde.cmmnDetailCodeVO.title}+' '+#{title.list}"></title>
+    <div th:replace="sym/ccm/cde/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sym.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comSymCcmCde.cmmnDetailCodeVO.title}+' '+#{title.list}"></span></h2>
+
+    <form id="listForm" name="listForm">
+    <input type="hidden" th:id="codeId" th:name="codeId"/>
+    <input type="hidden" th:id="code" th:name="code"/>
+    <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+
+        <div class="form-group">
+            <div class="search-wrap">
+                <div class="search-body">
+                    <div class="form-conts searchOption">
+                        <select id="searchCondition" name="searchCondition" class="krds-form-select medium" th:title="#{title.searchCondition}">
+                            <option th:text="#{comSymCcmCde.cmmnDetailCodeVO.codeId}" value="1" ></option>
+                            <option th:text="#{comSymCcmCde.cmmnDetailCodeVO.code}" value="2" ></option>
+                            <option th:text="#{comSymCcmCde.cmmnDetailCodeVO.codeNm}" value="3" ></option>
+                        </select>
+                    </div>
+                    <div class="form-conts btn-ico-wrap searchKeyword">
+                        <input type="text" id="searchKeyword" name="searchKeyword" class="krds-input medium" th:placeholder="#{title.search} + #{search.placeholder}">
+                        <button type="button" class="krds-btn medium icon"  th:onclick="cmmnDetailCodeSearch()">
+                            <span class="sr-only" th:text="#{button.search}"></span>
+                            <i class="svg-icon ico-sch"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="cmmnDetailCodeCreate()"></button>
+            </div>
+        </div>
+
+    </form>
+
+    <div class="krds-table-wrap">
+        <table class="tbl col data">
+<!--            <caption>공통상세코드 관리는 공통상세코드를 등록, 수정, 목록조회, 상세조회를 제공하는 컴포넌트</caption>-->
+            <colgroup>
+                <col style="width: 10%;">
+                <col style="width: 25%;">
+                <col style="width: 25%;">
+                <col>
+                <col style="width: 10%;">
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col" class="text-center"><span th:text="#{table.num}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comSymCcmCde.cmmnDetailCodeVO.codeId}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comSymCcmCde.cmmnDetailCodeVO.code}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comSymCcmCde.cmmnDetailCodeVO.codeNm}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comSymCcmCde.cmmnDetailCodeVO.useAt}"></span></th>
+            </tr>
+            </thead>
+            <tbody id="cmmnDetailCode-list-container"></tbody>
+        </table>
+    </div>
+
+    <div id="pagination-container" class="krds-pagination w-page"></div>
+</div>
+
+<script th:inline="javascript" defer>
+    $(document).ready(function() {
+        cmmnDetailCodeList();
+
+        $('#searchCondition').change(function() {
+            $('#searchKeyword').val('');
+        });
+    });
+
+    function cmmnDetailCodeSearch() {
+        if (notNullCheck($('#searchKeyword').val())) {
+            cmmnDetailCodeList();
+        } else {
+            alert('[(#{title.search})][(#{search.placeholder})]');
+        }
+    }
+
+    function cmmnDetailCodeList() {
+        $.ajax({
+            url: '/sym/ccm/cde/cmmnDetailCodeList',
+            method: 'post',
+            data: $('#listForm').serialize()
+        }).done(function(response) {
+            let cmmnDetailCodeList = response.cmmnDetailCodeList;
+            let pagination = response.pagination;
+            let lineNumber = response.lineNumber;
+
+            let html = '';
+            if(cmmnDetailCodeList.length === 0){
+                html = `<tr><td class="text-center" colspan="5">[(#{info.nodata.msg})]</td></tr>`
+            }else{
+                cmmnDetailCodeList.forEach(function(cmmnDetatilCode, index) {
+                    let number = lineNumber + (index + 1);
+                    html += '<tr>';
+                    html += '<td class="text-center">'+number+'</td>';
+                    html += '<td class="text-center">'+cmmnDetatilCode.codeId+'</td>';
+                    html += '<td class="text-center">'+
+                        '<a class="krds-btn text small" style="cursor:pointer" tabindex="0" '+
+                        'onclick="cmmnDetailCodeDetail(\''+cmmnDetatilCode.codeId+'\',\''+cmmnDetatilCode.code+'\')">'+
+                        cmmnDetatilCode.code+'</td>';
+                    html += '<td class="text-center">'+cmmnDetatilCode.codeNm+'</a></td>';
+                    html += '<td class="text-center">'+cmmnDetatilCode.useAt+'</td>';
+                    html += '</tr>';
+                });
+            }
+            $('#cmmnDetailCode-list-container').html(html);
+            $('#pagination-container').html(pagination);
+        });
+    }
+
+    function linkPage(pageIndex) {
+        $('#pageIndex').val(pageIndex);
+        cmmnDetailCodeList();
+    }
+
+    function cmmnDetailCodeDetail(codeId, code) {
+        $('#codeId').val(codeId);
+        $('#code').val(code);
+        $('#listForm').attr('method', 'post').attr('action', '/sym/ccm/cde/cmmnDetailCodeDetailView').submit();
+    }
+
+    function cmmnDetailCodeCreate() {
+        $('#listForm').attr('method', 'post').attr('action', '/sym/ccm/cde/cmmnDetailCodeInsertView').submit();
+    }
+</script>
+
+</body>
+</html>

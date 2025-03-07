@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQrm.title}+' '+#{title.update}"></title>
+    <div th:replace="uss/olp/qrm/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comUssOlpQrm.title}+' '+#{title.update}"></span></h2>
+
+    <form id="updateForm" name="updateForm" th:object="${qustnrRespondInfoVO}">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId"/>
+    <input type="hidden" th:id="qestnrId" th:name="qestnrId"/>
+    <input type="hidden" th:id="qustnrRespondId" th:name="qustnrRespondId" th:value="${qustnrRespondInfoVO.qustnrRespondId}"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrSj" th:text="#{comUssOlpQrm.regist.qestnrCn}"></label>
+                    </div>
+                    <div class="form-conts" style="flex-direction: row">
+                        <input type="text" id="qustnrSj" name="qustnrSj" class="krds-input" readonly="readonly">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="sexdstnCode" th:text="#{comUssOlpQrm.regist.sexdstnCode}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="sexdstnCode" name="sexdstnCode" th:title="#{input.cSelect}"></select>
+                    </div>
+                    <p class="form-hint-invalid" id="sexdstnCodeError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="occpTyCode" th:text="#{comUssOlpQrm.regist.occpTyCode}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="occpTyCode" name="occpTyCode" th:title="#{input.cSelect}"></select>
+                    </div>
+                    <p class="form-hint-invalid" id="occpTyCodeError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="respondNm" th:text="#{comUssOlpQrm.regist.respondNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="respondNm" name="respondNm" class="krds-input" maxlength="100" th:field="*{respondNm}">
+                    </div>
+                    <p class="form-hint-invalid" id="respondNmError" style="display:none"></p>
+                </div>
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qustnrRespondInfoList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="qustnrRespondInfoUpdate()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        qustnrRespondInfoDetail();
+    });
+
+    function qustnrRespondInfoList() {
+        window.location.href = '/uss/olp/qrm/qustnrRespondInfoListView';
+    }
+
+    function qustnrRespondInfoDetail() {
+        const updateForm = document.getElementById('updateForm');
+        const formData = new FormData(updateForm);
+
+        fetch('/uss/olp/qrm/qustnrRespondInfoDetail', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                qustnrRespondInfoList();
+            } else {
+                document.getElementById('qustnrTmplatId').value = response.result.qustnrTmplatId;
+                document.getElementById('qestnrId').value = response.result.qestnrId;
+                document.getElementById('qustnrSj').value = response.result.qustnrSj;
+
+                const buttonText = '[(#{input.select})]';
+                const sexdstnCode = response.result.sexdstnCode;
+                const sexdstnList = response.sexdstnList;
+                let sexdstnHtml = '';
+                sexdstnHtml += '<option value="">' + buttonText + '</option>';
+                sexdstnList.forEach(function(sexdstn, index) {
+                    if (sexdstnCode === sexdstn.code) {
+                        sexdstnHtml += '<option value="' + sexdstn.code + '" selected>' + sexdstn.codeNm + '</option>';
+                    } else {
+                        sexdstnHtml += '<option value="' + sexdstn.code + '">' + sexdstn.codeNm + '</option>';
+                    }
+                });
+                const occpTyCode = response.result.occpTyCode;
+                const occpTyList = response.occpTyList;
+                let occpTyHtml = '';
+                occpTyHtml += '<option value="">' + buttonText + '</option>';
+                occpTyList.forEach(function(occpTy, index) {
+                    if (occpTyCode === occpTy.code) {
+                        occpTyHtml += '<option value="' + occpTy.code + '" selected>' + occpTy.codeNm + '</option>';
+                    } else {
+                        occpTyHtml += '<option value="' + occpTy.code + '">' + occpTy.codeNm + '</option>';
+                    }
+                });
+
+                document.getElementById('sexdstnCode').innerHTML = sexdstnHtml;
+                document.getElementById('occpTyCode').innerHTML = occpTyHtml;
+                document.getElementById('respondNm').value = response.result.respondNm;
+            }
+        });
+    }
+
+    function qustnrRespondInfoUpdate() {
+        if (confirm('[(#{common.update.msg})]')) {
+            const errors = ['sexdstnCodeError', 'occpTyCodeError', 'respondNmError'];
+            errors.forEach(error => {
+                document.getElementById(error).textContent = '';
+                document.getElementById(error).style.display = 'none';
+            });
+
+            const updateForm = document.getElementById('updateForm');
+            const formData = new FormData(updateForm);
+
+            fetch('/uss/olp/qrm/qustnrRespondInfoUpdate', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                        document.getElementById(`${key}Error`).style.display = 'block';
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    qustnrRespondInfoList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    qustnrRespondInfoList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

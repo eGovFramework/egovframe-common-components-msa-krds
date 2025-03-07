@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comSymCcmCca.cmmnCodeVO.title}+' '+#{title.detail}"></title>
+    <div th:replace="sym/ccm/cca/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sym.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comSymCcmCca.cmmnCodeVO.title}+' '+#{title.detail}"></span></h2>
+
+    <form id="detailForm" name="detailForm" th:object="${cmmnCodeVO}">
+    <input type="hidden" th:id="codeId" th:name="codeId" th:value="${cmmnCodeVO.codeId}"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${cmmnCodeVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${cmmnCodeVO.searchKeyword}"/>
+
+    <div class="def-list-wrap">
+        <dl class="def-list">
+            <dt th:text="#{comSymCcmCca.cmmnCodeVO.clCodeNm}"></dt>
+            <dd id="clCodeNm"></dd>
+            <dt th:text="#{comSymCcmCca.cmmnCodeVO.codeId}"></dt>
+            <dd id="codeIdCd"></dd>
+            <dt th:text="#{comSymCcmCca.cmmnCodeVO.codeIdNm}"></dt>
+            <dd id="codeIdNm"></dd>
+            <dt th:text="#{comSymCcmCca.cmmnCodeVO.codeIdDc}"></dt>
+            <dd id="codeIdDc"></dd>
+            <dt th:text="#{comSymCcmCca.cmmnCodeVO.useAt}"></dt>
+            <dd id="useAt"></dd>
+        </dl>
+    </div>
+
+    <div class="page-btn-wrap">
+        <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="cmmnCodeList()"></button>
+        <div class="btn-wrap">
+            <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="cmmnCodeDelete()"></button>
+            <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="cmmnCodeUpdate()"></button>
+        </div>
+    </div>
+
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    cmmnCodeDetail();
+
+    function cmmnCodeList() {
+        $(location).attr('href', '/sym/ccm/cca/cmmnCodeListView');
+    }
+
+    function cmmnCodeDetail() {
+        $.ajax({
+            url: '/sym/ccm/cca/cmmnCodeDetail',
+            method: 'post',
+            data: $('#detailForm').serialize()
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                cmmnCodeList();
+            } else {
+                $('#clCodeNm').text(response.result.clCodeNm);
+                $('#codeIdCd').text(response.result.codeId);
+                $('#codeIdNm').text(response.result.codeIdNm);
+                $('#codeIdDc').text(response.result.codeIdDc);
+                $('#useAt').text(response.result.useAt);
+            }
+        });
+    }
+
+    function cmmnCodeDelete() {
+        if (confirm('[(#{common.delete.msg})]')) {
+            $.ajax({
+                url: '/sym/ccm/cca/cmmnCodeDelete',
+                method: 'post',
+                data: $('#detailForm').serialize()
+            }).done(function(response) {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.delete})]');
+                    cmmnCodeList();
+                } else {
+                    alert('[(#{success.common.delete})]');
+                    cmmnCodeList();
+                }
+            });
+        }
+    }
+
+    function cmmnCodeUpdate() {
+        $('#detailForm').attr('method', 'post').attr('action', '/sym/ccm/cca/cmmnCodeUpdateView').submit();
+    }
+</script>
+
+</body>
+</html>

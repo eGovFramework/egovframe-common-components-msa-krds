@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comExtOps.comQaOpsInfoVO.textSearch.result}"></title>
+    <div th:replace="ext/ops/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.ssi.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 th:text="#{comExtOps.comQaOpsInfoVO.textSearch.result}"></h2>
+
+    <div class="search_top_border">
+        <ul class="search_info">
+            <li><span th:text="#{ScomExtOps.comQaOpsInfoVO.search.searchWord}">'</span><span class="keyword" th:text="${'`'+(BoardVO.searchWrd).split(',')[0]+'`'}"></span></li>
+            <li><span th:text="#{ScomExtOps.comQaOpsInfoVO.search.searchCount}"></span><span class="count">0</span><span th:text="#{ScomExtOps.comQaOpsInfoVO.search.searchCountText}"></span></li>
+        </ul>
+        <button class="krds-btn medium" th:text="#{comExtOps.comQaOpsInfoVO.search.title}" onclick="searchHome()"></button>
+    </div>
+
+    <form id="listForm" name="searchFrm">
+        <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+        <input type="hidden" th:id="nttId" th:name="nttId" th:value="${BoardVO.nttId}"/>
+        <input type="hidden" th:id="searchCnd" th:name="searchCnd" th:value="${BoardVO.searchCnd}"/>
+        <input type="hidden" th:id="searchWrd" th:name="searchWrd" th:value="${BoardVO.searchWrd}"/>
+    </form>
+
+    <ul id="search_list"></ul>
+
+    <div id="pagination-container" class="krds-pagination w-page"></div>
+
+    <!-- 검색 결과 없음 -->
+    <div class="no-result" style="display: none">
+        <p><span th:text="#{ScomExtOps.comQaOpsInfoVO.search.nothing}"></span></p>
+    </div>
+
+    <!-- 로딩 메시지 -->
+    <div id="loading">
+        <div class="krds-spinner" role="status">
+            <span class="sr-only" th:text="#{comExtOps.comQaOpsInfoVO.search.loading}"></span>
+            <span th:text="#{ScomExtOps.comQaOpsInfoVO.searching}"></span>
+        </div>
+    </div>
+
+    <!-- 오류 발생 -->
+    <div class="response-error" style="display: none; text-align: center; margin: 2rem;">
+        <p><span th:text="#{ScomExtOps.comQaOpsInfoVO.search.error}"></span></p>
+    </div>
+
+</div>
+
+    <script defer th:inline="javascript">
+
+    $(document).ready(function() {
+        Listpaging();
+    });
+    
+    function truncateText(text, maxLength) {
+        if (!text) return '';
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength);
+    }
+
+    function toggleContent(btn) {
+        if (!btn) return;
+        
+        const contentWrapper = btn.previousElementSibling;
+        if (!contentWrapper) return;
+        
+        const fullText = contentWrapper.getAttribute('data-full-content');
+        if (!fullText) return;
+        
+        contentWrapper.textContent = fullText;
+        btn.style.display = 'none';  // 더보기 버튼 숨기기
+    }
+    
+    function Listpaging() {
+        document.getElementById("loading").style.display = "block";
+        document.getElementById('search_list').innerHTML = "";
+
+        $.ajax({
+            url: "/ext/ops/textSearchResult",
+            type: "post",
+            data: $("#listForm").serialize(),
+        }).done(function(result) {
+            let html = "";
+            let resultList = result.bbsTextSearchList;
+            if (resultList.length > 0) {
+                for(let i=0; i<resultList.length; i++) {
+                    let item = resultList[i];
+                    let fullContent = item.nttCn || '';
+                    let truncatedContent = truncateText(fullContent, 200);
+                    let showMoreButton = fullContent.length > 200;
+
+                    const accuracy = '[(#{comExtOps.comQaOpsInfoVO.accuracy})]';
+                    document.querySelector('.search_info li .count').innerText=resultList.length;
+
+                    html += `<li class="search_item">
+                                <p class="search_item_header">
+                                    <span class="krds-badge outline-information">${item.bbsNm || ''}</span>
+                                    <span class="search_item_header_right">
+                                        <span>${item.frstRegistPnttm ? item.frstRegistPnttm.substring(0,10) : ''}</span>
+                                        <span>${item.ntcrNm || ''}</span>
+                                    </span>
+                                </p>
+                                <div class="search_item_body">
+                                    <h2>${item.nttSj || ''}</h2>
+                                    <p class="search_item_body_contents" data-full-content="${fullContent.replace(/'/g, "&#39;")}">${truncatedContent}</p>
+                                </div>
+                                <div class="search_itm_btm">
+                                    <p>
+                                        <span>${accuracy + ' : '}</span>
+                                        <strong>${item.score ? item.score.toFixed(2) : '0.00'}</strong>
+                                    </p>
+                                </div>
+                            </li>`
+                }
+
+                document.getElementById('search_list').innerHTML = html;
+                document.querySelector(".no-result").style.display = "none";
+                document.querySelector(".response-error").style.display = "none";
+                
+                if (result.pagination) {
+                    document.querySelector(".krds-pagination.w-page").innerHTML = result.pagination;
+                }
+            } else {
+                document.getElementById('search_list').innerHTML = '';
+                document.querySelector(".no-result").style.display = "block";
+                document.querySelector(".krds-pagination.w-page").innerHTML = "";
+            }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            document.getElementById('search_list').innerHTML = "";
+            document.querySelector(".response-error").style.display = "block";
+            document.querySelector(".krds-pagination.w-page").innerHTML = "";
+            console.error("Error details:", textStatus, errorThrown);
+        }).always(function() {
+            document.getElementById("loading").style.display = "none";
+        });
+    }
+    
+    function linkPage(pageIndex) {
+        $('#pageIndex').val(pageIndex);
+        Listpaging();
+    }
+
+    function searchHome(){
+        window.location.href = '/ext/ops/searchPageView';
+    }
+    
+    </script>
+
+</body>
+</html>

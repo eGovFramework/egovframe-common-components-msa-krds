@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQqm.comUssOlpQmc.title}+' '+#{title.list}"></title>
+    <div th:replace="uss/olp/qqm/fragement/linkFragment"></div>
+</head>
+
+<body th:fragment="modalContents">
+
+<form id="qestnrItemistForm" name="qestnrItemistForm">
+<input type="hidden" th:id="qustnrItemPageIndex" th:name="qustnrItemPageIndex" th:value="1"/>
+</form>
+
+<div class="krds-table-wrap">
+    <table class="tbl col data">
+<!--        <caption>설문항목관리 기능을 제공하며 설문조사 참여자가 설문 참여시 설문항목 관리정보를 제공하는 컴포넌트</caption>-->
+        <colgroup>
+            <col style="width: 8%;">
+            <col style="width: 20%;">
+            <col style="width: 20%;">
+            <col style="width: 20%;">
+            <col style="width: 15%;">
+            <col style="width: 17%;">
+        </colgroup>
+        <thead>
+        <tr>
+            <th scope="col" class="text-center"><span th:text="#{table.num}"></span></th>
+            <th scope="col" class="text-center"><span th:text="#{comUssOlpQim.regist.qestnrCn}"></span></th>
+            <th scope="col" class="text-center"><span th:text="#{comUssOlpQim.regist.qestnrQesitmCn}"></span></th>
+            <th scope="col" class="text-center"><span th:text="#{comUssOlpQim.regist.iemCn}"></span></th>
+            <th scope="col" class="text-center"><span th:text="#{comUssOlpQim.regist.registerName}"></span></th>
+            <th scope="col" class="text-center"><span th:text="#{comUssOlpQim.regist.registerDate}"></span></th>
+        </tr>
+        </thead>
+        <tbody id="qustnrItem-list-container"></tbody>
+    </table>
+</div>
+
+<div id="qustnrItem-pagination-container" class="krds-pagination w-page"></div>
+
+<script th:inline="javascript" defer>
+    function qustnrItemList() {
+        const param = {
+            qustnrTmplatId: document.getElementById('qustnrTmplatId').value,
+            qestnrId: document.getElementById('qestnrId').value,
+            qustnrQesitmId: document.getElementById('qustnrQesitmId').value,
+            pageIndex: document.getElementById('qustnrItemPageIndex').value
+        };
+
+        fetch('/uss/olp/qqm/qustnrIemList', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(param)
+        })
+        .then(response => response.json())
+        .then(data => {
+            const qustnrIemList = data.qustnrIemList;
+            const pagination = data.pagination;
+            const lineNumber = data.lineNumber;
+
+            let html = '';
+            if(qustnrIemList.length === 0){
+                html = `<tr><td colspan="6">[(#{info.nodata.msg})]</td></tr>`
+            }else {
+                qustnrIemList.forEach(function (qustnrItem, index) {
+                    const number = lineNumber + (index + 1);
+                    html += '<tr>';
+                    html += '<td class="text-center">'+number+'</td>';
+                    html += '<td class="text-center">'+qustnrItem.qustnrSj+'</td>';
+                    html += '<td class="text-center">'+qustnrItem.qestnCn+'</td>';
+                    html += '<td class="text-center">'+qustnrItem.iemCn+'</td>';
+                    html += '<td class="text-center">'+qustnrItem.userNm+'</td>';
+                    html += '<td class="text-center">'+qustnrItem.frstRegistPnttm+'</td>';
+                    html += '</tr>';
+                });
+            }
+            document.getElementById('qustnrItem-list-container').innerHTML = html;
+            document.getElementById('qustnrItem-pagination-container').innerHTML = pagination;
+        });
+    }
+
+    function qustnrItemListLinkPage(pageIndex) {
+        document.getElementById('qustnrItemPageIndex').value = pageIndex;
+        qustnrItemList();
+    }
+</script>
+
+</body>
+</html>

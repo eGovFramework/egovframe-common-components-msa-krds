@@ -1,0 +1,37 @@
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+
+# macOS
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store
+*.AppleDouble
+*.LSOverride
+
+# maven
+target/
+.project
+.classpath
+**/.mvn/wrapper/
+**/mvnw*
+
+# eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+.sts4-cache/
+
+model/
+target/

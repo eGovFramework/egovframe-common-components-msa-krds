@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopCmy.commuMasterVO.title}+' '+#{title.detail}"></title>
+    <div th:replace="cop/cmy/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt">홈</a></li>
+            <li>협업</li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comCopCmy.commuMasterVO.title}+' '+#{title.detail}"></span></h2>
+
+    <form id="detailForm" name="detailForm" th:object="${communityVO}">
+    <input type="hidden" th:id="cmmntyId" th:name="cmmntyId" th:value="${communityVO.cmmntyId}"/>
+    <input type="hidden" th:id="cmmntyNm" th:name="cmmntyNm"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${communityVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${communityVO.searchKeyword}"/>
+
+    <div class="def-list-wrap">
+        <dl class="def-list">
+            <dt th:text="#{comCopCmy.commuMasterVO.detail.cmmntyNm}"></dt>
+            <dd id="cmmntyName"></dd>
+            <dt th:text="#{table.reger}"></dt>
+            <dd id="frstRegisterId"></dd>
+            <dt th:text="#{table.regdate}"></dt>
+            <dd id="frstRegisterPnttm"></dd>
+            <dt th:text="#{comCopCmy.commuMasterVO.detail.useAt}"></dt>
+            <dd id="useAt"></dd>
+            <dt th:text="#{comCopCmy.commuMasterVO.detail.cmmntyIntrcn}"></dt>
+            <dd id="cmmntyIntrcn"></dd>
+            <dt th:text="#{comCopCmy.commuMasterVO.detail.commuAdres}"></dt>
+            <dd id="commuAdres"></dd>
+        </dl>
+    </div>
+    <div class="page-btn-wrap">
+        <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="communityList()"></button>
+        <div class="btn-wrap">
+            <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="communityUpdate()"></button>
+        </div>
+    </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    communityDetail();
+
+    function communityList() {
+        $(location).attr('href', '/cop/cmy/communityListView');
+    }
+
+    function communityDetail() {
+        $.ajax({
+            url: '/cop/cmy/communityDetail',
+            method: 'POST',
+            data: $('#detailForm').serialize()
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                communityList();
+            } else {
+                $('#cmmntyNm').val(response.result.cmmntyNm);
+                $('#cmmntyName').text(response.result.cmmntyNm);
+                $('#frstRegisterId').text(response.result.userNm);
+                $('#frstRegisterPnttm').text(response.result.frstRegistPnttm);
+                $('#useAt').text(response.result.useAt);
+                $('#cmmntyIntrcn').text(response.result.cmmntyIntrcn).css('white-space', 'pre-line');
+                let commuAdres = '/cop/cmy/communityBoardList?cmmntyId='+response.result.cmmntyId;
+                $('#commuAdres').html('<a href="#" onclick="communityBoardList()">'+commuAdres+'</a>');
+            }
+        });
+    }
+
+    function communityUpdate() {
+        $('#detailForm').attr('method', 'post').attr('action', '/cop/cmy/communityUpdateView').submit();
+    }
+
+    function communityBoardList() {
+        $('#detailForm').attr('method', 'post').attr('action', '/cop/cmy/communityBoardList').submit();
+    }
+</script>
+
+</body>
+</html>

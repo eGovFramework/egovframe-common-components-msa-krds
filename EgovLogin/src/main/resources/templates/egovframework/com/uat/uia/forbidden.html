@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUatUia.title}"></title>
+    <div th:replace="uat/uia/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:if="${pathCode} eq '1'" th:text="#{comCmm.uat.title}"></li>
+            <li th:if="${pathCode} eq '2'" th:text="#{comCmm.sec.title}"></li>
+            <li th:if="${pathCode} eq '3'" th:text="#{comCmm.cop.title}"></li>
+            <li th:if="${pathCode} eq '4'" th:text="#{comCmm.uss.title}"></li>
+            <li th:if="${pathCode} eq '5'" th:text="#{comCmm.sym.title}"></li>
+            <li th:if="${pathCode} eq '6'" th:text="#{comCmm.ssi.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{errors.accessDenied.code}"></span></h2>
+
+    <div id="contentArea">
+        <span class="sec-tit" th:text="#{errors.accessDenied.title}"></span>
+    </div>
+</div>
+
+</body>
+</html>

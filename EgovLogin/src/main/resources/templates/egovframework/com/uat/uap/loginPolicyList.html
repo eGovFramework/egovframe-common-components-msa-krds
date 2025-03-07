@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUatUap.LoginPolicyList.caption}"></title>
+    <div th:replace="uat/uap/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uat.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comUatUap.LoginPolicyList.caption}"></span></h2>
+
+    <form id="listForm" name="listForm">
+        <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="1"/>
+        <input type="hidden" th:id="employerId" th:name="employerId"/>
+        <input type="hidden" th:id="userNm" th:name="userNm"/>
+        <input type="hidden" th:id="regYn" th:name="regYn"/>
+        <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+
+        <div class="form-group">
+            <div class="search-wrap">
+                <h3 class="search-tit" th:text="#{comUatUap.LoginPolicyList.userName}"></h3>
+                <div class="form-conts btn-ico-wrap searchKeyword">
+                    <input type="text" id="searchKeyword" name="searchKeyword" class="krds-input" th:placeholder="#{title.search} + #{search.placeholder}">
+                    <button type="button" class="krds-btn medium icon"  th:onclick="loginPolicySearch()">
+                        <span class="sr-only" th:text="#{button.search}"></span>
+                        <i class="svg-icon ico-sch"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="krds-table-wrap">
+        <table class="tbl col data">
+<!--            <caption>특정 IP에 대한 로그인 제한과 같은 사용자 로그인 정책을 정의하고, 정의된 정책에 맞게 로그인을 제한하는 기능을 제공하는 컴포넌트</caption>-->
+            <colgroup>
+                <col style="width: 10%;">
+                <col style="width: 25%;">
+                <col style="width: 25%;">
+                <col style="width: 25%;">
+                <col style="width: 15%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center"><span th:text="#{table.num}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUatUap.LoginPolicyList.userId}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUatUap.LoginPolicyList.userName}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUatUap.LoginPolicyList.ipInfo}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUatUap.LoginPolicyList.restricted}"></span></th>
+                </tr>
+            </thead>
+            <tbody id="loginPolicy-list-container"></tbody>
+        </table>
+    </div>
+
+    <div id="pagination-container" class="krds-pagination w-page"></div>
+</div>
+<script th:inline="javascript" defer>
+    loginPolicyList();
+
+    function loginPolicySearch() {
+        if (notNullCheck($('#searchKeyword').val())) {
+            loginPolicyList();
+        } else {
+            // alert('사용자명을 입력하세요.');
+            alert('[(#{title.search})][(#{search.placeholder})]');
+        }
+    }
+
+    function loginPolicyList() {
+        $.ajax({
+            url: '/uat/uap/loginPolicyList',
+            method: 'post',
+            data: $('#listForm').serialize()
+        }).done(function(response) {
+            console.log(response);
+            let loginPolicyList = response.loginPolicyList;
+            let pagination = response.pagination;
+            let lineNumber = response.lineNumber;
+
+            let html = '';
+            if(loginPolicyList.length === 0){
+                html = `<tr><td class="text-center" colspan="5">[(#{info.nodata.msg})]</td></tr>`
+            }else{
+                loginPolicyList.forEach(function(loginPolicy, index) {
+                    let number = lineNumber + (index + 1);
+                    html += '<tr>';
+                    html += '<td class="text-center">'+number+'</td>';
+                    html += '<td class="text-center">'+
+                        '<a class="btn btn-txt sm" onclick="loginPolicyDetail(\''+index+'\')" style="cursor: pointer">'+loginPolicy.userId+'</a>'+
+                        '<input type="hidden" name="id" value="'+loginPolicy.userId+'">'+
+                        '<input type="hidden" name="name" value="'+loginPolicy.userNm+'">'+
+                        '<input type="hidden" name="use" value="'+loginPolicy.regYn+'">'+
+                        '</td>';
+                    html += '<td class="text-center">'+loginPolicy.userNm+'</td>';
+                    html += '<td class="text-center">'+loginPolicy.ipInfo+'</td>';
+                    html += '<td class="text-center">'+loginPolicy.lmttAt+'</td>';
+                    html += '</tr>';
+                });
+            }
+            $('#loginPolicy-list-container').html(html);
+            $('#pagination-container').html(pagination);
+        });
+    }
+
+    function linkPage(pageIndex) {
+        $('#pageIndex').val(pageIndex);
+        loginPolicyList();
+    }
+
+    function loginPolicyDetail(index) {
+        $('#employerId').val($('input[name="id"]').eq(index).val());
+        $('#userNm').val($('input[name="name"]').eq(index).val());
+        $('#regYn').val($('input[name="use"]').eq(index).val());
+        $('#listForm').attr('method', 'post').attr('action', '/uat/uap/loginPolicyDetailView').submit();
+    }
+
+</script>
+
+</body>
+</html>

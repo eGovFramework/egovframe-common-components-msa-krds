@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUatUia.title}"></title>
+    <div th:replace="uat/uia/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+<nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+        <li th:text="#{comCmm.uat.title}"></li>
+    </ol>
+</nav>
+
+<h2 class="heading-large" style="margin-bottom: 2rem;"><span th:text="#{comUatUia.title}"></span></h2>
+
+<form id="loginForm" name="loginForm" th:object="${loginVO}">
+    <div class="inner narrow">
+        <div class="conts-area login-type-tab">
+            <div class="krds-tab-area layer">
+                <!-- tab list -->
+                <div class="tab fill full">
+                    <ul role="tablist">
+                        <li role="tab" aria-selected="true" aria-controls="panel_login_01" class="tab-btn active">
+                            <button type="button" class="btn-tab" value="GNR" th:text="#{comUatUia.loginForm.GNR}"><i class="sr-only created"> 선택됨</i></button>
+                        </li>
+                        <li class="tab-btn" role="tab" aria-selected="true" aria-controls="panel_login_01">
+                            <button type="button" class="btn-tab" value="ENT" th:text="#{comUatUia.loginForm.ENT}"></button>
+                        </li>
+                        <li class="tab-btn" role="tab" aria-selected="true" aria-controls="panel_login_01">
+                            <button type="button" class="btn-tab" value="USR" th:text="#{comUatUia.loginForm.USR}"></button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-conts-wrap">
+                    <section id="panel_login_01" aria-labelledby="tab_login_01" class="tab-conts active" data-quick-nav="false">
+                        <div class="login-form-area type-tab">
+                            <div class="login-wrap">
+                                <fieldset>
+                                    <legend>로그인 폼</legend>
+                                    <div class="fieldset">
+                                        <div class="form-group">
+                                            <div class="form-tit">
+                                                <label for="userId">[(#{comUatUia.loginForm.id})]</label>
+                                            </div>
+                                            <div class="form-conts">
+                                                <input type="text" id="userId" name="userId" class="krds-input" autocomplete="on" maxlength="30" th:placeholder="#{comUatUia.validate.idCheck}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-tit">
+                                                <label for="userPw">[(#{comUatUia.loginForm.pw})]</label>
+                                            </div>
+                                            <div class="form-conts btn-ico-wrap">
+                                                <input type="password" id="userPw" name="userPw" maxlength="12" class="krds-input" th:placeholder="#{comUatUia.validate.passCheck}">
+                                                <span class="sr-only" th:text="#{comUatUia.idPw.showPassword}"></span>
+                                                <button type="button" class="krds-btn svg-icon ico-pw-visible" th:onclick="loginView()"></button>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" class="krds-btn large primary" th:onclick="loginProcess()" th:text="#{comUatUia.loginForm.login}"></button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<form id="loginContentForm" name="loginContentForm" th:object="${loginVO}">
+<input type="hidden" id="userInfo" name="userInfo"/>
+</form>
+</div>
+<script th:inline="javascript" defer>
+    function loginView() {
+        const visibleOff = document.querySelector(".krds-btn.svg-icon.ico-pw-visible");
+        const visibleOn = document.querySelector(".krds-btn.svg-icon.ico-pw-visible-on");
+        const passwordField = document.getElementById('userPw');
+        if (passwordField.type === 'password') {
+            visibleOff.classList.replace("ico-pw-visible","ico-pw-visible-on");
+            passwordField.type = 'text';
+        } else {
+            visibleOn.classList.replace("ico-pw-visible-on","ico-pw-visible");
+            passwordField.type = 'password';
+        }
+    }
+
+    function loginProcess() {
+        let userId = document.getElementById('userId').value;
+        let userPw = document.getElementById('userPw').value;
+        let userSe;
+        document.querySelectorAll(".tab-btn").forEach(tab =>{
+           if(tab.classList.contains("active")){
+               userSe = tab.querySelector("button").value;
+           }
+        });
+        // let userSe = document.getElementById('userSe').value;
+
+        if (userId.length === 0) {
+            alert('[(#{comUatUia.validate.idCheck})]');
+            return false;
+        } else if (userPw.length === 0) {
+            alert('[(#{comUatUia.validate.passCheck})]');
+            return false;
+        } else {
+            const param = {userId: userId, userPw: userPw, userSe: userSe};
+            console.log(param);
+            fetch('/uat/uia/actionLogin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(param)
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'loginFailure') {
+                    alert(response.errors);
+                    location.reload();
+                } else {
+                    contentView(response.userInfo);
+                }
+            })
+        }
+    }
+
+    function contentView(userInfo) {
+        document.getElementById('userInfo').value = userInfo;
+        const form = document.getElementById('loginContentForm');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', '/uat/uia/loginView');
+        form.submit();
+    }
+</script>
+
+</body>
+</html>

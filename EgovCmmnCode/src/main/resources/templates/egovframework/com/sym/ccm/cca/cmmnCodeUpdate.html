@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comSymCcmCca.cmmnCodeVO.title}+' '+#{title.update}"></title>
+    <div th:replace="sym/ccm/cca/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sym.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comSymCcmCca.cmmnCodeVO.title}+' '+#{title.create}"></span></h2>
+
+    <form id="updateForm" name="updateForm" th:object="${cmmnCodeVO}">
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${cmmnCodeVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${cmmnCodeVO.searchKeyword}"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="clCodeNm" th:text="#{comSymCcmCca.cmmnCodeVO.clCodeNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="hidden" id="clCode" name="clCode"/>
+                        <input type="text"  id="clCodeNm" name="clCodeNm" class="krds-input"  th:value="${cmmnCodeVO.clCodeNm}" readonly="readonly">
+                    </div>
+                    <p class="form-hint-invalid" id="clCodeError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="codeId" th:text="#{comSymCcmCca.cmmnCodeVO.codeId}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="codeId" name="codeId" class="krds-input" th:value="${cmmnCodeVO.codeId}" readonly="readonly">
+                    </div>
+                    <p class="form-hint-invalid" id="codeIdError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="codeIdNm" th:text="#{comSymCcmCca.cmmnCodeVO.codeIdNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="codeIdNm" name="codeIdNm" class="krds-input" maxlength="60" th:field="*{codeIdNm}"
+                               th:placeholder="#{comSymCcmCca.cmmnCodeVO.codeIdNm}+' '+#{input.input}">
+                    </div>
+                    <p class="form-hint-invalid" id="codeIdNmError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="codeIdDc" th:text="#{comSymCcmCca.cmmnCodeVO.codeIdDc}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="codeIdDc" name="codeIdDc" maxlength="200" class="krds-input"
+                                      th:field="*{codeIdDc}"
+                                      th:placeholder="#{comSymCcmCca.cmmnCodeVO.codeIdDc}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/200</span></p>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="codeIdDcError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="useAt" th:text="#{comSymCcmCca.cmmnCodeVO.useAt}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="useAt" name="useAt" th:title="#{comSymCcmCca.cmmnCodeVO.useAt}">
+                            <option th:text="#{input.yes}" value="Y"></option>
+                            <option th:text="#{input.no}" value="N"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="cmmnCodeList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="cmmnCodeUpdate()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    $(document).ready(function() {
+        cmmnCodeDetail();
+
+        $('#codeIdDc').on('input', function() {
+            $('#textCount').text($(this).val().length);
+        });
+    });
+
+    function cmmnCodeList() {
+        $(location).attr('href', '/sym/ccm/cca/cmmnCodeListView');
+    }
+
+    function cmmnCodeDetail() {
+        $.ajax({
+            url: '/sym/ccm/cca/cmmnCodeDetail',
+            method: 'post',
+            data: $('#updateForm').serialize()
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                cmmnCodeList();
+            } else {
+                $('#clCode').val(response.result.clCode);
+                $('#clCodeNm').val(response.result.clCodeNm);
+                $('#codeId').val(response.result.codeId);
+                $('#codeIdNm').val(response.result.codeIdNm);
+                let codeIdDc = $('#codeIdDc');
+                codeIdDc.val(response.result.codeIdDc);
+                $('#textCount').text(codeIdDc.val().length);
+                let html = '';
+                if (response.result.useAt === 'Y') {
+                    html += '<option value="Y" selected>[(#{input.yes})]</option>';
+                    html += '<option value="N">[(#{input.no})]</option>';
+                } else {
+                    html += '<option value="Y">[(#{input.yes})]</option>';
+                    html += '<option value="N" selected>[(#{input.no})]</option>';
+                }
+                $('#useAt').html(html);
+            }
+        });
+    }
+
+    function cmmnCodeUpdate() {
+        if (confirm('[(#{common.update.msg})]')) {
+            $('#codeIdNmError, #codeIdDcError').text('');
+            $('#codeIdNmError, #codeIdDcError').css("display","none");
+            $.ajax({
+                url: '/sym/ccm/cca/cmmnCodeUpdate',
+                method: 'post',
+                data: $('#updateForm').serialize()
+            }).done(function(response) {
+                if(response.status === 'valid') {
+                    $.each(response.errors, function(key, value) {
+                        $('#'+key+'Error').text(value);
+                        $('#'+key+'Error').css("display","block");
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    cmmnCodeList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    cmmnCodeList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

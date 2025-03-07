@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQmc.title}+' '+#{title.detail}"></title>
+    <div th:replace="uss/olp/qmc/fragement/linkFragment"></div>
+</head>
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comUssOlpQmc.title}+' '+#{title.detail}"></span></h2>
+
+    <form id="detailForm" name="detailForm" th:object="${qestnrInfoVO}">
+        <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId"/>
+        <input type="hidden" th:id="qestnrId" th:name="qestnrId" th:value="${qestnrInfoVO.qestnrId}"/>
+        <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${qestnrInfoVO.searchCondition}"/>
+        <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${qestnrInfoVO.searchKeyword}"/>
+
+        <div class="def-list-wrap">
+            <dl class="def-list">
+                <dt th:text="#{comUssOlpQmc.regist.qestnrSj}"></dt>
+                <dd id="qustnrSj"></dd>
+                <dt th:text="#{comUssOlpQmc.regist.qestnrPurps}"></dt>
+                <dd id="qustnrPurps"></dd>
+                <dt th:text="#{comUssOlpQmc.regist.qestnrWritngGuidanceCn}"></dt>
+                <dd id="qustnrWritingGuidanceCn"></dd>
+                <dt th:text="#{comUssOlpQmc.regist.qestnrTrget}"></dt>
+                <dd id="qustnrTrget"></dd>
+                <dt th:text="#{comUssOlpQmc.regist.qestnrDe}"></dt>
+                <dd id="qustnrDe"></dd>
+                <dt th:text="#{comUssOlpQmc.regist.qestnrTmplatTy}"></dt>
+                <dd style="display: flex; align-items: center; gap: 1rem;">
+                    <span class="span" id="qustnrTmplatTy"></span>
+                    <img id="previewImage" th:alt="#{comUssOlpQmc.title.image}" width="100"/>
+                </dd>
+            </dl>
+        </div>
+
+        <div class="page-btn-wrap">
+            <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qestnrInfoList()"></button>
+            <div class="btn-wrap">
+                <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="qestnrInfoDelete()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="qestnrInfoUpdate()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        qestnrInfoDetail();
+    });
+
+    function qestnrInfoList() {
+        window.location.href = '/uss/olp/qmc/qestnrInfoListView';
+    }
+
+    function qestnrInfoDetail() {
+        const detailForm = document.getElementById('detailForm');
+        const formData = new FormData(detailForm);
+
+        fetch('/uss/olp/qmc/qestnrInfoDetail', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                qestnrInfoList();
+            } else {
+                document.getElementById('qustnrTmplatId').value = response.result.qustnrTmplatId;
+                document.getElementById('qustnrSj').textContent = response.result.qustnrSj;
+                document.getElementById('qustnrPurps').textContent = response.result.qustnrPurps;
+                document.getElementById('qustnrWritingGuidanceCn').textContent = response.result.qustnrWritingGuidanceCn;
+                document.getElementById('qustnrTrget').textContent = response.result.qustnrTrgetNm;
+                document.getElementById('qustnrDe').textContent = response.result.qustnrBgnde+' ~ '+response.result.qustnrEndde;
+                document.getElementById('qustnrTmplatTy').textContent = response.result.qustnrTmplatTy;
+                document.getElementById('previewImage').setAttribute('src','/uss/olp/qmc/qustnrTmplatImage?qustnrTmplatId='+response.result.qustnrTmplatId);
+            }
+        });
+    }
+
+    function qestnrInfoDelete() {
+        if (confirm('[(#{common.delete.msg})]')) {
+            const detailForm = document.getElementById('detailForm');
+            const formData = new FormData(detailForm);
+
+            fetch('/uss/olp/qmc/qestnrInfoDelete', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.delete})]');
+                    qestnrInfoList();
+                } else {
+                    alert('[(#{success.common.delete})]');
+                    qestnrInfoList();
+                }
+            });
+        }
+    }
+
+    function qestnrInfoUpdate() {
+        const detailForm = document.getElementById('detailForm');
+        detailForm.method = 'POST';
+        detailForm.action = '/uss/olp/qmc/qestnrInfoUpdateView';
+        detailForm.submit();
+    }
+</script>
+
+</body>
+</html>

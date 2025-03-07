@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQmc.title}+' '+#{title.list}"></title>
+    <div th:replace="uss/olp/qim/fragement/linkFragment"></div>
+</head>
+
+<body th:fragment="modalContents">
+<form id="qestnrInfoListForm" name="qestnrInfoListForm">
+<input type="hidden" th:id="qestnrInfoPageIndex" th:name="qestnrInfoPageIndex" th:value="1"/>
+
+    <div class="form-group">
+        <div class="search-wrap">
+            <div class="search-body">
+                <div class="form-conts searchOption">
+                    <select id="qestnrInfoSearchCondition" name="qestnrInfoSearchCondition" class="krds-form-select medium" th:title="#{title.searchCondition}">
+                        <option th:text="#{comUssOlpQmc.searchCondition.QUSTNR_SJ}" value="1" ></option>
+                        <option th:text="#{comUssOlpQmc.searchCondition.FRST_REGISTER_ID}" value="2" ></option>
+                    </select>
+                </div>
+                <div class="form-conts btn-ico-wrap searchKeyword">
+                    <input type="text" id="qestnrInfoSearchKeyword" name="qestnrInfoSearchKeyword" class="krds-input medium" th:placeholder="#{title.search} + #{search.placeholder}">
+                    <button type="button" class="krds-btn medium icon"  th:onclick="qestnrInfoSearch()">
+                        <span class="sr-only" th:text="#{button.search}"></span>
+                        <i class="svg-icon ico-sch"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<div class="krds-table-wrap">
+    <table class="tbl col data">
+<!--        <caption>설문관리 시스템 구축시 사용되는 관리 기능과 조사 기능을 제공하는 컴포넌트</caption>-->
+        <colgroup>
+            <col style="width: 8%;">
+            <col style="width: 20%;">
+            <col style="width: 20%;">
+            <col style="width: 25%;">
+            <col style="width: 15%;">
+            <col style="width: 12%;">
+        </colgroup>
+        <thead>
+        <tr>
+            <th scope="col" class="text-center"><span th:text="#{table.num}"></span></th>
+            <th scope="col" class="text-center"><span th:text="#{comUssOlpQmc.regist.qestnrSj}"></span></th>
+            <th scope="col" class="text-center"><span th:text="#{comUssOlpQmc.regist.qestnrPurps}"></span></th>
+            <th scope="col" class="text-center"><span th:text="#{comUssOlpQmc.regist.qestnrDe}"></span></th>
+            <th scope="col" class="text-center"><span th:text="#{comUssOlpQmc.regist.registerName}"></span></th>
+            <th scope="col" class="text-center"><span th:text="#{comUssOlpQmc.regist.registerDate}"></span></th>
+        </tr>
+        </thead>
+        <tbody id="qestnrInfo-list-container"></tbody>
+    </table>
+</div>
+
+<div id="qestnrInfo-pagination-container" class="krds-pagination w-page"></div>
+
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        qestnrInfoList();
+        document.getElementById('qestnrInfoSearchCondition').addEventListener('change', function() {
+            document.getElementById('qestnrInfoSearchKeyword').value = '';
+        });
+    });
+
+    function qestnrInfoSearch() {
+        if (notNullCheck(document.getElementById('qestnrInfoSearchKeyword').value)) {
+            qestnrInfoList();
+        } else {
+            alert('[(#{title.search})][(#{search.placeholder})]');
+        }
+    }
+
+    function qestnrInfoList() {
+        const param = {
+            searchCondition: document.getElementById('qestnrInfoSearchCondition').value,
+            searchKeyword: document.getElementById('qestnrInfoSearchKeyword').value,
+            pageIndex: document.getElementById('qestnrInfoPageIndex').value
+        };
+
+        fetch('/uss/olp/qim/qestnrInfoList', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(param)
+        })
+        .then(response => response.json())
+        .then(data => {
+            const qestnrInfoList = data.qestnrInfoList;
+            const pagination = data.pagination;
+            const lineNumber = data.lineNumber;
+
+            let html = '';
+            if(qestnrInfoList.length === 0){
+                html = `<tr><td class="text-center" colspan="6">[(#{info.nodata.msg})]</td></tr>`
+            }else{
+                qestnrInfoList.forEach(function (qestnrInfo, index) {
+                    const number = lineNumber + (index + 1);
+                    html += '<tr>';
+                    html += '<td class="text-center">'+number+'</td>';
+                    html += '<td class="text-center">'+
+                        '<a class="krds-btn text small" style="cursor: pointer" tabindex="0" onclick="qestnrInfoSelect('+
+                        '\''+qestnrInfo.qustnrTmplatId+'\',\''+qestnrInfo.qestnrId+'\',\''+qestnrInfo.qustnrSj+'\''+
+                        ')">'+qestnrInfo.qustnrSj+
+                        '</a></td>';
+                    html += '<td class="text-center">'+qestnrInfo.qustnrPurps+'</td>';
+                    html += '<td class="text-center">'+qestnrInfo.qustnrBgnde+'~'+qestnrInfo.qustnrEndde+'</td>';
+                    html += '<td class="text-center">'+qestnrInfo.userNm+'</td>';
+                    html += '<td class="text-center">'+qestnrInfo.frstRegistPnttm+'</td>';
+                    html += '</tr>';
+                });
+            }
+            document.getElementById('qestnrInfo-list-container').innerHTML = html;
+            document.getElementById('qestnrInfo-pagination-container').innerHTML = pagination;
+        });
+    }
+
+    function qestnrInfoListLinkPage(pageIndex) {
+        document.getElementById('qestnrInfoPageIndex').value = pageIndex;
+        qestnrInfoList();
+    }
+</script>
+
+</body>
+</html>

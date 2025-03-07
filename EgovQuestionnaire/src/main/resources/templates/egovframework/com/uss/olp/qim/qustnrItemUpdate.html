@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQim.title}+' '+#{title.update}"></title>
+    <div th:replace="uss/olp/qim/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comUssOlpQim.title}+' '+#{title.update}"></span></h2>
+
+    <form id="updateForm" name="updateForm" th:object="${qustnrIemVO}">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId"/>
+    <input type="hidden" th:id="qestnrId" th:name="qestnrId"/>
+    <input type="hidden" th:id="qustnrQesitmId" th:name="qustnrQesitmId"/>
+    <input type="hidden" th:id="qustnrIemId" th:name="qustnrIemId" th:value="${qustnrIemVO.qustnrIemId}"/>
+    <input type="hidden" th:id="etcAnswerAt" th:name="etcAnswerAt" th:value="N"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrSj" th:text="#{comUssOlpQim.regist.qestnrCn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="qustnrSj" name="qustnrSj" class="krds-input" readonly="readonly">
+                    </div>
+                    <p class="form-hint-invalid" id="qestnrIdError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qestnCn" th:text="#{comUssOlpQim.regist.qestnrQesitmCn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="qestnCn" name="qestnCn" class="krds-input" readonly="readonly">
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrQesitmIdError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="iemSn" th:text="#{comUssOlpQim.regist.iemSn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="iemSn" name="iemSn" class="krds-input" maxlength="5"
+                               th:placeholder="#{comUssOlpQim.regist.iemSn}+' '+#{input.input}" th:field="*{iemSn}">
+                    </div>
+                    <p class="form-hint-invalid" id="iemSnError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="iemCn" th:text="#{comUssOlpQim.regist.iemCn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="iemCn" name="iemCn" maxlength="500" class="krds-input"
+                                      th:field="*{iemCn}"
+                                      th:placeholder="#{comUssOlpQim.regist.iemCn}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/500</span></p>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="iemCnError" style="display:none"></p>
+                </div>
+
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qustnrItemList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="qustnrItemUpdate()"></button>
+            </div>
+        </div>
+
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        qustnrItemDetail();
+
+        const iemCn = document.getElementById('iemCn');
+        const textCount = document.getElementById('textCount');
+        iemCn.addEventListener('input', function() {
+            textCount.textContent = iemCn.value.length;
+        });
+    });
+
+    function qustnrItemList() {
+        window.location.href = '/uss/olp/qim/qusntrItemListView';
+    }
+
+    function qustnrItemDetail() {
+        const updateForm = document.getElementById('updateForm');
+        const formData = new FormData(updateForm);
+
+        fetch('/uss/olp/qim/qustnrItemDetail', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                qustnrItemList();
+            } else {
+                document.getElementById('qustnrTmplatId').value = response.result.qustnrTmplatId;
+                document.getElementById('qestnrId').value = response.result.qestnrId;
+                document.getElementById('qustnrQesitmId').value = response.result.qustnrQesitmId;
+                document.getElementById('qustnrSj').value = response.result.qustnrSj;
+                document.getElementById('qestnCn').value = response.result.qestnCn;
+                document.getElementById('iemSn').value = response.result.iemSn;
+                const iemCn = document.getElementById('iemCn');
+                iemCn.value = response.result.iemCn;
+                document.getElementById('textCount').textContent = iemCn.value.length;
+            }
+        });
+    }
+
+    function qustnrItemUpdate() {
+        if (confirm('[(#{common.update.msg})]')) {
+            const errors = ['iemSnError', 'iemCnError'];
+            errors.forEach(error => {
+                document.getElementById(error).textContent = '';
+                document.getElementById(error).style.display="none";
+            });
+
+            const updateForm = document.getElementById('updateForm');
+            const formData = new FormData(updateForm);
+
+            fetch('/uss/olp/qim/qustnrItemUpdate', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                        document.getElementById(`${key}Error`).style.display="block";
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    qustnrItemList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    qustnrItemList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

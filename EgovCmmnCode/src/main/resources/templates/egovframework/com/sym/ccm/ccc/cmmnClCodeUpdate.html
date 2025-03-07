@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comSymCcmCcc.cmmnClCodeVO.title}+' '+#{title.update}"></title>
+    <div th:replace="sym/ccm/ccc/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sym.title}"></li>
+        </ol>
+    </nav>
+    <h2 class="heading-large"><span th:text="#{comSymCcmCcc.cmmnClCodeVO.title}+' '+#{title.update}"></span></h2>
+    <form id="updateForm" name="updateForm" th:object="${cmmnClCodeVO}">
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${cmmnClCodeVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${cmmnClCodeVO.searchKeyword}"/>
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="clCode" th:text="#{comSymCcmCcc.cmmnClCodeVO.clCode}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="clCode" name="clCode" class="krds-input" th:value="${cmmnClCodeVO.clCode}" readonly="readonly">
+                    </div>
+                    <p class="form-hint-invalid" id="clCodeError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="clCodeNm" th:text="#{comSymCcmCcc.cmmnClCodeVO.clCodeNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="clCodeNm" name="clCodeNm" class="krds-input" maxlength="60"
+                               th:placeholder="#{comSymCcmCcc.cmmnClCodeVO.clCodeNm}+' '+#{input.input}" th:field="*{clCodeNm}">
+                    </div>
+                    <p class="form-hint-invalid" id="clCodeNmError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="clCodeDc" th:text="#{comSymCcmCcc.cmmnClCodeVO.clCodeDc}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="clCodeDc" name="clCodeDc" maxlength="200" class="krds-input"
+                                      th:field="*{clCodeDc}"
+                                      th:placeholder="#{comSymCcmCcc.cmmnClCodeVO.clCodeDc}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/200</span></p>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="clCodeDcError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="useAt" th:text="#{comSymCcmCcc.cmmnClCodeVO.useAt}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="useAt" name="useAt" th:title="#{comSymCcmCcc.cmmnClCodeVO.useAt}">
+                            <option th:text="#{input.yes}" value="Y"></option>
+                            <option th:text="#{input.no}" value="N"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="cmmnClCodeList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="cmmnClCodeUpdate()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript" defer>
+    $(document).ready(function() {
+        cmmnClCodeDetail();
+
+        $('#clCodeDc').on('input', function() {
+            $('#textCount').text($(this).val().length);
+        });
+    });
+
+    function cmmnClCodeList() {
+        $(location).attr('href', '/sym/ccm/ccc/cmmnClCodeListView');
+    }
+
+    function cmmnClCodeDetail() {
+        $.ajax({
+            url: '/sym/ccm/ccc/cmmnClCodeDetail',
+            method: 'post',
+            data: $('#updateForm').serialize()
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                cmmnClCodeList();
+            } else {
+                $('#clCodeNm').val(response.result.clCodeNm);
+                let clCodeDc = $('#clCodeDc');
+                clCodeDc.val(response.result.clCodeDc);
+                $('#textCount').text(clCodeDc.val().length);
+                let html = '';
+                if (response.result.useAt === 'Y') {
+                    html += '<option value="Y" selected>[(#{input.yes})]</option>';
+                    html += '<option value="N">[(#{input.no})]</option>';
+                } else {
+                    html += '<option value="Y">[(#{input.yes})]</option>';
+                    html += '<option value="N" selected>[(#{input.no})]</option>';
+                }
+                $('#useAt').html(html);
+            }
+        });
+    }
+
+    function cmmnClCodeUpdate() {
+        if (confirm('[(#{common.update.msg})]')) {
+            $('#clCodeError, #clCodeNmError, #clCodeDcError').text('');
+            $.ajax({
+                url: '/sym/ccm/ccc/cmmnClCodeUpdate',
+                method: 'post',
+                data: $('#updateForm').serialize()
+            }).done(function(response) {
+                if(response.status === 'valid') {
+                    $.each(response.errors, function(key, value) {
+                        $('#'+key+'Error').text(value);
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    cmmnClCodeList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    cmmnClCodeList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

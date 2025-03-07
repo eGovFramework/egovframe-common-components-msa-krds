@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopBbs.boardMasterVO.title}+' '+#{title.list}"></title>
+    <div th:replace="cop/bls/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt">홈</a></li>
+            <li>협업</li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="${bbsMasterVO.blogNm}+' '+#{comCopBlog.blogMasterVO.title}+''+#{comCopCmy.blogUserVO.list.board}"></span></h2>
+
+    <form id="listForm" name="listForm">
+    <input type="hidden" th:id="bbsId" th:name="bbsId"/>
+    <input type="hidden" th:id="blogId" th:name="blogId" th:value="${bbsMasterVO.blogId}"/>
+    <input type="hidden" th:id="blogNm" th:name="blogNm" th:value="${bbsMasterVO.blogNm}"/>
+    <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+
+        <div class="form-group">
+            <div class="search-wrap">
+                <div class="search-body">
+                    <div class="form-conts searchOption">
+                        <select id="searchCondition" name="searchCondition" class="krds-form-select" th:title="#{title.searchCondition}">
+                            <option th:text="#{comCopBbs.boardMasterVO.list.bbsNm}" value="1" ></option>
+                            <option th:text="#{comCopBbs.boardMasterVO.list.bbsIntrcn}" value="2" ></option>
+                        </select>
+                    </div>
+                    <div class="form-conts btn-ico-wrap searchKeyword">
+                        <input type="text" id="searchKeyword" name="searchKeyword" class="krds-input" placeholder="검색어를 입력하세요.">
+                        <button type="button" class="krds-btn medium icon"  th:onclick="bbsMasterSearch()">
+                            <span class="sr-only">검색</span>
+                            <i class="svg-icon ico-sch"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="bbsMasterCreate()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{comCopBlog.blogMasterVO.title}+''+#{button.list}" th:onclick="blogList()"></button>
+            </div>
+        </div>
+
+    </form>
+
+    <div class="krds-table-wrap">
+        <table class="tbl col data">
+            <caption>통합게시판, 방명록 등의 게시판을 생성하고 등록된 게시판들에 대하여 관련된 속성정보를 관리할 수 있는 기능을 제공하는 컴포넌트</caption>
+            <colgroup>
+                <col style="width: 10%;">
+                <col>
+                <col style="width: 13%;">
+                <col style="width: 13%;">
+                <col style="width: 13%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center"><span th:text="#{table.num}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopBbs.boardMasterVO.list.bbsNm}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{table.reger}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{table.regdate}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopBbs.boardMasterVO.list.useAt}"></span></th>
+                </tr>
+            </thead>
+            <tbody id="bbsMaster-list-container"></tbody>
+        </table>
+    </div>
+
+    <div id="pagination-container" class="krds-pagination w-page"></div>
+</div>
+<script th:inline="javascript" defer>
+    bbsMasterList();
+
+    function bbsMasterSearch() {
+        if (notNullCheck($('#searchKeyword').val())) {
+            bbsMasterList();
+        } else {
+            alert('검색어를 입력하세요.');
+        }
+    }
+
+    function bbsMasterList() {
+        $.ajax({
+            url: '/cop/bls/bbsMasterList',
+            method: 'POST',
+            data: $('#listForm').serialize()
+        }).done(function(response) {
+            let bbsMasterList = response.bbsMasterList;
+            let pagination = response.pagination;
+            let lineNumber = response.lineNumber;
+
+            let html = '';
+            bbsMasterList.forEach(function(bbsMaster, index) {
+                let number = lineNumber + (index + 1);
+                html += '<tr>';
+                html += '<td class="text-center">'+number+'</td>';
+                html += '<td class="text-center">'+
+                    '<a class="krds-btn text medium" onclick="bbsMasterDetail(\''+bbsMaster.bbsId+'\',\''+bbsMaster.blogId+'\')">'+
+                    bbsMaster.bbsNm+'</a></td>';
+                html += '<td class="text-center">'+bbsMaster.userNm+'</td>';
+                html += '<td class="text-center">'+bbsMaster.frstRegistPnttm+'</td>';
+                html += '<td class="text-center">'+bbsMaster.useAt+'</td>';
+                html += '</tr>';
+            });
+
+            $('#bbsMaster-list-container').html(html);
+            $('#pagination-container').html(pagination);
+        });
+    }
+
+    function linkPage(pageIndex) {
+        $('#pageIndex').val(pageIndex);
+        bbsMasterList();
+    }
+
+    function bbsMasterDetail(bbsId) {
+        $('#bbsId').val(bbsId);
+        $('#listForm').attr('method', 'post').attr('action', '/cop/bls/bbsMasterDetailView').submit();
+    }
+
+    function bbsMasterCreate() {
+        $('#listForm').attr('method', 'post').attr('action', '/cop/bls/bbsMasterInsertView').submit();
+    }
+
+    function blogList() {
+        $('#listForm').attr('method', 'post').attr('action', '/cop/bls/blogListView').submit();
+    }
+</script>
+
+</body>
+</html>

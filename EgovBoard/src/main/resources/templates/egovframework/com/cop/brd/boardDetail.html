@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopBbs.articleVO.title}+' '+#{title.detail}"></title>
+    <div th:replace="cop/brd/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.cop.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:id="boardTitle" th:text="${bbsVO.bbsNm}+' '+#{comCopBbs.articleVO.title}+' '+#{title.create}"></span></h2>
+
+    <form id="detailForm" name="detailForm" th:object="${bbsVO}">
+        <input type="hidden" th:id="nttId" th:name="nttId" th:value="${bbsVO.nttId}"/>
+        <input type="hidden" th:id="bbsId" th:name="bbsId" th:value="${bbsVO.bbsId}"/>
+        <input type="hidden" th:id="bbsNm" th:name="bbsNm" th:value="${bbsVO.bbsNm}"/>
+        <input type="hidden" th:id="blogId" th:name="blogId" th:value="${bbsVO.blogId}"/>
+        <input type="hidden" th:id="blogNm" th:name="blogNm" th:value="${bbsVO.blogNm}"/>
+        <input type="hidden" th:id="cmmntyId" th:name="cmmntyId" th:value="${bbsVO.cmmntyId}"/>
+        <input type="hidden" th:id="cmmntyNm" th:name="cmmntyNm" th:value="${bbsVO.cmmntyNm}"/>
+        <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${bbsVO.searchCondition}"/>
+        <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${bbsVO.searchKeyword}"/>
+        <input type="hidden" th:id="answerAt" th:name="answerAt" th:value="N">
+
+        <div class="def-list-wrap">
+            <dl class="def-list">
+                <dt th:text="#{comCopBbs.articleVO.detail.nttSj}"></dt>
+                <dd id="nttSj"></dd>
+                <dt th:text="#{table.reger}"></dt>
+                <dd id="frstRegisterId"></dd>
+                <dt th:text="#{table.regdate}"></dt>
+                <dd id="frstRegistPnttm"></dd>
+                <dt th:text="#{comCopBbs.articleVO.detail.inqireCo}"></dt>
+                <dd id="rdcnt"></dd>
+                <dt th:text="#{comCopBbs.articleVO.detail.nttCn}"></dt>
+                <dd id="nttCn" class="ck-content"></dd>
+                <dt th:text="#{comCopBbs.articleVO.detail.ntceDe}"></dt>
+                <dd id="ntceDe"></dd>
+                <dt th:text="#{comCopBbs.articleVO.detail.atchFile}" class="atchfiles"></dt>
+                <dd id="atchFileList" class="atchfiles">
+                    <ul></ul>
+                </dd>
+            </dl>
+        </div>
+
+        <div class="page-btn-wrap">
+            <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="boardList()"></button>
+            <div class="btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.reply}" th:onclick="boardReply()"></button>
+                <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="boardDelete()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="boardUpdate()"></button>
+            </div>
+        </div>
+
+        <div class="comment-wrap"></div>
+
+    </form>
+</div>
+
+<script th:inline="javascript" defer>
+    let bbsId = document.getElementById('bbsId').value;
+    let nttId = document.getElementById('nttId').value
+    let userId = "";
+
+    boardDetail();
+    fn_egov_bbs_master_optn(bbsId, nttId);
+
+    function boardList() {
+        const detailForm = document.getElementById('detailForm');
+        detailForm.method = 'POST';
+        detailForm.action = '/cop/brd/boardListView';
+        detailForm.submit();
+    }
+
+    function decodeHTML(html) {
+        var textarea = document.createElement("textarea");
+        textarea.innerHTML = html;
+        return textarea.value;
+    }
+
+    function boardDetail() {
+        $.ajax({
+            url: '/cop/brd/boardDetail',
+            method: 'POST',
+            data: $('#detailForm').serialize()
+        }).done(function(response) {
+            console.log(response.result);
+            userId= response.userId;
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                boardList();
+            } else {
+                $('#nttSj').text(response.result.nttSj);
+                $('#frstRegisterId').text(response.result.userNm);
+                $('#frstRegistPnttm').text(response.result.frstRegistPnttm);
+                $('#rdcnt').text(response.result.rdcnt);
+                $('#nttCn').html(decodeHTML(response.result.nttCn));
+                $('#ntceDe').text(response.result.ntceBgnde+' ~ '+response.result.ntceEndde);
+                renderArticleDetail(response);
+            }
+        });
+    }
+
+    /*********************************************************
+     * 게시판 속성 호출
+     ******************************************************** */
+    function fn_egov_bbs_master_optn(bbsId, nttId) {
+        $.ajax({
+            url:'/cop/brd/selectBBSMasterOptn',
+            method: 'POST',
+            data: {bbsId:bbsId}
+        }).done(function(result){
+            let html = "";
+            if (result.answerAt === "Y") {
+                console.log("댓글");
+                fn_egov_comment_view_list(bbsId, nttId);
+                html += `<div class="comment-list-wrap">
+                            <div class="comment_cnt">
+                                [(#{comCopBbs.boardMasterVO.detail.option2})]
+                                <span class="keyword" id="commentCnt"></span>
+                            </div>
+                            <ul id="comment-list" class="total-search-list"></ul>
+                            <div class="krds-pagination w-page" id="pagination"></div>
+                        </div>`;
+                html += `<div class="commentInsert">
+                            <ol class="comment-wrap">
+                                <li class="li">
+                                    <div class="comment-top" style="display:flex; justify-content: space-between">
+                                        <span class="form-qu" style="width: 100%">[(#{title.comment})]</span>
+                                        <span class="textarea-count" style="border:none;">
+                                            <span class="text-primary" id="recentTextCnt">0</span><span class="text-num" id="fullTextCnt">/200</span>
+                                        </span>
+                                    </div>
+                                    <div class="form-group full">
+                                        <div class="form-conts">
+                                            <div class="textarea-wrap">
+                                                <textarea id="answer" class="form-control" th:placeholder="#{button.comment} #{search.placeholder}" title="#{button.comment} #{search.placeholder}" maxlength="200"></textarea>
+                                                <button type="button" class="krds-btn medium commentBtn" onclick="fn_egov_comment_insert()">[(#{button.create})]</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>`;
+            } else if (result.stsfdgAt === "Y") {
+                console.log("만족도");
+                fn_egov_satistaction_view_list(bbsId, nttId);
+                html += `<div class="comment-list-wrap">
+                            <div class="comment-list-top">
+                                <div class="comment_cnt">
+                                    [(#{comCopBbs.boardMasterVO.detail.option3})]
+                                    <span class="keyword" id="satisAverage">0</span>
+                                </div>
+                                <div class="starAvr">
+                                    <span class="star">★★★★★<span class="totalStar">★★★★★</span></span>
+                                    <span>(<span class="satisfactionTotalCnt">0</span>)</span>
+                                </div>
+                            </div>
+                            <ul id="satisfaction-list" class="total-search-list"></ul>
+                            <div class="krds-pagination w-page" id="pagination"></div>
+                        </div>`;
+                html += `<div class="commentInsert">
+                            <ol class="comment-wrap">
+                                <li class="li">
+                                    <div class="comment-top">
+                                        <div class="comment-top-left" style="width: 100%">
+                                            <span class="form-qu">[(#{comCopBbs.boardMasterVO.detail.option3})]</span>
+                                                <span class="star">★★★★★
+                                                    <span class="stsStarCheck">★★★★★</span>
+                                                    <input type="range" oninput="drawStar()" value="0" step="1" min="0" max="5" class="star_range" name="reviewStar">
+                                            </span>
+                                        </div>
+                                        <div class="comment-top-right">
+                                            <span class="textarea-count" style="border:none;">
+                                            <span class="text-primary" id="recentTextCnt">0</span><span class="text-num" id="fullTextCnt">/200</span>
+                                        </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group full">
+                                        <div class="form-conts">
+                                            <div class="textarea-wrap">
+                                                <textarea id="answer" class="form-control" th:placeholder="#{button.comment} #{search.placeholder}" title="#{button.comment} #{search.placeholder}" maxlength="200"></textarea>
+                                                <button type="button" class="krds-btn medium commentBtn" onclick="fn_egov_satisfaction_insert()">[(#{button.create})]</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>`;
+            }
+            document.querySelector(".comment-wrap").innerHTML += html;
+            fn_comment_count();
+        })
+    }
+
+    function renderArticleDetail(response) {
+        if (response.result.atchFileId) {
+            atchFileId = response.result.atchFileId;
+            fetch("/cop/brd/selectFileInfs", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: atchFileId
+            })
+                .then(res => res.json())
+                .then(result => {
+                    console.log(result);
+                    const atchFiles = document.querySelector('.atchfiles ul');
+                    result.forEach(item => {
+                        const li = document.createElement('li');
+                        console.log(item);
+                        li.innerHTML = `<p onclick="fileDownload('${item.atchFileId}','${item.fileSn}','${item.orignlFileNm}')">${item.orignlFileNm}</p>`;
+                        atchFiles.appendChild(li)
+                    });
+                })
+                .catch(error => console.error("Error fetching attached files:", error));
+        }else{
+            document.querySelector('.atchfiles').style.display='none';
+        }
+    }
+
+    function boardUpdate() {
+        $('#detailForm').attr('method', 'post').attr('action', '/cop/brd/boardUpdateView').submit();
+    }
+
+    function boardDelete(){
+
+        if (!confirm('[(#{common.delete.msg})]')) {
+            return;
+        }
+
+        fetch('/cop/brd/deleteBoard', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ bbsId: bbsId, nttId: nttId })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(data => {
+                alert(data);
+                boardList();
+            })
+            .catch(error => {
+                console.log("에러");
+                console.log(error);
+            });
+
+    }
+
+    function fileDownload(atchFileId,fileSn,fileNm){
+        $.ajax({
+            url: "/cop/brd/fileDownload",
+            method: 'GET',
+            data: {atchFileId:atchFileId, fileSn:fileSn},
+            xhrFields: {
+                responseType: "blob"
+            },
+        }).done(function(data, status, xhr){
+            console.log(data);
+            const blob = new Blob([data], { type: xhr.getResponseHeader("Content-Type") });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileNm;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
+    }
+
+    /* 답글 처리 */
+    function boardReply(){
+        var frm = document.getElementById("detailForm");
+        frm.querySelector("#answerAt").value = "Y";
+        frm.setAttribute("method","post");
+        frm.setAttribute("action","/cop/brd/boardInsertView");
+        frm.submit();
+    }
+
+    /* 댓글 / 만족도 조사 */
+    /*********************************************************
+     * 댓글 목록 호출
+     *********************************************************/
+    function fn_egov_comment_view_list(bbsId, nttId, pageIndex) {
+        if (pageIndex === 0 || pageIndex == null) {
+            pageIndex = 1;
+        }
+        fetch("/cop/brd/selectCommentList", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bbsId: bbsId, nttId: nttId, pageIndex: pageIndex })
+        })
+            .then(response => response.json())
+            .then(result => {
+                document.querySelector("#comment-list").innerHTML = "";
+                document.querySelector(".krds-pagination").innerHTML = "";
+                const response = result.response;
+
+                if (response.totalElements === 0) {
+                    document.querySelector("#commentCnt").textContent = "0";
+                    document.querySelector(".krds-pagination").style.display = "none";
+                } else {
+                    response.content.forEach(item => {
+                        const commentList = `<li>
+                                            <p class="info-top">
+                                                <span class="user-info" style="width:100%"><span class="txt" style="font-weight: bold;">${item.wrterNm}</span> | <span class="i-date">${item.frstRegistPnttm.replace("T", " ")}</span></span>
+                                                ${item.frstRegisterId === userId ? `<button type="button" class="krds-btn medium icon btn-close close-modal"
+                                                                                    onclick="fn_egov_comment_delete('${item.bbsId}',${item.nttId},${item.answerNo})">
+                                                                                        <span class="sr-only" th:text="#{button.close}"></span>
+                                                                                        <i class="svg-icon ico-popup-close"></i>
+                                                                                    </button>`:""}
+                                            </p>
+                                            <div class="info-body"><div class="in"><div class="text"><p class="txt">${item.answer}</p></div></div></div>
+                                         </li>`;
+                        document.querySelector("#comment-list").insertAdjacentHTML("beforeend", commentList);
+                    });
+                    document.querySelector("#commentCnt").textContent = response.totalElements;
+                    document.querySelector(".krds-pagination").style.display = "flex";
+                    document.querySelector(".krds-pagination").innerHTML = result.pagination;
+                }
+            })
+            .catch(error => {
+                alert("에러");
+                console.error(error);
+            });
+    }
+
+    /*********************************************************
+     * 댓글 등록
+     *********************************************************/
+    function fn_egov_comment_insert() {
+        const answer = document.querySelector("#answer").value;
+        fetch("/cop/brd/insertComment", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bbsId: bbsId, nttId: nttId, answer: answer })
+        })
+            .then(response => response.text())
+            .then(response => {
+                alert(response);
+                fn_egov_comment_view_list(bbsId, nttId, 1);
+                document.querySelector("#answer").value = "";
+                document.querySelector("#recentTextCnt").textContent = "0";
+            })
+            .catch(error => {
+                alert(error);
+                console.error(error);
+            });
+    }
+
+    /*********************************************************
+     * 댓글 입력 시 글자 수 카운트
+     *********************************************************/
+    function fn_comment_count() {
+        document.querySelector("#answer").addEventListener("keyup", function (e) {
+            const maxCnt = 200;
+            const comment = this.value;
+            let commentLen = 0;
+            let totalByte = 0;
+
+            for (let i = 0; i < comment.length; i++) {
+                const each_char = comment.charAt(i);
+                const uni_char = escape(each_char);
+                if (uni_char.length > 4) {
+                    totalByte += 2;
+                } else {
+                    totalByte += 1;
+                }
+                if (totalByte <= maxCnt) {
+                    commentLen += 1;
+                }
+            }
+
+            if (comment.length === 0 || comment === "") {
+                document.querySelector("#recentTextCnt").textContent = 0;
+            } else {
+                document.querySelector("#recentTextCnt").textContent = totalByte;
+            }
+
+            if (totalByte < 200) {
+                document.querySelector("#recentTextCnt").style.color = "#246BEB";
+            } else {
+                this.value = this.value.substring(0, commentLen);
+                document.querySelector("#recentTextCnt").style.color = "red";
+            }
+        });
+    }
+
+    /*********************************************************
+     * 댓글 삭제
+     *********************************************************/
+    function fn_egov_comment_delete(bbsId, nttId, answerNo) {
+
+        if (!confirm('[(#{common.delete.msg})]')) {
+            return;
+        }
+
+        fetch("/cop/brd/deleteComment", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bbsId: bbsId, nttId: nttId, answerNo: answerNo })
+        })
+            .then(response => response.text())
+            .then(result => {
+                alert(result);
+                fn_egov_comment_view_list(bbsId, nttId, 1);
+            })
+            .catch(error => {
+                alert(error);
+                console.error(error);
+            });
+    }
+
+    /*********************************************************
+     * 만족도 조사 목록 호출
+     *********************************************************/
+    function fn_egov_satistaction_view_list(bbsId, nttId, pageIndex) {
+        if (pageIndex === 0 || pageIndex == null) {
+            pageIndex = 1;
+        }
+        fetch("/cop/brd/selectStsfdgList", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bbsId: bbsId, nttId: nttId, pageIndex: pageIndex })
+        })
+            .then(response => response.json())
+            .then(result => {
+                const response = result.response.content;
+                document.querySelector("#satisfaction-list").innerHTML = "";
+                document.querySelector(".krds-pagination").innerHTML = "";
+
+                if (result.response.totalElements === 0) {
+                    document.querySelector(".krds-pagination").style.display = "none";
+                } else {
+                    response.forEach(item => {
+                        const stsfdgList = `<li>
+                                        <p class="info-top">
+                                            <span class="user-info" style="width:100%"><span class="txt" style="font-weight: bold;">${item.wrterNm}</span> | <span class="i-date">${item.frstRegistPnttm.replace("T", " ")}</span></span>
+                                            ${item.frstRegisterId === userId ? `<button type="button" class="krds-btn medium icon btn-close close-modal"
+                                                                                onclick="fn_egov_satisfaction_delete('${item.bbsId}',${item.nttId},${item.stsfdgNo})">
+                                                                                    <span class="sr-only" th:text="#{button.close}"></span>
+                                                                                    <i class="svg-icon ico-popup-close"></i>
+                                                                                </button>`: ""}
+                                        </p>
+                                        <div class="stsfdg-area">
+                                            <span class="star" style="color:lightgray">★★★★★<span style="width:${item.stsfdg * 20}%">★★★★★</span></span>&nbsp<span>${item.stsfdg.toFixed(1)}</span>
+                                        </div>
+                                        <div class="info-body"><div class="in"><div class="text"><p class="txt">${item.stsfdgCn}</p></div></div></div>
+                                     </li>`;
+                        document.querySelector("#satisfaction-list").insertAdjacentHTML("beforeend", stsfdgList);
+                    });
+
+                    document.querySelector("#satisAverage").textContent = result.satisAvr;
+                    document.querySelector(".totalStar").style.width = ((result.satisAvr) * 20) + '%';
+                    document.querySelector(".satisfactionTotalCnt").textContent = result.response.totalElements;
+                    document.querySelector(".krds-pagination").style.display = "flex";
+                    document.querySelector(".krds-pagination").innerHTML = result.pagination;
+                }
+            })
+            .catch(error => {
+                alert("에러!!");
+                console.error(error);
+            });
+    }
+
+    /*********************************************************
+     * 만족도 조사 등록
+     *********************************************************/
+    function fn_egov_satisfaction_insert() {
+        const answer = document.querySelector("#answer").value;
+        const star = document.querySelector(".star_range").value;
+        fetch("/cop/brd/insertStsfdg", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bbsId: bbsId, nttId: nttId, stsfdgCn: answer, stsfdg: star })
+        })
+            .then(response => response.text())
+            .then(response => {
+                alert(response);
+                fn_egov_satistaction_view_list(bbsId, nttId);
+                document.querySelector("#answer").value = "";
+                document.querySelector(".star_range").value = 0;
+                document.querySelector("#recentTextCnt").textContent = "0";
+                document.querySelector(".stsStarCheck").style.width = 0;
+            })
+            .catch(error => {
+                alert("에러 발생 !!!");
+                console.error(error);
+            });
+    }
+
+    /*********************************************************
+     * 만족도 조사 삭제
+     *********************************************************/
+    function fn_egov_satisfaction_delete(bbsId, nttId, stsfdgNo) {
+
+        if (!confirm('[(#{common.delete.msg})]')) {
+            return;
+        }
+
+        fetch("/cop/brd/deleteStsfdg", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bbsId: bbsId, nttId: nttId, stsfdgNo: stsfdgNo })
+        })
+            .then(response => response.text())
+            .then(result => {
+                alert(result);
+                fn_egov_satistaction_view_list(bbsId, nttId);
+            })
+            .catch(error => {
+                alert("에러!");
+                console.error(error);
+            });
+    }
+
+    /*********************************************************
+     * 별점 표시
+     *********************************************************/
+    function drawStar() {
+        const starval = document.querySelector(".star_range").value;
+        const starvalue = starval * 20;
+        document.querySelector(".stsStarCheck").style.width = starvalue + "%";
+    }
+
+    /*********************************************************
+     * 댓글 페이지 링크
+     *********************************************************/
+    function Comment_linkPage(pageIndex) {
+        fn_egov_comment_view_list(bbsId, nttId, pageIndex);
+    }
+
+    /*********************************************************
+     * 만족도 페이지 링크
+     *********************************************************/
+    function Satisfaction_linkPage(pageIndex) {
+        fn_egov_satistaction_view_list(bbsId, nttId, pageIndex);
+    }
+</script>
+
+</body>
+</html>

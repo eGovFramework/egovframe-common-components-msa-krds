@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comSymCcmCcc.cmmnClCodeVO.title}+' '+#{title.detail}"></title>
+    <div th:replace="sym/ccm/ccc/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sym.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comSymCcmCcc.cmmnClCodeVO.title}+' '+#{title.detail}"></span></h2>
+
+    <form id="detailForm" name="detailForm" th:object="${cmmnClCodeVO}">
+    <input type="hidden" th:id="clCode" th:name="clCode" th:value="${cmmnClCodeVO.clCode}"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${cmmnClCodeVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${cmmnClCodeVO.searchKeyword}"/>
+
+    <div class="def-list-wrap">
+        <dl class="def-list">
+            <dt th:text="#{comSymCcmCcc.cmmnClCodeVO.clCode}"></dt>
+            <dd id="clCodeCd"></dd>
+            <dt th:text="#{comSymCcmCcc.cmmnClCodeVO.clCodeNm}"></dt>
+            <dd id="clCodeNm"></dd>
+            <dt th:text="#{comSymCcmCcc.cmmnClCodeVO.clCodeDc}"></dt>
+            <dd id="clCodeDc"></dd>
+            <dt th:text="#{comSymCcmCcc.cmmnClCodeVO.useAt}"></dt>
+            <dd id="useAt"></dd>
+        </dl>
+    </div>
+
+    <div class="page-btn-wrap">
+        <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="cmmnClCodeList()"></button>
+        <div class="btn-wrap">
+            <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="cmmnClCodeDelete()"></button>
+            <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="cmmnClCodeUpdate()"></button>
+        </div>
+    </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    cmmnClCodeDetail();
+
+    function cmmnClCodeList() {
+        $(location).attr('href', '/sym/ccm/ccc/cmmnClCodeListView');
+    }
+
+    function cmmnClCodeDetail() {
+        $.ajax({
+            url: '/sym/ccm/ccc/cmmnClCodeDetail',
+            method: 'post',
+            data: $('#detailForm').serialize()
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                cmmnClCodeList();
+            } else {
+                $('#clCodeCd').text(response.result.clCode);
+                $('#clCodeNm').text(response.result.clCodeNm);
+                $('#clCodeDc').text(response.result.clCodeDc);
+                $('#useAt').text(response.result.useAt);
+            }
+        });
+    }
+
+    function cmmnClCodeDelete() {
+        if (confirm('[(#{common.delete.msg})]')) {
+            $.ajax({
+                url: '/sym/ccm/ccc/cmmnClCodeDelete',
+                method: 'post',
+                data: $('#detailForm').serialize()
+            }).done(function(response) {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.delete})]');
+                    cmmnClCodeList();
+                } else {
+                    alert('[(#{success.common.delete})]');
+                    cmmnClCodeList();
+                }
+            });
+        }
+    }
+
+    function cmmnClCodeUpdate() {
+        $('#detailForm').attr('method', 'post').attr('action', '/sym/ccm/ccc/cmmnClCodeUpdateView').submit();
+    }
+</script>
+
+</body>
+</html>

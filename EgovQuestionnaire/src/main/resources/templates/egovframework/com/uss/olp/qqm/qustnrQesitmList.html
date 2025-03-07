@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQqm.title}+' '+#{title.list}"></title>
+    <div th:replace="uss/olp/qqm/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-l" style="margin-bottom: 2rem;"><span th:text="#{comUssOlpQqm.title}+' '+#{title.list}"></span></h2>
+
+    <form id="listForm" name="listForm">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId"/>
+    <input type="hidden" th:id="qestnrId" th:name="qestnrId"/>
+    <input type="hidden" th:id="qustnrQesitmId" th:name="qustnrQesitmId"/>
+    <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+
+        <div class="form-group">
+            <div class="search-wrap">
+                <div class="search-body">
+                    <div class="form-conts searchOption">
+                        <select id="searchCondition" name="searchCondition" class="krds-form-select medium" th:title="#{title.searchCondition}">
+                            <option th:text="#{comUssOlpQqm.regist.qestnrCn}" value="1" ></option>
+                            <option th:text="#{comUssOlpQmc.searchCondition.FRST_REGISTER_ID}" value="2" ></option>
+                        </select>
+                    </div>
+                    <div class="form-conts btn-ico-wrap searchKeyword">
+                        <input type="text" id="searchKeyword" name="searchKeyword" class="krds-input medium" th:placeholder="#{title.search} + #{search.placeholder}">
+                        <button type="button" class="krds-btn medium icon"  th:onclick="qustnrQesitmSearch()">
+                            <span class="sr-only" th:text="#{button.search}"></span>
+                            <i class="svg-icon ico-sch"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="qustnrQesitmCreate()"></button>
+            </div>
+        </div>
+
+    </form>
+
+    <div class="krds-table-wrap">
+        <table class="tbl col data">
+<!--            <caption>설문질문관리 시스템 구축 시 사용되는 설문질문관리 기능을 제공하는 컴포넌트</caption>-->
+            <colgroup>
+                <col style="width: 10%;">
+                <col style="width: 15%;">
+                <col style="width: 20%;">
+                <col style="width: 10%;">
+                <col style="width: 10%;">
+                <col style="width: 10%;">
+                <col style="width: 10%;">
+                <col style="width: 15%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center"><span th:text="#{table.num}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUssOlpQqm.regist.qestnrCn}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUssOlpQqm.regist.qestnCn}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUssOlpQqm.regist.qestnTyCode}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUssOlpQqm.regist.qestnIem}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUssOlpQqm.regist.statistics}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUssOlpQqm.regist.registerName}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUssOlpQqm.regist.registerDate}"></span></th>
+                </tr>
+            </thead>
+            <tbody id="qustnrQesitm-list-container"></tbody>
+        </table>
+    </div>
+    <div id="pagination-container" class="krds-pagination w-page"></div>
+</div>
+<!-- Modal Start -->
+<section id="qustnrItemModal" class="krds-modal fade" aria-hidden="true" role="dialog" aria-labelledby="tit_qustnrItemModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tit_qustnrItemModal" class="modal-title">
+                    <span th:text="#{comUssOlpQqm.title}+' '+#{title.list}"></span></h2>
+            </div>
+            <div class="modal-conts">
+                <div class="conts-area">
+                    <div th:insert="~{uss/olp/qqm/qustnrItemListPopup::modalContents}"></div>
+                </div>
+            </div>
+<!--            <div class="modal-btn btn-wrap"></div>-->
+            <button type="button" class="krds-btn medium icon btn-close close-modal">
+                <span class="sr-only" th:text="#{button.close}"></span>
+                <i class="svg-icon ico-popup-close"></i>
+            </button>
+        </div>
+    </div>
+    <div class="modal-back"></div>
+</section>
+<!-- Modal End -->
+
+<!-- Modal Start -->
+<section id="qustnrRspnsResultModal" class="krds-modal fade" aria-hidden="true" role="dialog" aria-labelledby="tit_qustnrRspnsResultModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tit_qustnrRspnsResultModal" class="modal-title">
+                    <span th:text="#{comUssOlpQnn.title}+' '+#{comUssOlpQnn.regist.statistics}"></span></h2>
+            </div>
+            <div class="modal-conts">
+                <div class="conts-area">
+                    <div th:insert="~{uss/olp/qqm/qustnrRspnsResultStatsPopup::modalContents}"></div>
+                </div>
+            </div>
+<!--            <div class="modal-btn btn-wrap"></div>-->
+            <button type="button" class="krds-btn medium icon btn-close close-modal">
+                <span class="sr-only" th:text="#{button.close}"></span>
+                <i class="svg-icon ico-popup-close"></i>
+            </button>
+        </div>
+    </div>
+    <div class="modal-back"></div>
+</section>
+<!-- Modal End -->
+
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        qustnrQesitmList();
+
+        document.getElementById('searchCondition').addEventListener('change', function() {
+            document.getElementById('searchKeyword').value = '';
+        });
+
+        document.addEventListener('click', (event) => {
+            if (event.target.classList.contains('open-modal')) {
+                const id = event.target.getAttribute('data-target');
+                const tid = event.target.getAttribute('data-tid');
+                const qid = event.target.getAttribute('data-qid');
+                const qqid = event.target.getAttribute('data-qqid');
+                document.getElementById('qustnrTmplatId').value = tid;
+                document.getElementById('qestnrId').value = qid;
+                document.getElementById('qustnrQesitmId').value = qqid;
+                krds_modal.openModal(id);
+                if (id === 'qustnrItemModal') {
+                    qustnrItemList();
+                } else {
+                    qustnrRspnsResultStats();
+                }
+                event.preventDefault();
+            }else if(event.target.parentElement.classList.contains('close-modal')){
+                const id = document.querySelector(".krds-modal.fade.shown.in").id;
+                krds_modal.closeModal(id);
+            }
+        });
+    });
+
+    function qustnrQesitmSearch() {
+        if (notNullCheck(document.getElementById('searchKeyword').value)) {
+            qustnrQesitmList();
+        } else {
+            alert('[(#{title.search})][(#{search.placeholder})]');
+        }
+    }
+
+    function qustnrQesitmList() {
+        const form = document.getElementById('listForm');
+        const formData = new FormData(form);
+
+        fetch('/uss/olp/qqm/qustnrQesitmList', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            const qustnrQesitmList = data.qustnrQesitmList;
+            const pagination = data.pagination;
+            const lineNumber = data.lineNumber;
+
+            let html = '';
+            let buttonText = '[(#{comUssOlpQqm.value.view})]';
+            if(qustnrQesitmList.length === 0){
+                html = `<tr><td class="text-center" colspan="8">[(#{info.nodata.msg})]</td></tr>`
+            }else{
+                qustnrQesitmList.forEach(function(qustnrQesitm, index) {
+                    const number = lineNumber + (index + 1);
+                    html += '<tr>';
+                    html += '<td class="text-center">'+number+'</td>';
+                    html += '<td class="text-center">'+qustnrQesitm.qustnrSj+'</td>';
+                    html += '<td class="text-center">'+
+                        '<a class="krds-btn text small" style="cursor: pointer" tabindex="0" onclick="qustnrQesitmDetail('+
+                        '\''+qustnrQesitm.qustnrQesitmId+'\''+
+                        ')">'+qustnrQesitm.qestnCn+
+                        '</a></td>';
+                    html += '<td class="text-center">'+qustnrQesitm.qestnTyNm+'</td>';
+
+                    html += '<td class="text-center">';
+
+                    if (qustnrQesitm.qestnTyNm === '[(#{comUssOlpQqm.regist.objectiveQuest})]') {
+                        html += '<button type="button" class="krds-btn small open-modal" '+
+                            'data-tid="'+qustnrQesitm.qustnrTmplatId+'" data-qid="'+qustnrQesitm.qestnrId+'" data-qqid="'+qustnrQesitm.qustnrQesitmId+'" '+
+                            'data-target="qustnrItemModal" id="qustnrItemBtn">'+buttonText+'</button>';
+                    } else {
+                        html += qustnrQesitm.qestnTyNm;
+                    }
+
+                    html += '</td>';
+
+                    html += '<td class="text-center">'+
+                        '<button type="button" class="krds-btn small open-modal" '+
+                        'data-tid="'+qustnrQesitm.qustnrTmplatId+'" data-qid="'+qustnrQesitm.qestnrId+'" data-qqid="'+qustnrQesitm.qustnrQesitmId+'" '+
+                        'data-target="qustnrRspnsResultModal" id="qustnrRspnsResultBtn">'+buttonText+'</button></td>';
+
+                    html += '<td class="text-center">'+qustnrQesitm.userNm+'</td>';
+                    html += '<td class="text-center">'+qustnrQesitm.frstRegistPnttm+'</td>';
+                    html += '</tr>';
+                });
+            }
+            document.getElementById('qustnrQesitm-list-container').innerHTML = html;
+            document.getElementById('pagination-container').innerHTML = pagination;
+        });
+    }
+
+    function linkPage(pageIndex) {
+        document.getElementById('pageIndex').value = pageIndex;
+        qustnrQesitmList();
+    }
+
+    function qustnrQesitmDetail(qustnrQesitmId) {
+        document.getElementById('qustnrQesitmId').value = qustnrQesitmId;
+        const form = document.getElementById('listForm');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', '/uss/olp/qqm/qustnrQesitmDetailView');
+        form.submit();
+    }
+
+    function qustnrQesitmCreate() {
+        const form = document.getElementById('listForm');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', '/uss/olp/qqm/qustnrQesitmInsertView');
+        form.submit();
+    }
+</script>
+
+</body>
+</html>

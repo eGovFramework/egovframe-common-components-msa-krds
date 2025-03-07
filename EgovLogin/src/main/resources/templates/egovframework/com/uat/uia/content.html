@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUatUia.title}"></title>
+    <div th:replace="uat/uia/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uat.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comUatUia.title}"></span></h2>
+
+    <div id="contentArea">
+        <strong class="sec-tit" id="userName"></strong><span class="loginInfoText"></span>
+        <button type="button" class="krds-btn medium" th:text="#{comUatUia.unitContent.3}" th:onclick="logout()"></button>
+    </div>
+
+    <input type="hidden" id="userInfo" name="userInfo" th:value="${loginVO != null ? loginVO.userInfo : ''}"/>
+</div>
+
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        let userName = document.getElementById('userName');
+        let userInfo = document.getElementById("userInfo").value;
+        let loginInfoText = '[(#{comUatUia.unitContent.2})]';
+        userName.innerText = userInfo;
+        document.querySelector('.loginInfoText').innerText = loginInfoText;
+    });
+
+    function logout() {
+        fetch('/uat/uia/logout', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(response => {
+            window.location.href = '/uat/uia/loginView';
+        })
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopSecRgm.title}+' '+#{title.list}"></title>
+    <div th:replace="sec/rgm/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sec.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comCopSecRgm.title}+' '+#{title.list}"></span></h2>
+
+    <form id="listForm" name="listForm">
+    <input type="hidden" th:id="userIds" th:name="userIds"/>
+    <input type="hidden" th:id="mberTyCode" th:name="mberTyCode"/>
+    <input type="hidden" th:id="authorCode" th:name="authorCode"/>
+    <input type="hidden" th:id="regYns" th:name="regYns"/>
+    <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+
+        <div class="form-group">
+            <div class="search-wrap">
+                <div class="search-body">
+                    <div class="form-conts searchOption">
+                        <select id="searchCondition" name="searchCondition" class="krds-form-select medium" th:title="#{title.searchCondition}">
+                            <option th:text="#{comCopSecRgm.searchCondition.userId}" value="1" ></option>
+                            <option th:text="#{comCopSecRgm.searchCondition.userNm}" value="2" ></option>
+                            <option th:text="#{comCopSecRgm.searchCondition.group}" value="3" ></option>
+                        </select>
+                    </div>
+                    <div class="form-conts btn-ico-wrap searchKeyword">
+                        <input type="text" id="searchKeyword" name="searchKeyword" class="krds-input medium" th:placeholder="#{title.search} + #{search.placeholder}">
+                        <button type="button" class="krds-btn medium icon"  th:onclick="authorGroupSearch()">
+                            <span class="sr-only" th:text="#{button.search}"></span>
+                            <i class="svg-icon ico-sch"></i>
+                        </button>
+                    </div>
+                    <button type="button" class="krds-btn medium tertiary open-modal" data-target="authorGroupInfoModal" id="authorGroupInfoModalButton" th:text="#{comCopSecRgm.btn.groupInquire}" style="display: none"></button>
+                </div>
+                <div class="page-btn-wrap">
+                    <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="authorGroupDelete()"></button>
+                    <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="authorGroupInsert()"></button>
+                </div>
+            </div>
+        </div>
+
+    <div class="krds-table-wrap">
+        <table class="tbl col data">
+<!--            <caption>사용자의 특성에 따라 그룹을 설정하고 특정 그룹을 선택한 뒤 해당 그룹에 속한 사용자에게 일괄적으로 권한을 부여하는 컴포넌트</caption>-->
+            <colgroup>
+                <col style="width: 7%;">
+                <col style="width: 16%;">
+                <col style="width: 20%;">
+                <col style="width: 20%;">
+                <col>
+                <col style="width: 7%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center">
+                        <div class="krds-check-area">
+                            <div class="krds-form-check">
+                                <input type="checkbox" name="checkAll" id="checkAll" th:onclick="authorGroupAllChecked()">
+                                <label for="checkAll"></label>
+                            </div>
+                        </div>
+                    </th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopSecRgm.list.userId}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopSecRgm.list.userNm}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopSecRgm.list.userType}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopSecRgm.list.author}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comCopSecRgm.list.regYn}"></span></th>
+                </tr>
+            </thead>
+            <tbody id="authorGroup-list-container"></tbody>
+        </table>
+    </div>
+
+    <div id="pagination-container" class="krds-pagination w-page"></div>
+
+    </form>
+
+    <!-- Modal Start -->
+    <section id="authorGroupInfoModal" class="krds-modal fade" role="dialog" aria-labelledby="tit_authorGroupInfoModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="tit_authorGroupInfoModal" class="modal-title">
+                        <span th:text="#{comCopSecGmt.title}+' '+#{title.list}"></span></h2>
+                </div>
+                <div class="modal-conts">
+                    <div class="conts-area">
+                        <div th:insert="~{sec/rgm/authorGroupInfoListPopup::modalContents}"></div>
+                    </div>
+                </div>
+                <div class="modal-btn btn-wrap"></div>
+                <button type="button" class="krds-btn medium icon btn-close close-modal">
+                    <span class="sr-only" th:text="#{button.close}"></span>
+                    <i class="svg-icon ico-popup-close"></i>
+                </button>
+            </div>
+        </div>
+        <div class="modal-back"></div>
+    </section>
+</div>
+<!-- Modal End -->
+
+<script th:inline="javascript" defer>
+    $(document).ready(function() {
+        authorGroupList();
+
+        $('#searchCondition').change(function() {
+            if ($('#searchCondition').val() === '3') {
+                $('#searchKeyword').val('').removeAttr('placeholder').prop('readonly', true);
+                $('#authorGroupInfoModalButton').css('display','block');
+            } else {
+                $('#searchKeyword').val('').attr('placeholder', '[(#{title.search})][(#{search.placeholder})]').prop('readonly', false);
+                $('#authorGroupInfoModalButton').css('display','none');
+            }
+        });
+
+        $('#authorGroupInfoModalButton').click(function() {
+            if ($('#searchCondition').val() !== '3') {
+                alert('[(#{comCopSecRgm.searchCondition.group})][(#{select.placeholder})]');
+                $('#authorGroupInfoModal').removeClass('shown');
+            }
+        });
+    });
+
+    function authorGroupSearch() {
+        if (notNullCheck($('#searchKeyword').val())) {
+            authorGroupList();
+        } else {
+            alert('[(#{title.search})][(#{search.placeholder})]');
+        }
+    }
+
+    function authorGroupList() {
+        $.ajax({
+            url: '/sec/rgm/authorGroupList',
+            method: 'post',
+            data: $('#listForm').serialize()
+        }).done(function(response) {
+            $('#checkAll').prop('checked', false);
+            let authorGroupList = response.authorGroupList;
+            let authorInfoList = response.authorInfoList;
+            let pagination = response.pagination;
+
+            let html = '';
+            if(authorGroupList.length === 0){
+                html = `<tr><td class="text-center" colspan="6">[(#{info.nodata.msg})]</td></tr>`
+            }else{
+                authorGroupList.forEach(function(author, index) {
+                    html += '<tr>';
+                    html += '<td class="text-center">'+
+                        '<div class="krds-check-area">'+
+                        '<div class="krds-form-check">'+
+                        '<input type="checkbox" name="chkbox" id="chk'+index+'">'+
+                        '<label for="chk'+index+'"></label>'+
+                        '</div>'+
+                        '</div>'+
+                        '<input type="hidden" name="chkId" value="'+author.esntlId+'">'+
+                        '</td>';
+                    html += '<td class="text-center">'+author.userId+'</td>';
+                    html += '<td class="text-center">'+author.userNm+'</td>';
+                    html += '<td class="text-center">'+author.mberTyNm+
+                        '<input type="hidden" name="mberCode" value="'+author.mberTyCode+'"></td>';
+                    html += '<td class="text-center"><select class="krds-form-select small" name="authCode"> ';
+                    authorInfoList.forEach(function(authorInfo, index) {
+                        let selected = '';
+                        if (author.authorCode === authorInfo.authorCode) {
+                            selected = 'selected';
+                        }
+                        html += '<option value="'+authorInfo.authorCode+'" '+selected+'>'+authorInfo.authorNm+'</option>';
+                    });
+                    html += '</select></td>';
+                    html += '<td class="text-center">'+author.regYn+'<input type="hidden" name="regYn" value="'+author.regYn+'"></td>';
+                    html += '</tr>';
+                });
+            }
+            $('#authorGroup-list-container').html(html);
+            $('#pagination-container').html(pagination);
+        });
+    }
+
+    function linkPage(pageIndex) {
+        $('#pageIndex').val(pageIndex);
+        authorGroupList();
+    }
+
+    function authorGroupInsert() {
+        if(!authorGroupChecked()) return;
+
+        if(confirm('[(#{comCopSecRgm.list.validate.confirm.regist})]')) {
+            $.ajax({
+                url: '/sec/rgm/authorGroupInsert',
+                method: 'post',
+                data: $('#listForm').serialize()
+            }).done(function(response) {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.insert})]');
+                    authorGroupList();
+                } else {
+                    alert('[(#{success.common.insert})]');
+                    authorGroupList();
+                }
+            });
+        }
+    }
+
+    function authorGroupDelete() {
+        if(!authorGroupChecked()) return;
+
+        if(confirm('[(#{comCopSecRgm.list.validate.confirm.delete})]')) {
+            $.ajax({
+                url: '/sec/rgm/authorGroupDelete',
+                method: 'post',
+                data: $('#listForm').serialize()
+            }).done(function(response) {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.delete})]');
+                    authorGroupList();
+                } else {
+                    alert('[(#{success.common.delete})]');
+                    authorGroupList();
+                }
+            });
+        }
+    }
+
+    function authorGroupAllChecked() {
+        let checkField = $('form[name="listForm"] input[name="chkbox"]');
+        let isChecked = document.listForm.checkAll.checked;
+        checkField.prop('checked', isChecked);
+    }
+
+    function authorGroupChecked() {
+        let checkField = $('form[name="listForm"] input[name="chkbox"]');
+        let checkId = $('form[name="listForm"] input[name="chkId"]');
+        let mberCode = $('form[name="listForm"] input[name="mberCode"]');
+        let authCode = $('form[name="listForm"] select[name="authCode"]');
+        let regYn = $('form[name="listForm"] input[name="regYn"]');
+
+        let returnId = '';
+        let returnMberCode = '';
+        let returnAuthorCode = '';
+        let returnRegYn = '';
+        let checkedCount = 0;
+
+        if (!checkField.length) {
+            alert('[(#{comCopSecRgm.list.validate.alert.noResult})]');
+            return false;
+        }
+
+        checkField.each(function(i) {
+            if ($(this).is(':checked')) {
+                checkedCount++;
+                let currentCheckId = checkId.eq(i).val();
+                let currentMberCode = mberCode.eq(i).val();
+                let currentAuthCode = authCode.eq(i).val();
+                let currentRegYn = regYn.eq(i).val();
+
+                returnId += (returnId ? ";" : "") + currentCheckId;
+                returnMberCode += (returnMberCode ? ";" : "") + currentMberCode;
+                returnAuthorCode += (returnAuthorCode ? ";" : "") + currentAuthCode;
+                returnRegYn += (returnRegYn ? ";" : "") + currentRegYn;
+            }
+        });
+
+        if (checkedCount === 0) {
+            alert('[(#{comCopSecRgm.list.validate.alert.notSelect})]');
+            return false;
+        }
+
+        $('#userIds').val(returnId);
+        $('#mberTyCode').val(returnMberCode);
+        $('#authorCode').val(returnAuthorCode);
+        $('#regYns').val(returnRegYn);
+
+        return true;
+    }
+</script>
+
+</body>
+</html>

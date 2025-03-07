@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQmc.comUssOlpQrm.title}+' '+#{title.list}"></title>
+    <div th:replace="uss/olp/qmc/fragement/linkFragment"></div>
+</head>
+
+<body th:fragment="modalContents">
+
+<form id="qustnrRespondInfoListForm" name="qustnrRespondInfoListForm">
+<input type="hidden" th:id="qustnrRespondInfoPageIndex" th:name="qustnrRespondInfoPageIndex" th:value="1"/>
+</form>
+
+<div class="krds-table-wrap">
+    <table class="tbl col data">
+        <caption>설문관리 시스템 구축 시 사용되는 응답자정보 기능을 제공하는 컴포넌트</caption>
+        <colgroup>
+            <col style="width: 20%;">
+            <col style="width: 20%;">
+            <col style="width: 20%;">
+            <col style="width: 20%;">
+            <col style="width: 20%;">
+        </colgroup>
+        <thead>
+            <tr>
+                <th scope="col" class="text-center"><span th:text="#{table.num}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comUssOlpQmc.comUssOlpQrm.regist.qestnrCn}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comUssOlpQmc.comUssOlpQrm.regist.respondNm}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comUssOlpQmc.regist.registerName}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comUssOlpQmc.regist.registerDate}"></span></th>
+            </tr>
+        </thead>
+        <tbody id="qustnrRespondInfo-list-container"></tbody>
+    </table>
+</div>
+
+<div id="qustnrRespondInfo-pagination-container" class="krds-pagination w-page"></div>
+
+<script th:inline="javascript" defer>
+    function qustnrRespondInfoList() {
+        const param = {
+            qustnrTmplatId: document.getElementById('qustnrTmplatId').value,
+            qestnrId: document.getElementById('qestnrId').value,
+            pageIndex: document.getElementById('qustnrRespondInfoPageIndex').value
+        };
+
+        fetch('/uss/olp/qmc/qustnrRespondInfoList', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(param)
+        })
+        .then(response => response.json())
+        .then(data => {
+            const qustnrRespondInfoList = data.qustnrRespondInfoList;
+            const pagination = data.pagination;
+            const lineNumber = data.lineNumber;
+
+            let html = '';
+            if(qustnrRespondInfoList.length === 0){
+                html = `<tr><td colspan="6">[(#{info.nodata.msg})]</td></tr>`
+            }else {
+                qustnrRespondInfoList.forEach(function (qustnrRespondInfo, index) {
+                    const number = lineNumber + (index + 1);
+                    html += '<tr>';
+                    html += '<td class="text-center">'+number+'</td>';
+                    html += '<td class="text-center">'+qustnrRespondInfo.qustnrSj+'</td>';
+                    html += '<td class="text-center">'+qustnrRespondInfo.respondNm+'</a></td>';
+                    html += '<td class="text-center">'+qustnrRespondInfo.userNm+'</td>';
+                    html += '<td class="text-center">'+qustnrRespondInfo.frstRegistPnttm+'</td>';
+                    html += '</tr>';
+                });
+            }
+
+            document.getElementById('qustnrRespondInfo-list-container').innerHTML = html;
+            document.getElementById('qustnrRespondInfo-pagination-container').innerHTML = pagination;
+        });
+    }
+
+    function qustnrRespondInfoListLinkPage(pageIndex) {
+        document.getElementById('qustnrRespondInfoPageIndex').value = pageIndex;
+        qustnrRespondInfoList();
+    }
+</script>
+
+</body>
+</html>

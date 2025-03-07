@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQim.title}+' '+#{title.detail}"></title>
+    <div th:replace="uss/olp/qim/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comUssOlpQim.title}+' '+#{title.detail}"></span></h2>
+
+    <form id="detailForm" name="detailForm" th:object="${qustnrIemVO}">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId"/>
+    <input type="hidden" th:id="qestnrId" th:name="qestnrId"/>
+    <input type="hidden" th:id="qustnrQesitmId" th:name="qustnrQesitmId"/>
+    <input type="hidden" th:id="qustnrIemId" th:name="qustnrIemId" th:value="${qustnrIemVO.qustnrIemId}"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${qustnrIemVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${qustnrIemVO.searchKeyword}"/>
+
+    <div class="def-list-wrap">
+        <dl class="def-list">
+            <dt th:text="#{comUssOlpQim.regist.qestnrCn}"></dt>
+            <dd id="qestnrCn"></dd>
+            <dt th:text="#{comUssOlpQim.regist.qestnrQesitmCn}"></dt>
+            <dd id="qestnrQesitmCn"></dd>
+            <dt th:text="#{comUssOlpQim.regist.iemSn}"></dt>
+            <dd id="iemSn"></dd>
+            <dt th:text="#{comUssOlpQim.regist.iemCn}"></dt>
+            <dd id="iemCn"></dd>
+        </dl>
+    </div>
+
+    <div class="page-btn-wrap both">
+        <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qustnrItemList()"></button>
+        <div class="btn-wrap">
+            <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="qustnrItemDelete()"></button>
+            <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="qustnrItemUpdate()"></button>
+        </div>
+    </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        qustnrItemDetail();
+    });
+
+    function qustnrItemList() {
+        window.location.href = '/uss/olp/qim/qusntrItemListView';
+    }
+
+    function qustnrItemDetail() {
+        const detailForm = document.getElementById('detailForm');
+        const formData = new FormData(detailForm);
+
+        fetch('/uss/olp/qim/qustnrItemDetail', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                qustnrItemList();
+            } else {
+                document.getElementById('qustnrTmplatId').value = response.result.qustnrTmplatId;
+                document.getElementById('qestnrId').value = response.result.qestnrId;
+                document.getElementById('qustnrQesitmId').value = response.result.qustnrQesitmId;
+                document.getElementById('qestnrCn').textContent = response.result.qustnrSj;
+                document.getElementById('qestnrQesitmCn').textContent = response.result.qestnCn;
+                document.getElementById('iemSn').textContent = response.result.iemSn;
+                document.getElementById('iemCn').textContent = response.result.iemCn;
+            }
+        });
+    }
+
+    function qustnrItemDelete() {
+        const detailForm = document.getElementById('detailForm');
+        const formData = new FormData(detailForm);
+
+        if (confirm('[(#{common.delete.msg})]')) {
+            fetch('/uss/olp/qim/qustnrItemDelete', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.delete})]');
+                    qustnrItemList();
+                } else {
+                    alert('[(#{success.common.delete})]');
+                    qustnrItemList();
+                }
+            });
+        }
+    }
+
+    function qustnrItemUpdate() {
+        const detailForm = document.getElementById('detailForm');
+        detailForm.method = 'POST';
+        detailForm.action = '/uss/olp/qim/qustnrItemUpdateView';
+        detailForm.submit();
+    }
+</script>
+
+</body>
+</html>

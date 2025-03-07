@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comExtOps.comQaOpsInfoVO.title}"></title>
+    <div th:replace="ext/ops/fragment/linkFragment"></div>
+</head>
+<body>
+
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.ssi.title}"></li>
+        </ol>
+    </nav>
+    <div class="contents_container">
+        <div class="search_header">
+            <h2 th:text="#{comExtOps.comQaOpsInfoVO.title}"></h2>
+            <p th:text="#{comExtOps.comQaOpsInfoVO.message}"></p>
+        </div>
+        <form id="searchForm" name="searchForm" class="search-form">
+            <input type="hidden" id="pageIndex" name="pageIndex" value="1"/>
+            <div class="form-group search_body">
+                <div class="search-wrap">
+                    <div class="krds-tab-area layer">
+                        <div class="tab fill full">
+                            <ul role="tablist">
+                                <li id="tab_login_01" role="tab" aria-selected="true" aria-controls="panel_login_01" class="active">
+                                    <button type="button" class="btn-tab" th:text="#{comExtOps.comQaOpsInfoVO.textSearch}"><i class="sr-only created" th:text="#{input.cSelect}"></i></button>
+                                </li>
+                                <li id="tab_login_02" role="tab" aria-selected="false" aria-controls="panel_login_02">
+                                    <button type="button" class="btn-tab" th:text="#{comExtOps.comQaOpsInfoVO.vectorSearch}"></button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-conts-wrap">
+                            <section id="panel_login_01" aria-labelledby="tab_login_01" class="tab-conts active" data-quick-nav="false">
+                                <h3 class="sr-only" th:text="#{tab.title}"></h3>x
+                                <div class="search-body">
+                                    <div class="form-conts searchOption">
+                                        <select id="searchCondition" name="searchCnd" class="krds-form-select medium">
+                                            <option th:text="#{comExtOps.comQaOpsInfoVO.nttSj}" value="1"></option>
+                                            <option th:text="#{comExtOps.comQaOpsInfoVO.nttCn}" value="2"></option>
+                                            <option th:text="#{comExtOps.comQaOpsInfoVO.wrterNm}" value="3"></option>
+                                        </select>
+                                    </div>
+                                    <div class="form-conts btn-ico-wrap searchKeyword">
+                                        <input type="text" id="textSearchKeyword" name="searchWrd" class="krds-input medium" th:placeholder="#{title.search} + #{search.placeholder}">
+                                        <button type="button" class="krds-btn medium icon" onclick="textSearch()">
+                                            <span class="sr-only" th:text="#{button.search}"></span>
+                                            <i class="svg-icon ico-sch"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </section>
+                            <section id="panel_login_02" aria-labelledby="tab_login_02" class="tab-conts" data-quick-nav="false">
+                                <h3 class="sr-only" th:text="#{tab.title}"></h3>
+                                <div class="form-conts btn-ico-wrap searchKeyword">
+                                    <input type="text" id="vectorSearchKeyword" name="searchWrd" class="krds-input medium" th:placeholder="#{title.search} + #{search.placeholder}">
+                                    <button type="button" class="krds-btn medium icon" onclick="vectorSearch()">
+                                        <span class="sr-only" th:text="#{button.search}"></span>
+                                        <i class="svg-icon ico-sch"></i>
+                                    </button>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div id="loading" class="loading" style="display: none;">
+            <div class="krds-spinner" role="status">
+                <span class="sr-only" th:text="#{comExtOps.comQaOpsInfoVO.search.loading}"></span>
+                <span th:text="#{ScomExtOps.comQaOpsInfoVO.searching}"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script th:inline="javascript">
+        // // 페이지 로드 시 로딩 화면 숨기기
+        window.onload = function() {
+            document.getElementById("loading").style.display = "none";
+        };
+
+        // // 뒤로가기 시 로딩 화면 숨기기
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                document.getElementById("loading").style.display = "none";
+            }
+        };
+
+        // 검색 수행
+        var form = document.getElementById("searchForm");
+        function textSearch(){
+            if (!notNullCheck($('#textSearchKeyword').val())) {
+                alert('[(#{title.search})][(#{search.placeholder})]');
+                return false;
+            }
+            form.action = "/ext/ops/textSearchResultView";
+            form.method = "post";
+            form.submit();
+        }
+        function vectorSearch(){
+            if (!notNullCheck($('#vectorSearchKeyword').val())) {
+                alert('[(#{title.search})][(#{search.placeholder})]');
+                return false;
+            }
+            form.action = "/ext/ops/vectorSearchResultView";
+            form.method = "post";
+            form.submit();
+        }
+
+        function notNullCheck(value) {
+            return value != null && value.trim() !== '';
+        }
+    </script>
+
+</body>
+</html>

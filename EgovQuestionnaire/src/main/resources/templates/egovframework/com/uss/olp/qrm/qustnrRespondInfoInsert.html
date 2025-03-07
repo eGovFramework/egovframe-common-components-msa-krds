@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQrm.title}+' '+#{title.create}"></title>
+    <div th:replace="uss/olp/qrm/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comUssOlpQrm.title}+' '+#{title.create}"></span></h2>
+
+    <form id="insertForm" name="insertForm" th:object="${qustnrRespondInfoVO}">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId"/>
+    <input type="hidden" th:id="qestnrId" th:name="qestnrId"/>
+    <input type="hidden" th:id="qustnrRespondId" th:name="qustnrRespondId"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrSj" th:text="#{comUssOlpQrm.regist.qestnrCn}"></label>
+                    </div>
+                    <div class="form-conts modal-wrap" style="flex-direction: row">
+                        <input type="text" id="qustnrSj" name="qustnrSj" class="krds-input" readonly="readonly">
+                        <button type="button" class="krds-btn medium tertiary open-modal" data-target="qestnrInfoModal" id="qestnrInfoBtn" th:text="#{button.search}"></button>
+                    </div>
+                    <p class="form-hint-invalid" id="qestnrIdError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="sexdstnCode" th:text="#{comUssOlpQrm.regist.sexdstnCode}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="sexdstnCode" name="sexdstnCode" th:title="#{input.cSelect}"></select>
+                    </div>
+                    <p class="form-hint-invalid" id="sexdstnCodeError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="occpTyCode" th:text="#{comUssOlpQrm.regist.occpTyCode}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="occpTyCode" name="occpTyCode" th:title="#{input.cSelect}"></select>
+                    </div>
+                    <p class="form-hint-invalid" id="occpTyCodeError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="respondNm" th:text="#{comUssOlpQrm.regist.respondNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="respondNm" name="respondNm" class="krds-input" maxlength="100" th:field="*{respondNm}">
+                    </div>
+                    <p class="form-hint-invalid" id="respondNmError" style="display:none"></p>
+                </div>
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qustnrRespondInfoList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="qustnrRespondInfoInsert()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- Modal Start -->
+<section id="qestnrInfoModal" class="krds-modal fade" aria-hidden="true" role="dialog" aria-labelledby="tit_qestnrInfoModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tit_qestnrInfoModal" class="modal-title">
+                    <span th:text="#{comUssOlpQrm.comUssOlpQmc.title}+' '+#{title.list}"></span></h2>
+            </div>
+            <div class="modal-conts">
+                <div class="conts-area">
+                    <div th:insert="~{uss/olp/qrm/qestnrInfoListPopup::modalContents}"></div>
+                </div>
+            </div>
+<!--            <div class="modal-btn btn-wrap"></div>-->
+            <button type="button" class="krds-btn medium icon btn-close close-modal">
+                <span class="sr-only">닫기</span>
+                <i class="svg-icon ico-popup-close"></i>
+            </button>
+        </div>
+    </div>
+    <div class="modal-back"></div>
+</section>
+<!-- Modal End -->
+
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        cmmnDetailCodeList();
+    });
+
+    function qustnrRespondInfoList() {
+        window.location.href = '/uss/olp/qrm/qustnrRespondInfoListView';
+    }
+
+    function qustnrRespondInfoInsert() {
+        if (confirm('[(#{common.save.msg})]')) {
+            const errors = ['qestnrIdError', 'sexdstnCodeError', 'occpTyCodeError', 'respondNmError'];
+            errors.forEach(error => {
+                document.getElementById(error).textContent = '';
+                document.getElementById(error).style.display = 'none';
+            });
+
+            const insertForm = document.getElementById('insertForm');
+            const formData = new FormData(insertForm);
+
+            fetch('/uss/olp/qrm/qustnrRespondInfoInsert', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                        document.getElementById(`${key}Error`).style.display = 'block';
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.insert})]');
+                    qustnrRespondInfoList();
+                } else {
+                    alert('[(#{success.common.insert})]');
+                    qustnrRespondInfoList();
+                }
+            });
+        }
+    }
+
+    function cmmnDetailCodeList() {
+        fetch('/uss/olp/qrm/cmmnDetailCodeList', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            const sexdstnList = data.sexdstnList;
+            const occpTyList = data.occpTyList;
+            let buttonText = '[(#{input.select})]';
+            let sexdstnHtml = '';
+            sexdstnHtml += '<option value="">' + buttonText + '</option>';
+            sexdstnList.forEach(function(sexdstn, index) {
+                sexdstnHtml += '<option value="' + sexdstn.code + '">' + sexdstn.codeNm + '</option>';
+            });
+            let occpTyHtml = '';
+            occpTyHtml += '<option value="">' + buttonText + '</option>';
+            occpTyList.forEach(function(occpTy, index) {
+                occpTyHtml += '<option value="' + occpTy.code + '">' + occpTy.codeNm + '</option>';
+            });
+            document.getElementById('sexdstnCode').innerHTML = sexdstnHtml;
+            document.getElementById('occpTyCode').innerHTML = occpTyHtml;
+        });
+    }
+
+    function qestnrInfoSelect(tid, id, sj) {
+        document.getElementById('qustnrTmplatId').value = tid;
+        document.getElementById('qestnrId').value = id;
+        document.getElementById('qustnrSj').value = sj;
+        document.getElementById('qestnrIdError').textContent = '';
+        document.getElementById('qestnrInfoModal').classList.remove('shown');
+        document.querySelector("body").classList.remove("scroll-no");
+    }
+</script>
+
+</body>
+</html>

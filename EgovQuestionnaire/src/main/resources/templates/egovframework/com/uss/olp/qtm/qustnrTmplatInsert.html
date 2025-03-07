@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQtm.title}+' '+#{title.create}"></title>
+    <div th:replace="uss/olp/qtm/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-l" style="margin-bottom: 2rem;"><span th:text="#{comUssOlpQtm.title}+' '+#{title.create}"></span></h2>
+
+    <form id="insertForm" name="insertForm" enctype="multipart/form-data" th:object="${qustnrTmplatVO}">
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrTmplatTy" th:text="#{comUssOlpQtm.regist.qestnrTmplatTy}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="qustnrTmplatTy" name="qustnrTmplatTy" class="krds-input" maxlength="100"
+                               th:field="*{qustnrTmplatTy}"
+                               th:placeholder="#{comUssOlpQtm.regist.qestnrTmplatTy}+' '+#{input.input}"/>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrTmplatTyError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="krds-file-upload">
+                        <div class="file-upload" id="fileUploadArea">
+                            <p class="txt" th:text="#{comUssOlpQtm.alert.image}"></p>
+                            <div class="file-upload-btn-wrap">
+                                <input type="file" name="qustnrTmplatImageInfo" id="fileUpload" accept="image/*" class="sr-only">
+                                <label for="fileUpload" class="krds-btn medium">
+                                    <button type="button" th:text="#{input.cSelect}"><i class="svg-icon ico-upload"></i></button>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="file-upload-result file-list" style="display: none">
+                            <ul class="upload-list" id="fileUploadList"></ul>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrTmplatImageMessage" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrTmplatDc" th:text="#{comUssOlpQtm.regist.qestnrTmplatCn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="qustnrTmplatDc" name="qustnrTmplatDc" maxlength="1000" class="krds-input"
+                                      th:placeholder="#{comUssOlpQtm.regist.qestnrTmplatCn}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/1000</span></p>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrTmplatDcError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrTmplatPathNm" th:text="#{comUssOlpQtm.regist.qestnrTmplatCours}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="qustnrTmplatPathNm" name="qustnrTmplatPathNm" class="krds-input" maxlength="100"
+                               th:field="*{qustnrTmplatPathNm}"
+                               th:value="${qustnrTmplatVO.getQustnrTmplatPathNm()}"
+                               th:placeholder="#{comUssOlpQtm.regist.qestnrTmplatCours}+' '+#{input.input}"/>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrTmplatPathNmError" style="display:none"></p>
+                </div>
+
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qustnrTmplatList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="qustnrTmplatInsert()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const errorElement = document.getElementById('qustnrTmplatImageMessage');
+        const uploadResult = document.querySelector('.file-upload-result');
+        const fileUploadList = document.getElementById('fileUploadList');
+
+        // 파일 추가 (드래그 앤 드롭)
+        document.addEventListener("dragover", event => event.preventDefault());
+        document.addEventListener("drop", event => event.preventDefault());
+
+        fileUploadArea.addEventListener("drop", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleFile(e.dataTransfer.files);
+        });
+
+        function handleFile(files) {
+            errorElement.textContent = '';
+            fileUploadList.innerHTML = '';
+
+            if (files.length > 0) {
+                const file = files[0];
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                const maxSize = 50 * 1024; // 50KB
+
+                if (!validTypes.includes(file.type)) {
+                    errorElement.textContent = '[(#{errors.file.extension})]';
+                    return;
+                }
+
+                if (file.size > maxSize) {
+                    errorElement.textContent = 'File size exceeds the limit of 50KB.';
+                    return;
+                }
+
+                uploadResult.style.display = 'block';
+                const fileInfo = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                fileUploadList.innerHTML = `<li><div class="file-info">` +
+                    `<div class="file-name">${fileInfo}</div>` +
+                    `<div class="btn-wrap" onclick="removeFile(this)">` +
+                        `<button type="button" class="krds-btn medium text">삭제<i class="svg-icon ico-delete-fill"></i></button>` +
+                    `</div>` +
+                    `</div></li>`;
+            } else {
+                errorElement.textContent = '[(#{comUssOlpQtm.regist.egovfile})][(#{comUssOlpQtm.alert.select})]';
+                return false;
+            }
+        }
+    });
+
+    function removeFile(button) {
+        document.getElementById('fileUpload').value = '';
+        button.closest('li').remove();
+    }
+
+    function qustnrTmplatList() {
+        window.location.href = '/uss/olp/qtm/qustnrTmplatListView';
+    }
+
+    function qustnrTmplatInsert() {
+        if (confirm('[(#{common.save.msg})]')) {
+            if (document.getElementById('fileUpload').files.length < 1) {
+                document.getElementById('qustnrTmplatImageMessage').textContent = '[(#{comUssOlpQtm.regist.egovfile})][(#{comUssOlpQtm.alert.select})]';
+                return false;
+            }
+
+            const errors = ['qustnrTmplatTyError', 'qustnrTmplatDcError', 'qustnrTmplatPathNmError'];
+            errors.forEach(error => {
+                document.getElementById(error).textContent = '';
+                document.getElementById(error).style.display = 'none';
+            });
+
+            const insertForm = document.getElementById('insertForm');
+            const formData = new FormData(insertForm);
+
+            fetch('/uss/olp/qtm/qustnrTmplatInsert', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                        document.getElementById(`${key}Error`).style.display = 'block';
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.insert})]');
+                    qustnrTmplatList();
+                } else {
+                    alert('[(#{success.common.insert})]');
+                    qustnrTmplatList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

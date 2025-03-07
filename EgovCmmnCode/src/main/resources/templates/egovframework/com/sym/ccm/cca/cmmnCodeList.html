@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comSymCcmCca.cmmnCodeVO.title}+' '+#{title.list}"></title>
+    <div th:replace="sym/ccm/cca/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sym.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comSymCcmCca.cmmnCodeVO.title}+' '+#{title.list}"></span></h2>
+
+    <form id="listForm" name="listForm">
+    <input type="hidden" th:id="codeId" th:name="codeId"/>
+    <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+
+        <div class="form-group">
+            <div class="search-wrap">
+                <div class="search-body">
+                    <div class="form-conts searchOption">
+                        <select id="searchCondition" name="searchCondition" class="krds-form-select medium" th:title="#{title.searchCondition}">
+                            <option th:text="#{comSymCcmCca.cmmnCodeVO.codeId}" value="1" ></option>
+                            <option th:text="#{comSymCcmCca.cmmnCodeVO.codeIdNm}" value="2" ></option>
+                        </select>
+                    </div>
+                    <div class="form-conts btn-ico-wrap searchKeyword">
+                        <input type="text" id="searchKeyword" name="searchKeyword" class="krds-input medium" th:placeholder="#{title.search} + #{search.placeholder}">
+                        <button type="button" class="krds-btn medium icon"  th:onclick="cmmnCodeSearch()">
+                            <span class="sr-only" th:text="#{button.search}"></span>
+                            <i class="svg-icon ico-sch"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="cmmnCodeCreate()"></button>
+            </div>
+        </div>
+    </form>
+
+    <div class="krds-table-wrap">
+        <table class="tbl col data">
+<!--            <caption>공통코드관리는 공통코드를 등록, 수정, 목록조회, 상세조회를 제공하는 컴포넌트</caption>-->
+            <colgroup>
+                <col style="width: 10%;">
+                <col style="width: 35%;">
+                <col style="width: 15%;">
+                <col>
+                <col style="width: 10%;">
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col" class="text-center"><span th:text="#{table.num}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comSymCcmCca.cmmnCodeVO.clCodeNm}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comSymCcmCca.cmmnCodeVO.codeId}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comSymCcmCca.cmmnCodeVO.codeIdNm}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comSymCcmCca.cmmnCodeVO.useAt}"></span></th>
+            </tr>
+            </thead>
+            <tbody id="cmmnCode-list-container"></tbody>
+        </table>
+    </div>
+
+    <div id="pagination-container" class="krds-pagination w-page"></div>
+</div>
+<script th:inline="javascript" defer>
+    $(document).ready(function() {
+        cmmnCodeList();
+
+        $('#searchCondition').change(function() {
+            $('#searchKeyword').val('');
+        });
+    });
+
+    function cmmnCodeSearch() {
+        if (notNullCheck($('#searchKeyword').val())) {
+            cmmnCodeList();
+        } else {
+            alert('[(#{title.search})][(#{search.placeholder})]');
+        }
+    }
+
+    function cmmnCodeList() {
+        $.ajax({
+            url: '/sym/ccm/cca/cmmnCodeList',
+            method: 'post',
+            data: $('#listForm').serialize()
+        }).done(function(response) {
+            let cmmnCodeList = response.cmmnCodeList;
+            let pagination = response.pagination;
+            let lineNumber = response.lineNumber;
+
+            let html = '';
+            if(cmmnCodeList.length === 0){
+                html = `<tr><td class="text-center" colspan="5">[(#{info.nodata.msg})]</td></tr>`
+            }else{
+                cmmnCodeList.forEach(function(cmmnCode, index) {
+                    let number = lineNumber + (index + 1);
+                    html += '<tr>';
+                    html += '<td class="text-center">'+number+'</td>';
+                    html += '<td class="text-center">'+cmmnCode.clCodeNm+'</td>';
+                    html += '<td class="text-center">'+
+                        '<a class="krds-btn text small" style="cursor: pointer" tabindex="0" onclick="cmmnCodeDetail(\''+cmmnCode.codeId+'\')">'+
+                        cmmnCode.codeId+'</a></td>';
+                    html += '<td class="text-center">'+cmmnCode.codeIdNm+'</td>';
+                    html += '<td class="text-center">'+cmmnCode.useAt+'</td>';
+                    html += '</tr>';
+                });
+            }
+            $('#cmmnCode-list-container').html(html);
+            $('#pagination-container').html(pagination);
+        });
+    }
+
+    function linkPage(pageIndex) {
+        $('#pageIndex').val(pageIndex);
+        cmmnCodeList();
+    }
+
+    function cmmnCodeDetail(codeId) {
+        $('#codeId').val(codeId);
+        $('#listForm').attr('method', 'post').attr('action', '/sym/ccm/cca/cmmnCodeDetailView').submit();
+    }
+
+    function cmmnCodeCreate() {
+        $('#listForm').attr('method', 'post').attr('action', '/sym/ccm/cca/cmmnCodeInsertView').submit();
+    }
+</script>
+
+</body>
+</html>

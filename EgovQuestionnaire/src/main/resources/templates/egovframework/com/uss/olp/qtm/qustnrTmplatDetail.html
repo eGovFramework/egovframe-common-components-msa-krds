@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQtm.title}+' '+#{title.detail}"></title>
+    <div th:replace="uss/olp/qtm/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comUssOlpQtm.title}+' '+#{title.detail}"></span></h2>
+
+    <form id="detailForm" name="detailForm" th:object="${qustnrTmplatVO}">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId" th:value="${qustnrTmplatVO.qustnrTmplatId}"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${qustnrTmplatVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${qustnrTmplatVO.searchKeyword}"/>
+
+    <div class="def-list-wrap">
+        <dl class="def-list">
+            <dt th:text="#{comUssOlpQtm.regist.qestnrTmplatTy}"></dt>
+            <dd id="qustnrTmplatTy"></dd>
+            <dt th:text="#{comUssOlpQtm.regist.egovfile.information}"></dt>
+            <dd><img id="previewImage" th:alt="#{comUssOlpQtm.title.image}"/></dd>
+            <dt th:text="#{comUssOlpQtm.regist.qestnrTmplatCn}"></dt>
+            <dd id="qustnrTmplatDc"></dd>
+            <dt th:text="#{comUssOlpQtm.regist.qestnrTmplatCours}"></dt>
+            <dd id="qustnrTmplatPathNm"></dd>
+        </dl>
+    </div>
+
+    <div class="page-btn-wrap">
+        <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qustnrTmplatList()"></button>
+        <div class="btn-wrap">
+            <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="qustnrTmplatDelete()"></button>
+            <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="qustnrTmplatUpdate()"></button>
+        </div>
+    </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        qustnrTmplatDetail();
+    });
+
+    function qustnrTmplatList() {
+        window.location.href = '/uss/olp/qtm/qustnrTmplatListView';
+    }
+
+    function qustnrTmplatDetail() {
+        const detailForm = document.getElementById('detailForm');
+        const formData = new FormData(detailForm);
+
+        fetch('/uss/olp/qtm/qustnrTmplatDetail', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                qustnrTmplatList();
+            } else {
+                document.getElementById('qustnrTmplatTy').textContent = response.result.qustnrTmplatTy;
+                document.getElementById('previewImage').setAttribute('src','/uss/olp/qtm/qustnrTmplatImage?qustnrTmplatId='+response.result.qustnrTmplatId);
+                document.getElementById('qustnrTmplatDc').textContent = response.result.qustnrTmplatDc;
+                document.getElementById('qustnrTmplatPathNm').textContent = response.result.qustnrTmplatPathNm;
+            }
+        });
+    }
+
+    function qustnrTmplatDelete() {
+        if (confirm('[(#{common.delete.msg})]')) {
+            const detailForm = document.getElementById('detailForm');
+            const formData = new FormData(detailForm);
+
+            fetch('/uss/olp/qtm/qustnrTmplatDelete', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.delete})]');
+                    qustnrTmplatList();
+                } else {
+                    alert('[(#{success.common.delete})]');
+                    qustnrTmplatList();
+                }
+            });
+        }
+    }
+
+    function qustnrTmplatUpdate() {
+        const detailForm = document.getElementById('detailForm');
+        detailForm.method = 'POST';
+        detailForm.action = '/uss/olp/qtm/qustnrTmplatUpdateView';
+        detailForm.submit();
+    }
+</script>
+
+</body>
+</html>

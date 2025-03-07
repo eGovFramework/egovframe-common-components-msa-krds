@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopSecRam.title}+' '+#{title.create}"></title>
+    <div th:replace="sec/ram/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sec.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comCopSecRam.title}+' '+#{title.create}"></span></h2>
+
+    <form id="insertForm" name="insertForm" th:object="${authorInfoVO}">
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="authorCode" th:text="#{comCopSecRam.regist.authorCode}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="authorCode" name="authorCode" class="krds-input" maxlength="30"
+                               th:field="*{authorCode}"
+                               th:placeholder="#{comCopSecRam.regist.authorCode}+' '+#{input.input}">
+                    </div>
+                    <p class="form-hint-invalid" id="authorCodeError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="authorNm" th:text="#{comCopSecRam.regist.authorNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="authorNm" name="authorNm" class="krds-input" maxlength="60"
+                               th:field="*{authorNm}"
+                               th:placeholder="#{comCopSecRam.regist.authorNm}+' '+#{input.input}">
+                    </div>
+                    <p class="form-hint-invalid" id="authorNmError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="authorDc" th:text="#{comCopSecRam.regist.authorDc}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="authorDc" name="authorDc" maxlength="200" class="krds-input"
+                                      th:field="*{authorDc}"
+                                      th:placeholder="#{comCopSecRam.regist.authorDc}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/200</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="authorInfoList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="authorInfoInsert()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        const authorDc = document.getElementById('authorDc');
+        const textCount = document.getElementById('textCount');
+        authorDc.addEventListener('input', function() {
+            textCount.textContent = authorDc.value.length;
+        });
+    });
+
+    function authorInfoList() {
+        window.location.href = '/sec/ram/authorInfoListView';
+    }
+
+    function authorInfoInsert() {
+        const insertForm = document.getElementById('insertForm');
+        const formData = new FormData(insertForm);
+
+        if (confirm('[(#{common.save.msg})]')) {
+            const errors = ['authorCodeError', 'authorNmError'];
+            errors.forEach(error => {
+                document.getElementById(error).textContent = '';
+                document.getElementById(error).style.display="none";
+            });
+
+            fetch('/sec/ram/authorInfoInsert', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                        document.getElementById(`${key}Error`).style.display="block";
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.insert})]');
+                    authorInfoList();
+                } else {
+                    alert('[(#{success.common.insert})]');
+                    authorInfoList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

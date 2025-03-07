@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQrm.title}+' '+#{title.detail}"></title>
+    <div th:replace="uss/olp/qrm/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comUssOlpQrm.title}+' '+#{title.detail}"></span></h2>
+
+    <form id="detailForm" name="detailForm" th:object="${qustnrRespondInfoVO}">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId"/>
+    <input type="hidden" th:id="qestnrId" th:name="qestnrId"/>
+    <input type="hidden" th:id="qustnrRespondId" th:name="qustnrRespondId" th:value="${qustnrRespondInfoVO.qustnrRespondId}"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${qustnrRespondInfoVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${qustnrRespondInfoVO.searchKeyword}"/>
+
+    <div class="def-list-wrap">
+        <dl class="def-list">
+            <dt th:text="#{comUssOlpQrm.regist.qestnrCn}"></dt>
+            <dd id="qustnrSj"></dd>
+            <dt th:text="#{comUssOlpQrm.regist.sexdstnCode}"></dt>
+            <dd id="sexdstnCode"></dd>
+            <dt th:text="#{comUssOlpQrm.regist.occpTyCode}"></dt>
+            <dd id="occpTyCode"></dd>
+            <dt th:text="#{comUssOlpQrm.regist.respondNm}"></dt>
+            <dd id="respondNm"></dd>
+        </dl>
+    </div>
+
+    <div class="page-btn-wrap">
+        <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qustnrRespondInfoList()"></button>
+    </div>
+
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        qustnrRespondInfoDetail();
+    });
+
+    function qustnrRespondInfoList() {
+        window.location.href = '/uss/olp/qrm/qustnrRespondInfoListView';
+    }
+
+    function qustnrRespondInfoDetail() {
+        const detailForm = document.getElementById('detailForm');
+        const formData = new FormData(detailForm);
+
+        fetch('/uss/olp/qrm/qustnrRespondInfoDetail', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                qustnrRespondInfoList();
+            } else {
+                document.getElementById('qustnrTmplatId').value = response.result.qustnrTmplatId;
+                document.getElementById('qestnrId').value = response.result.qestnrId;
+                document.getElementById('qustnrSj').textContent = response.result.qustnrSj;
+                document.getElementById('sexdstnCode').textContent = response.result.sexdstnNm;
+                document.getElementById('occpTyCode').textContent = response.result.occpTyNm;
+                document.getElementById('respondNm').textContent = response.result.respondNm;
+            }
+        });
+    }
+
+    function qustnrRespondInfoDelete() {
+        if (confirm('[(#{common.delete.msg})]')) {
+            const detailForm = document.getElementById('detailForm');
+            const formData = new FormData(detailForm);
+
+            fetch('/uss/olp/qrm/qustnrRespondInfoDelete', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.delete})]');
+                    qustnrRespondInfoList();
+                } else {
+                    alert('[(#{success.common.delete})]');
+                    qustnrRespondInfoList();
+                }
+            });
+        }
+    }
+
+    function qustnrRespondInfoUpdate() {
+        const detailForm = document.getElementById('detailForm');
+        detailForm.method = 'POST';
+        detailForm.action = '/uss/olp/qrm/qustnrRespondInfoUpdateView';
+        detailForm.submit();
+    }
+</script>
+
+</body>
+</html>

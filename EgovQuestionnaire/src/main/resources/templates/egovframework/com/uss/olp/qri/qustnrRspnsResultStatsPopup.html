@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQnn.title}+' '+#{comUssOlpQnn.regist.statistics}"></title>
+    <div th:replace="uss/olp/qri/fragement/linkFragment"></div>
+    <style>
+        .g_bar{
+            display: block;
+            width: 100%;
+            background-color: whitesmoke;
+        }
+    </style>
+</head>
+
+<body th:fragment="modalContents">
+
+<div>
+
+    <h3 class="sec-tit" th:text="#{comUssOlpQnn.regist.qestnrInfo}"></h3>
+
+    <div class="def-list-wrap">
+        <dl class="def-list">
+            <dt th:text="#{comUssOlpQnn.regist.qestnrSj}"></dt>
+            <dd id="qustnrSj" style="padding-left: 3rem;"></dd>
+            <dt th:text="#{comUssOlpQnn.regist.qestnrPurps}"></dt>
+            <dd id="qustnrPurps" style="padding-left: 3rem;"></dd>
+            <dt th:text="#{comUssOlpQnn.regist.qestnrWritngGuidanceCn}"></dt>
+            <dd id="qustnrWritingGuidanceCn" style="padding-left: 3rem;"></dd>
+            <dt th:text="#{comUssOlpQnn.regist.qestnrTrget}"></dt>
+            <dd id="qustnrTrget" style="padding-left: 3rem;"></dd>
+            <dt th:text="#{comUssOlpQnn.regist.qestnrDate}"></dt>
+            <dd id="qustnrDe" style="padding-left: 3rem;"></dd>
+        </dl>
+    </div>
+
+    <h3 class="sec-tit" th:text="#{comUssOlpQnn.title}+' '+#{comUssOlpQnn.regist.statistics}"></h3>
+
+    <div class="krds-table-wrap" id="qustnrResult"></div>
+
+</div>
+
+<script th:inline="javascript" defer>
+    function qustnrRspnsResultStats() {
+        const param = {
+            qustnrTmplatId: document.getElementById('qustnrTmplatId').value,
+            qestnrId: document.getElementById('qestnrId').value
+        };
+
+        fetch('/uss/olp/qri/qustnrRspnsResultStats', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(param)
+        })
+        .then(response => response.json())
+        .then(response => {
+            const qestnrInfo = response.qestnrInfo;
+            document.getElementById('qustnrSj').textContent = qestnrInfo.qustnrSj;
+            document.getElementById('qustnrPurps').textContent = qestnrInfo.qustnrPurps;
+            document.getElementById('qustnrWritingGuidanceCn').textContent = qestnrInfo.qustnrWritingGuidanceCn;
+            document.getElementById('qustnrTrget').textContent = qestnrInfo.qustnrTrgetNm;
+            document.getElementById('qustnrDe').textContent = qestnrInfo.qustnrBgnde+' ~ '+qestnrInfo.qustnrEndde;
+
+            const qustnrQesitmList = response.qustnrQesitmList;
+            const qustnrIemList = response.qustnrIemList;
+            const qustnrRspnsResultMCStats = response.qustnrRspnsResultMCStats;
+            const qustnrRspnsResultESStats = response.qustnrRspnsResultESStats;
+
+            let html = '';
+            if(qustnrQesitmList.length === 0){
+                html = `<tr><td class="text-center" colspan="5">[(#{info.nodata.msg})]</td></tr>`
+            }else{
+                qustnrQesitmList.forEach(function(qustnrQesitm, index) {
+                    const number = index + 1;
+                    html += '<table class="tbl col data">';
+                    html += '<caption>'+qustnrQesitm.length+'</caption>';
+                    html += '<thead><tr><th colspan="3">'+number+'. '+qustnrQesitm.qestnCn+'</th></tr></thead>';
+                    html += '<tbody>';
+
+                    qustnrIemList.forEach(function(qustnrIem) {
+                        if (qustnrQesitm.qustnrQesitmId === qustnrIem.qustnrQesitmId) {
+                            qustnrRspnsResultMCStats.forEach(function(qustnrRspnsResultMC) {
+                                if (qustnrIem.qustnrIemId === qustnrRspnsResultMC.qustnrIemId) {
+                                    if (qustnrRspnsResultMC.qustnrIemIdCount !== 0) {
+                                        html += '<tr>';
+                                        html += '<th scope="row" style="width: 30%">'+qustnrRspnsResultMC.iemCn+'</th>';
+                                        html += '<td style="width: 40%">';
+                                        html += '<span class="g_bar">';
+                                        html += '<span style="width: '+qustnrRspnsResultMC.qustnrIemIdPercent+'%; display: block; background-color: #1D56BC; height:1rem;"></span>';
+                                        html += '</span>';
+                                        html += '</td>';
+                                        html += '<td style="text-align: center; width: 30%">'+qustnrRspnsResultMC.qustnrIemIdPercent+'%</td>';
+                                        html += '</tr>';
+                                    } else {
+                                        html += '<tr>';
+                                        html += '<th scope="row" style="width: 30%">'+qustnrRspnsResultMC.iemCn+'</th>';
+                                        html += '<td style="width: 40%">';
+                                        html += '<span class="g_bar">';
+                                        html += '<span style="width: '+qustnrRspnsResultMC.qustnrIemIdCount+'%; display: block; background-color: #1D56BC; height:1rem;"></span>';
+                                        html += '</span>';
+                                        html += '</td>';
+                                        html += '<td style="text-align: center; width: 30%">'+qustnrRspnsResultMC.qustnrIemIdCount+'%</td>';
+                                        html += '</tr>';
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    qustnrRspnsResultESStats.forEach(function(qustnrRspnsResultES) {
+                        if (qustnrQesitm.qustnrQesitmId === qustnrRspnsResultES.qustnrQesitmId) {
+                            html += '<tr>';
+                            html += '<th scope="row" colspan="4" style="width: 100%">'+qustnrRspnsResultES.respondAnswerCn+'</th>';
+                            html += '</tr>';
+                        }
+                    });
+
+                    html += '</tbody></table>';
+                });
+            }
+            document.getElementById('qustnrResult').innerHTML = html;
+        });
+    }
+</script>
+
+</body>
+</html>

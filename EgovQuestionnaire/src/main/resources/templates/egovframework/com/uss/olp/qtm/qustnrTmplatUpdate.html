@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQtm.title}+' '+#{title.update}"></title>
+    <div th:replace="uss/olp/qtm/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comUssOlpQtm.title}+' '+#{title.update}"></span></h2>
+
+    <form id="updateForm" name="updateForm" enctype="multipart/form-data" th:object="${qustnrTmplatVO}">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId" th:value="${qustnrTmplatVO.qustnrTmplatId}"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrTmplatTy" th:text="#{comUssOlpQtm.regist.qestnrTmplatTy}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="qustnrTmplatTy" name="qustnrTmplatTy" class="krds-input" maxlength="100"
+                               th:field="*{qustnrTmplatTy}"
+                               th:placeholder="#{comUssOlpQtm.regist.qestnrTmplatTy}+' '+#{input.input}"/>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrTmplatTyError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="krds-file-upload">
+                        <div class="file-upload" id="fileUploadArea">
+                            <p class="txt" th:text="#{comUssOlpQtm.alert.image}"></p>
+                            <div class="file-upload-btn-wrap">
+                                <input type="file" name="qustnrTmplatImageInfo" id="fileUpload" accept="image/*" hidden>
+                                <label for="fileUpload" class="krds-btn medium">
+                                    <button  th:text="#{input.cSelect}"><i class="svg-icon ico-upload"></i></button>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="file-upload-result file-list" style="display: none">
+                            <ul class="upload-list" id="fileUploadList"></ul>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrTmplatImageMessage" style="display:none"></p>
+                    <input type="hidden" th:id="qustnrTmplatImageState" th:name="qustnrTmplatImageState"/>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrTmplatDc" th:text="#{comUssOlpQtm.regist.qestnrTmplatCn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="qustnrTmplatDc" name="qustnrTmplatDc" maxlength="1000" class="krds-input"
+                                      th:placeholder="#{comUssOlpQtm.regist.qestnrTmplatCn}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/1000</span></p>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrTmplatDcError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrTmplatPathNm" th:text="#{comUssOlpQtm.regist.qestnrTmplatCours}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="qustnrTmplatPathNm" name="qustnrTmplatPathNm" class="krds-input" maxlength="100"
+                               th:field="*{qustnrTmplatPathNm}"
+                               th:placeholder="#{comUssOlpQtm.regist.qestnrTmplatCours}+' '+#{input.input}"/>
+                    </div>
+                    <p class="form-hint-invalid" id="qustnrTmplatPathNmError" style="display:none"></p>
+                </div>
+
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qustnrTmplatList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="qustnrTmplatUpdate()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        qustnrTmplatDetail();
+
+        const qustnrTmplatDc = document.getElementById('qustnrTmplatDc');
+        const textCount = document.getElementById('textCount');
+
+        qustnrTmplatDc.addEventListener('input', function() {
+            textCount.textContent = qustnrTmplatDc.value.length;
+        });
+
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileUpload = document.getElementById('fileUpload');
+        const errorElement = document.getElementById('qustnrTmplatImageMessage');
+        const uploadResult = document.querySelector('.file-upload-result');
+        const fileUploadList = document.getElementById('fileUploadList');
+        const stateElement = document.getElementById('qustnrTmplatImageState');
+
+        fileUploadArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+
+        fileUploadArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            handleFile(event.dataTransfer.files);
+        });
+
+        fileUpload.addEventListener('change', function() {
+            handleFile(this.files);
+        });
+
+        function handleFile(files) {
+            errorElement.textContent = '';
+            fileUploadList.innerHTML = '';
+            stateElement.value = '';
+
+            if (files.length > 0) {
+                const file = files[0];
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                const maxSize = 50 * 1024; // 50KB
+
+                if (!validTypes.includes(file.type)) {
+                    errorElement.textContent = '[(#{errors.file.extension})]';
+                    return;
+                }
+
+                if (file.size > maxSize) {
+                    errorElement.textContent = 'File size exceeds the limit of 50MB.';
+                    return;
+                }
+
+                uploadResult.style.display = 'block';
+                const fileInfo = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                fileUploadList.innerHTML = `<li><div class="file-info">` +
+                    `<div class="file-name">${fileInfo}</div>` +
+                    `<div class="btn-wrap"><button type="button" class="krds-btn medium text" onclick="removeFile(this)">삭제 <i class="svg-icon ico-delete-fill"></i></button></div>` +
+                    `</div></li>`;
+            } else {
+                errorElement.textContent = '[(#{comUssOlpQtm.regist.egovfile})][(#{comUssOlpQtm.alert.select})]';
+                return false;
+            }
+        }
+    });
+
+    function removeFile(button) {
+        document.getElementById('fileUpload').value = '';
+        button.closest('li').remove();
+    }
+
+    function qustnrTmplatList() {
+        window.location.href = '/uss/olp/qtm/qustnrTmplatListView';
+    }
+
+    function qustnrTmplatDetail() {
+        const updateForm = document.getElementById('updateForm');
+        const formData = new FormData(updateForm);
+
+        fetch('/uss/olp/qtm/qustnrTmplatDetail', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                qustnrTmplatList();
+            } else {
+                document.getElementById('qustnrTmplatTy').value = response.result.qustnrTmplatTy;
+                document.getElementById('qustnrTmplatImageState').value = 'update';
+                document.getElementById('qustnrTmplatDc').textContent = response.result.qustnrTmplatDc;
+                document.getElementById('qustnrTmplatPathNm').value = response.result.qustnrTmplatPathNm;
+            }
+        });
+    }
+
+    function qustnrTmplatUpdate() {
+        if (confirm('[(#{common.update.msg})]')) {
+            if (document.getElementById('qustnrTmplatImageState').value !== 'update') {
+                if (document.getElementById('fileUpload').files.length < 1) {
+                    document.getElementById('qustnrTmplatImageMessage').textContent = '[(#{comUssOlpQtm.regist.egovfile})][(#{comUssOlpQtm.alert.select})]';
+                    return false;
+                }
+            }
+
+            const errors = ['qustnrTmplatTyError', 'qustnrTmplatDcError', 'qustnrTmplatPathNmError'];
+            errors.forEach(error => {
+                document.getElementById(error).textContent = '';
+            });
+
+            const updateForm = document.getElementById('updateForm');
+            const formData = new FormData(updateForm);
+
+            fetch('/uss/olp/qtm/qustnrTmplatUpdate', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    qustnrTmplatList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    qustnrTmplatList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comSymCcmCde.cmmnDetailCodeVO.title}+' '+#{title.detail}"></title>
+    <div th:replace="sym/ccm/cde/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sym.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-l" style="margin-bottom: 2rem;"><span th:text="#{comSymCcmCde.cmmnDetailCodeVO.title}+' '+#{title.detail}"></span></h2>
+
+    <form id="detailForm" name="detailForm" th:object="${cmmnDetailCodeVO}">
+    <input type="hidden" th:id="codeId" th:name="codeId" th:value="${cmmnDetailCodeVO.codeId}"/>
+    <input type="hidden" th:id="code" th:name="code" th:value="${cmmnDetailCodeVO.code}"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${cmmnDetailCodeVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${cmmnDetailCodeVO.searchKeyword}"/>
+
+    <div class="def-list-wrap">
+        <dl class="def-list">
+            <dt th:text="#{comSymCcmCde.cmmnDetailCodeVO.codeIdNm}"></dt>
+            <dd id="codeIdNm"></dd>
+            <dt th:text="#{comSymCcmCde.cmmnDetailCodeVO.code}"></dt>
+            <dd id="codeCd"></dd>
+            <dt th:text="#{comSymCcmCde.cmmnDetailCodeVO.codeNm}"></dt>
+            <dd id="codeNm"></dd>
+            <dt th:text="#{comSymCcmCde.cmmnDetailCodeVO.codeDc}"></dt>
+            <dd id="codeDc"></dd>
+            <dt th:text="#{comSymCcmCde.cmmnDetailCodeVO.useAt}"></dt>
+            <dd id="useAt"></dd>
+        </dl>
+    </div>
+
+    <div class="page-btn-wrap">
+        <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="cmmnDetailCodeList()"></button>
+        <div class="btn-wrap">
+            <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="cmmnDetailCodeDelete()"></button>
+            <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="cmmnDetailCodeUpdate()"></button>
+        </div>
+    </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    cmmnDetailCodeDetail();
+
+    function cmmnDetailCodeList() {
+        $(location).attr('href', '/sym/ccm/cde/cmmnDetailCodeListView');
+    }
+
+    function cmmnDetailCodeDetail() {
+        $.ajax({
+            url: '/sym/ccm/cde/cmmnDetailCodeDetail',
+            method: 'post',
+            data: $('#detailForm').serialize(),
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                cmmnDetailCodeList();
+            } else {
+                $('#codeIdNm').text(response.result.codeIdNm);
+                $('#codeCd').text(response.result.code);
+                $('#codeNm').text(response.result.codeNm);
+                $('#codeDc').text(response.result.codeDc);
+                $('#useAt').text(response.result.useAt);
+            }
+        });
+    }
+
+    function cmmnDetailCodeDelete() {
+        if (confirm('[(#{common.delete.msg})]')) {
+            $.ajax({
+                url: '/sym/ccm/cde/cmmnDetailCodeDelete',
+                method: 'post',
+                data: $('#detailForm').serialize(),
+            }).done(function(response) {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.delete})]');
+                    cmmnDetailCodeList();
+                } else {
+                    alert('[(#{success.common.delete})]');
+                    cmmnDetailCodeList();
+                }
+            });
+        }
+    }
+
+    function cmmnDetailCodeUpdate() {
+        $('#detailForm').attr('method', 'post').attr('action', '/sym/ccm/cde/cmmnDetailCodeUpdateView').submit();
+    }
+</script>
+
+</body>
+</html>

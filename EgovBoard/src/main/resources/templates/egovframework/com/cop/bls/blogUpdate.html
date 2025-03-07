@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopBlog.blogMasterVO.title}+' '+#{title.update}"></title>
+    <div th:replace="cop/bls/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt">홈</a></li>
+            <li>협업</li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-l" style="margin-bottom: 2rem;"><span th:text="#{comCopBlog.blogMasterVO.title}+' '+#{title.update}"></span></h2>
+
+    <form id="updateForm" name="updateForm" th:object="${blogVO}">
+    <input type="hidden" th:id="blogId" th:name="blogId" th:value="${blogVO.blogId}"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${blogVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${blogVO.searchKeyword}"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="blogNm" th:text="#{comCopBlog.blogMasterVO.regist.blogNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="blogNm" name="blogNm" class="krds-input" maxlength="70"
+                               th:field="*{blogNm}"
+                               th:placeholder="#{comCopBlog.blogMasterVO.regist.blogNm}+' '+#{input.input}">
+                    </div>
+                    <p class="form-hint-invalid" id="blogNmError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="blogIntrcn" th:text="#{comCopBlog.blogMasterVO.regist.blogIntrcn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                                <textarea id="blogIntrcn" name="blogIntrcn" maxlength="200" class="krds-input"
+                                          th:field="*{blogIntrcn}"
+                                          th:placeholder="#{comCopBlog.blogMasterVO.regist.blogIntrcn}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="textCount" class="text-primary">0</span>
+                                <span class="text-num">/200</span></p>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="blogIntrcnError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="useAt" th:text="#{comCopBlog.blogMasterVO.regist.useAt}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="useAt" name="useAt" th:title="#{comCopBlog.blogMasterVO.regist.useAt}"></select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="blogList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="blogUpdate()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript" defer>
+    $(document).ready(function() {
+        blogDetail();
+
+        $('#blogIntrcn').on('input', function() {
+            $('#textCount').text($(this).val().length);
+        });
+    });
+
+    function blogList() {
+        $(location).attr('href', '/cop/bls/blogListView');
+    }
+
+    function blogDetail() {
+        $.ajax({
+            url: '/cop/bls/blogDetail',
+            method: 'POST',
+            data: $('#updateForm').serialize()
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                blogList();
+            } else {
+                $('#blogNm').val(response.result.blogNm);
+                let blogIntrcn = $('#blogIntrcn');
+                blogIntrcn.val(response.result.blogIntrcn);
+                $('#textCount').text(blogIntrcn.val().length);
+                let html = '';
+                if (response.result.useAt === 'Y') {
+                    html += '<option value="Y" selected>[(#{input.yes})]</option>';
+                    html += '<option value="N">[(#{input.no})]</option>';
+                } else {
+                    html += '<option value="Y">[(#{input.yes})]</option>';
+                    html += '<option value="N" selected>[(#{input.no})]</option>';
+                }
+                $('#useAt').html(html);
+            }
+        });
+    }
+
+    function blogUpdate() {
+        if (confirm('[(#{common.update.msg})]')) {
+            $('#blogNmError, #blogIntrcnError').text('');
+            $('#blogNmError, #blogIntrcnError').css('display','none');
+            $.ajax({
+                url: '/cop/bls/blogUpdate',
+                method: 'POST',
+                data: $('#updateForm').serialize()
+            }).done(function(response) {
+                if(response.status === 'valid') {
+                    $.each(response.errors, function(key, value) {
+                        $('#'+key+'Error').text(value);
+                        $('#'+key+'Error').css('display','block');
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    blogList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    blogList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

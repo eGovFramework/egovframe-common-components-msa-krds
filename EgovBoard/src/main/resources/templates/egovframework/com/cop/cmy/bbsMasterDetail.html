@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopBbs.boardMasterVO.title}+' '+#{title.detail}"></title>
+    <div th:replace="cop/cmy/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt">홈</a></li>
+            <li>협업</li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comCopBbs.boardMasterVO.title}+' '+#{title.detail}+' - '+${bbsMasterVO.cmmntyNm}"></span></h2>
+
+    <form id="detailForm" name="detailForm" th:object="${bbsMasterVO}">
+    <input type="hidden" th:id="bbsId" th:name="bbsId" th:value="${bbsMasterVO.bbsId}"/>
+    <input type="hidden" th:id="bbsNm" th:name="bbsNm"/>
+    <input type="hidden" th:id="cmmntyId" th:name="cmmntyId" th:value="${bbsMasterVO.cmmntyId}"/>
+    <input type="hidden" th:id="cmmntyNm" th:name="cmmntyNm" th:value="${bbsMasterVO.cmmntyNm}"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${bbsMasterVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${bbsMasterVO.searchKeyword}"/>
+
+    <div class="def-list-wrap">
+        <dl class="def-list">
+            <dt th:text="#{comCopBbs.boardMasterVO.detail.bbsNm}"></dt>
+            <dd id="bbsName"></dd>
+            <dt th:text="#{comCopBbs.boardMasterVO.detail.bbsTyCode}"></dt>
+            <dd id="bbsTyCode"></dd>
+            <dt th:text="#{table.reger}"></dt>
+            <dd id="userNm"></dd>
+            <dt th:text="#{table.regdate}"></dt>
+            <dd id="frstRegistPnttm"></dd>
+            <dt th:text="#{comCopBbs.boardMasterVO.detail.useAt}"></dt>
+            <dd id="useAt"></dd>
+            <dt th:text="#{comCopBbs.boardMasterVO.detail.replyPosblAt}"></dt>
+            <dd id="replyPosblAt"></dd>
+            <dt th:text="#{comCopBbs.boardMasterVO.detail.fileAtchPosblAt}"></dt>
+            <dd id="fileAtchPosblAt"></dd>
+            <dt th:text="#{comCopBbs.boardMasterVO.detail.atchPosblFileNumber}"></dt>
+            <dd id="atchPosblFileNumber"></dd>
+            <dt th:text="#{comCopBbs.boardMasterVO.detail.bbsIntrcn}"></dt>
+            <dd id="bbsIntrcn"></dd>
+            <dt th:text="#{comCopBbs.boardMasterVO.detail.bbsAdres}"></dt>
+            <dd id="bbsAdres"></dd>
+            <dt th:text="#{comCopBbs.boardMasterVO.detail.option}"></dt>
+            <dd id="option"></dd>
+        </dl>
+    </div>
+
+    <div class="page-btn-wrap">
+        <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="bbsMasterList()"></button>
+        <div class="btn-wrap">
+            <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="bbsMasterUpdate()"></button>
+        </div>
+    </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    bbsMasterDetail();
+
+    function bbsMasterList() {
+        $('#detailForm').attr('method', 'post').attr('action', '/cop/cmy/bbsMasterListView').submit();
+    }
+
+    function bbsMasterDetail() {
+        $.ajax({
+            url: '/cop/cmy/bbsMasterDetail',
+            method: 'POST',
+            data: $('#detailForm').serialize()
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                bbsMasterList();
+            } else {
+                $('#bbsNm').val(response.result.bbsNm);
+                $('#bbsName').text(response.result.bbsNm);
+                $('#bbsTyCode').text(response.result.codeNm);
+                $('#userNm').text(response.result.userNm);
+                $('#frstRegistPnttm').text(response.result.frstRegistPnttm);
+                $('#useAt').text(response.result.useAt);
+                $('#replyPosblAt').text(response.result.replyPosblAt);
+                $('#fileAtchPosblAt').text(response.result.fileAtchPosblAt);
+                $('#atchPosblFileNumber').text(response.result.atchPosblFileNumber);
+                $('#bbsIntrcn').text(response.result.bbsIntrcn).css('white-space', 'pre-line');
+                let bbsAdres = '/cop/brd/board?bbsId='+response.result.bbsId;
+                $('#bbsAdres').html('<a href="#" onclick="boardList()">'+bbsAdres+'</a>');
+                let answerAt = response.result.answerAt;
+                let stsfdgAt = response.result.stsfdgAt;
+                let optionMessage = '[(#{comCopBbs.boardMasterVO.detail.option1})]';
+                let answerAtMessage = '[(#{comCopBbs.boardMasterVO.detail.option2})]';
+                let stsfdgAtMessage = '[(#{comCopBbs.boardMasterVO.detail.option3})]';
+                let message;
+                if (!notNullCheck(answerAt) && !notNullCheck(stsfdgAt)) {
+                    message = optionMessage;
+                } else if (answerAt === 'Y') {
+                    message = answerAtMessage;
+                } else if (stsfdgAt === 'Y') {
+                    message = stsfdgAtMessage;
+                }
+                $('#option').text(message);
+            }
+        });
+    }
+
+    function bbsMasterUpdate() {
+        $('#detailForm').attr('method', 'post').attr('action', '/cop/cmy/bbsMasterUpdateView').submit();
+    }
+
+    function boardList() {
+        $('#detailForm').attr('method', 'post').attr('action', '/cop/brd/boardListView').submit();
+    }
+</script>
+
+</body>
+</html>

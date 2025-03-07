@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:if="${loginPolicyVO.regYn == 'Y'}" th:text="#{comUatUap.loginPolicyUpdt.title}"></title>
+    <title th:unless="${loginPolicyVO.regYn == 'Y'}" th:text="#{comUatUap.loginPolicyRegist.title}"></title>
+    <div th:replace="uat/uap/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uat.title}"></li>
+        </ol>
+    </nav>
+
+    <form id="updateForm" name="updateForm" th:object="${loginPolicyVO}">
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${loginPolicyVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${loginPolicyVO.searchKeyword}"/>
+    <input type="hidden" th:id="dplctPermAt" th:name="dplctPermAt" th:value="Y"/>
+
+        <h3 class="sec-tit" th:if="${loginPolicyVO.regYn == 'Y'}" th:text="#{comUatUap.loginPolicyUpdt.pageTop.title}"></h3>
+        <h3 class="sec-tit" th:unless="${loginPolicyVO.regYn == 'Y'}" th:text="#{comUatUap.loginPolicyRegist.pageTop.title}"></h3>
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <!-- 폼그룹 -->
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="employerId" th:text="#{comUatUap.loginPolicyUpdt.emplyrId}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="employerId" name="employerId" class="krds-input" placeholder="사용자 ID"  th:value="${loginPolicyVO.employerId}" readonly="readonly">
+                    </div>
+                    <p class="form-hint-invalid" id="employerIdError" style="display:none"></p>
+                </div>
+                <!-- //폼그룹 -->
+                <!-- 폼그룹 -->
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="userNm" th:text="#{comUatUap.loginPolicyUpdt.emplyrNm}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text"  id="userNm" name="userNm" class="krds-input" th:value="${loginPolicyVO.userNm}" readonly="readonly" placeholder="사용자명">
+                    </div>
+                    <p class="userNmError" style="display:none"></p>
+                </div>
+                <!-- //폼그룹 -->
+                <!-- 폼그룹 -->
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="ipInfo" th:text="#{comUatUap.loginPolicyUpdt.ipInfo}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="ipInfo" name="ipInfo" class="krds-input" placeholder="IP 정보">
+                    </div>
+                    <p class="ipInfoError" style="display:none"></p>
+                </div>
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="lmttAt" th:text="#{comUatUap.loginPolicyUpdt.lmttAt}"></label>
+                    </div>
+                    <select id="lmttAt" name="lmttAt" class="krds-form-select" th:title="#{comUatUap.loginPolicyUpdt.lmttAt}">
+                    </select>
+                </div>
+
+    <!--            <div th:if="${loginPolicyVO.regYn == 'Y'}" class="form-group">-->
+                <div class="form-group">
+                    <label for="regDate" class="form-tit" th:text="#{comUatUap.loginPolicyUpdt.regDate}"></label>
+                    <div class="form-conts">
+                        <input type="text" id="regDate" name="regDate" class="krds-input" readonly="readonly">
+                    </div>
+                </div>
+                <!-- //폼그룹 -->
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="loginPolicyList()"></button>
+                <div th:if="${loginPolicyVO.regYn == 'Y'}" class="btn-wrap">
+                    <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="loginPolicyDelete()"></button>
+                    <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="loginPolicyUpdate()"></button>
+                </div>
+                <button th:if="${loginPolicyVO.regYn != 'Y'}" type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="loginPolicyInsert()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    $(document).ready(function() {
+        loginPolicyDetail();
+    });
+
+    function loginPolicyList() {
+        $(location).attr('href', '/uat/uap/loginPolicyListView');
+    }
+
+    function loginPolicyDetail() {
+        $.ajax({
+            url: '/uat/uap/loginPolicyDetail',
+            method: 'post',
+            data: $('#updateForm').serialize()
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                loginPolicyList();
+            } else {
+                $('#ipInfo').val(response.result.ipInfo);
+                let html = '';
+                if (response.result.lmttAt === 'Y') {
+                    html += '<option value="Y" selected>[(#{input.yes})]</option>';
+                    html += '<option value="N">[(#{input.no})]</option>';
+                } else if (response.result.lmttAt === 'N') {
+                    html += '<option value="Y">[(#{input.yes})]</option>';
+                    html += '<option value="N" selected>[(#{input.no})]</option>';
+                } else {
+                    html += '<option value="Y">[(#{input.yes})]</option>';
+                    html += '<option value="N">[(#{input.no})]</option>';
+                }
+                $('#lmttAt').html(html);
+                console.log('##### date >>> ' + response.result.lastUpdtPnttm);
+                if (response.result.lastUpdtPnttm) {
+                    $('#regDate').val(response.result.lastUpdtPnttm.substring(0, 10));
+                } else {
+                    $('#regDate').val();
+                }
+            }
+        });
+    }
+
+    function loginPolicyInsert() {
+        $('#ipInfoNmError').text('');
+        if (confirm('[(#{common.save.msg})]')) {
+            $.ajax({
+                url: '/uat/uap/loginPolicyInsert',
+                method: 'post',
+                data: $('#updateForm').serialize()
+            }).done(function(response) {
+                if(response.status === 'valid') {
+                    $.each(response.errors, function(key, value) {
+                        $('#'+key+'Error').text(value);
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.insert})]');
+                    loginPolicyList();
+                } else {
+                    alert('[(#{success.common.insert})]');
+                    loginPolicyList();
+                }
+            });
+        }
+    }
+
+    function loginPolicyUpdate() {
+        $('#ipInfoNmError').text('');
+        if (confirm('[(#{common.update.msg})]')) {
+            $.ajax({
+                url: '/uat/uap/loginPolicyUpdate',
+                method: 'post',
+                data: $('#updateForm').serialize()
+            }).done(function(response) {
+                if(response.status === 'valid') {
+                    $.each(response.errors, function(key, value) {
+                        $('#'+key+'Error').text(value);
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    loginPolicyList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    loginPolicyList();
+                }
+            });
+        }
+    }
+
+    function loginPolicyDelete() {
+        if (confirm('[(#{common.delete.msg})]')) {
+            $.ajax({
+                url: '/uat/uap/loginPolicyDelete',
+                method: 'post',
+                data: $('#updateForm').serialize()
+            }).done(function(response) {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.delete})]');
+                    loginPolicyList();
+                } else {
+                    alert('[(#{success.common.delete})]');
+                    loginPolicyList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

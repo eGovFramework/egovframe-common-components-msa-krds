@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQqm.title}+' '+#{title.update}"></title>
+    <div th:replace="uss/olp/qqm/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comUssOlpQqm.title}+' '+#{title.update}"></span></h2>
+
+    <form id="updateForm" name="updateForm" th:object="${qustnrQesitmVO}">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId"/>
+    <input type="hidden" th:id="qestnrId" th:name="qestnrId"/>
+    <input type="hidden" th:id="qustnrQesitmId" th:name="qustnrQesitmId" th:value="${qustnrQesitmVO.qustnrQesitmId}"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qustnrSj" th:text="#{comUssOlpQqm.regist.qestnrCn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="qustnrSj" name="qustnrSj" class="krds-input" readonly="readonly">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qestnSn" th:text="#{comUssOlpQqm.regist.qestnSn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="qestnSn" name="qestnSn" class="krds-input" maxlength="10" th:field="*{qestnSn}">
+                    </div>
+                    <p class="form-hint-invalid" id="qestnSnError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qestnTyCode" th:text="#{comUssOlpQqm.regist.qestnTyCode}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="qestnTyCode" name="qestnTyCode" th:title="#{input.select}"></select>
+                    </div>
+                    <p class="form-hint-invalid" id="qestnTyCodeError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="qestnCn" th:text="#{comUssOlpQqm.regist.qestnCn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap">
+                            <textarea id="qestnCn" name="qestnCn" maxlength="2000" class="krds-input"
+                                      th:placeholder="#{comUssOlpQqm.regist.qestnCn}+' '+#{input.input}"></textarea>
+                            <p class="textarea-count">
+                                <span id="qestnCnCount" class="text-primary">0</span>
+                                <span class="text-num">/2000</span></p>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="qestnCnError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="mxmmChoiseCo" th:text="#{comUssOlpQqm.regist.mxmmChoiseCo}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <select class="krds-form-select" id="mxmmChoiseCo" name="mxmmChoiseCo" th:title="#{comUssOlpQqm.regist.mxmmChoiseCo}"></select>
+                    </div>
+                    <p class="form-hint-invalid" id="mxmmChoiseCoError" style="display:none"></p>
+                </div>
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="qustnrQesitmList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="qustnrQesitmUpdate()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        qustnrQesitmDetail();
+
+        const qestnCn = document.getElementById('qestnCn');
+        const qestnCnCount = document.getElementById('qestnCnCount');
+
+        qestnCn.addEventListener('input', function() {
+            qestnCnCount.textContent = qestnCn.value.length;
+        });
+    });
+
+    function qustnrQesitmList() {
+        window.location.href = '/uss/olp/qqm/qustnrQesitmListView';
+    }
+
+    function qustnrQesitmDetail() {
+        const detailForm = document.getElementById('updateForm');
+        const formData = new FormData(detailForm);
+
+        fetch('/uss/olp/qqm/qustnrQesitmDetail', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                qustnrQesitmList();
+            } else {
+                document.getElementById('qustnrTmplatId').value = response.result.qustnrTmplatId;
+                document.getElementById('qestnrId').value = response.result.qestnrId;
+                document.getElementById('qustnrSj').value = response.result.qustnrSj;
+                document.getElementById('qestnSn').value = response.result.qestnSn;
+
+                let buttonText = '[(#{input.select})]';
+                const qestnTyCode = response.result.qestnTyCode;
+                const cmmnDetailCodeList = response.cmmnDetailCodeList;
+                let cmmnDetailCodeHtml = '';
+                cmmnDetailCodeHtml += '<option value="">' + buttonText + '</option>';
+                cmmnDetailCodeList.forEach(function(cmmnDetailCode, index) {
+                    if (qestnTyCode === cmmnDetailCode.code) {
+                        cmmnDetailCodeHtml += '<option value="' + cmmnDetailCode.code + '" selected>' + cmmnDetailCode.codeNm + '</option>';
+                    } else {
+                        cmmnDetailCodeHtml += '<option value="' + cmmnDetailCode.code + '">' + cmmnDetailCode.codeNm + '</option>';
+                    }
+                });
+                document.getElementById('qestnTyCode').innerHTML = cmmnDetailCodeHtml;
+
+                const qestnCn = document.getElementById('qestnCn');
+                qestnCn.value = response.result.qestnCn;
+                document.getElementById('qestnCnCount').textContent = qestnCn.value.length;
+
+                let mxmmChoiseCo = Number(response.result.mxmmChoiseCo);
+                let maxNumber = 0;
+                let maxNumberSelectHtml = '';
+                while(maxNumber < 10) {
+                    maxNumber++;
+                    if (mxmmChoiseCo === maxNumber) {
+                        maxNumberSelectHtml += '<option value="'+maxNumber+'" selected>'+maxNumber+'</option>';
+                    } else {
+                        maxNumberSelectHtml += '<option value="'+maxNumber+'">'+maxNumber+'</option>';
+                    }
+                }
+                document.getElementById('mxmmChoiseCo').innerHTML = maxNumberSelectHtml;
+            }
+        });
+    }
+
+    function qustnrQesitmUpdate() {
+        if (confirm('[(#{common.update.msg})]')) {
+            const errors = ['qestnSnError', 'qestnTyCodeError', 'qestnCnError', 'mxmmChoiseCoError'];
+            errors.forEach(error => {
+                document.getElementById(error).textContent = '';
+                document.getElementById(error).style.display='none';
+            });
+
+            const updateForm = document.getElementById('updateForm');
+            const formData = new FormData(updateForm);
+
+            fetch('/uss/olp/qqm/qustnrQesitmUpdate', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'valid') {
+                    Object.entries(response.errors).forEach(([key, value]) => {
+                        document.getElementById(`${key}Error`).textContent = value;
+                        document.getElementById(`${key}Error`).style.display = 'block';
+                    });
+                } else if (response.status === 'error') {
+                    alert('[(#{fail.common.update})]');
+                    qustnrQesitmList();
+                } else {
+                    alert('[(#{success.common.update})]');
+                    qustnrQesitmList();
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

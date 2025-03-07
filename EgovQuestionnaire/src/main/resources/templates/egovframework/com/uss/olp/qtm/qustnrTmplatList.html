@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comUssOlpQtm.title}+' '+#{title.list}"></title>
+    <div th:replace="uss/olp/qtm/fragement/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.uss.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large" style="margin-bottom: 2rem;"><span th:text="#{comUssOlpQtm.title}+' '+#{title.list}"></span></h2>
+
+    <form id="listForm" name="listForm">
+    <input type="hidden" th:id="qustnrTmplatId" th:name="qustnrTmplatId"/>
+    <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+
+        <div class="form-group">
+            <div class="search-wrap">
+                <div class="search-body">
+                    <div class="form-conts searchOption">
+                        <select id="searchCondition" name="searchCondition" class="krds-form-select medium" th:title="#{title.searchCondition}">
+                            <option th:text="#{comUssOlpQtm.searchCondition.QUSTNR_TMPLAT_DC}" value="1" ></option>
+                            <option th:text="#{comUssOlpQtm.searchCondition.QUSTNR_TMPLAT_TY}" value="2" ></option>
+                        </select>
+                    </div>
+                    <div class="form-conts btn-ico-wrap searchKeyword">
+                        <input type="text" id="searchKeyword" name="searchKeyword" class="krds-input medium" th:placeholder="#{title.search} + #{search.placeholder}">
+                        <button type="button" class="krds-btn medium icon"  th:onclick="qustnrTmplatSearch()">
+                            <span class="sr-only" th:text="#{button.search}"></span>
+                            <i class="svg-icon ico-sch"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="qustnrTmplatCreate()"></button>
+            </div>
+        </div>
+
+    </form>
+
+    <div class="krds-table-wrap">
+        <table class="tbl col data">
+<!--            <caption>설문관리 시스템 구축 시 사용되는 설문템플릿관리 기능을 제공하는 컴포넌트</caption>-->
+            <colgroup>
+                <col style="width: 10%;">
+                <col style="width: 10%;">
+                <col style="width: 20%;">
+                <col style="width: 30%;">
+                <col style="width: 15%;">
+                <col style="width: 15%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center"><span th:text="#{table.num}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUssOlpQtm.regist.qestnrTmplatTy}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUssOlpQtm.regist.egovfile.information}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUssOlpQtm.regist.qestnrTmplatCn}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUssOlpQtm.regist.frstRegisterNm}"></span></th>
+                    <th scope="col" class="text-center"><span th:text="#{comUssOlpQtm.regist.frstRegisterPnttm}"></span></th>
+                </tr>
+            </thead>
+            <tbody id="qustnrTmplat-list-container"></tbody>
+        </table>
+    </div>
+
+    <div id="pagination-container" class="krds-pagination w-page"></div>
+</div>
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        qustnrTmplatList();
+
+        document.getElementById('searchCondition').addEventListener('change', function() {
+            document.getElementById('searchKeyword').value = '';
+        });
+    });
+
+    function qustnrTmplatSearch() {
+        if (notNullCheck(document.getElementById('searchKeyword').value)) {
+            qustnrTmplatList();
+        } else {
+            alert('[(#{title.search})][(#{search.placeholder})]');
+        }
+    }
+
+    function qustnrTmplatList() {
+        const form = document.getElementById('listForm');
+        const formData = new FormData(form);
+
+        fetch('/uss/olp/qtm/qustnrTmplatList', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            const qustnrTmplatList = data.qustnrTmplatList;
+            const pagination = data.pagination;
+            const lineNumber = data.lineNumber;
+
+            let html = '';
+            let imageInfo = '[(#{comUssOlpQtm.title.image})]';
+            if(qustnrTmplatList.length === 0){
+                html = `<tr><td class="text-center" colspan="6">[(#{info.nodata.msg})]</td></tr>`
+            }else{
+                qustnrTmplatList.forEach(function(qustnrTmplat, index) {
+                    const number = lineNumber + (index + 1);
+                    html += '<tr>';
+                    html += '<td class="text-center">'+number+'</td>';
+                    html += '<td class="text-center">'+qustnrTmplat.qustnrTmplatTy+'</td>';
+                    html += '<td class="text-center">'+
+                        '<image src="/uss/olp/qtm/qustnrTmplatImage?qustnrTmplatId='+qustnrTmplat.qustnrTmplatId+
+                        '" width="100px" height="100px" alt="'+imageInfo+'"></image>'+
+                        '</td>';
+                    html += '<td class="text-center">' +
+                        '<a class="krds-btn text medium" style="cursor:pointer;" tabindex="0" onclick="qustnrTmplatDetail(' +
+                        '\''+qustnrTmplat.qustnrTmplatId+'\''+
+                        ')">'+qustnrTmplat.qustnrTmplatDc+
+                        '</a></td>';
+                    html += '<td class="text-center">'+qustnrTmplat.userNm+'</td>';
+                    html += '<td class="text-center">'+qustnrTmplat.frstRegistPnttm+'</td>';
+                    html += '</tr>';
+                });
+            }
+            document.getElementById('qustnrTmplat-list-container').innerHTML = html;
+            document.getElementById('pagination-container').innerHTML = pagination;
+        });
+    }
+
+    function linkPage(pageIndex) {
+        document.getElementById('pageIndex').value = pageIndex;
+        qustnrTmplatList();
+    }
+
+    function qustnrTmplatDetail(qustnrTmplatId) {
+        document.getElementById('qustnrTmplatId').value = qustnrTmplatId;
+        const form = document.getElementById('listForm');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', '/uss/olp/qtm/qustnrTmplatDetailView');
+        form.submit();
+    }
+
+    function qustnrTmplatCreate() {
+        const form = document.getElementById('listForm');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', '/uss/olp/qtm/qustnrTmplatInsertView');
+        form.submit();
+    }
+</script>
+
+</body>
+</html>

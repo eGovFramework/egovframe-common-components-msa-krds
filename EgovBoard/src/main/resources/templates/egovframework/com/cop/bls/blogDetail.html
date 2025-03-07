@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopBlog.blogMasterVO.title}+' '+#{title.detail}"></title>
+    <div th:replace="cop/bls/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt">홈</a></li>
+            <li>협업</li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comCopBlog.blogMasterVO.title}+' '+#{title.detail}"></span></h2>
+
+    <form id="detailForm" name="detailForm" th:object="${blogVO}">
+    <input type="hidden" th:id="blogId" th:name="blogId" th:value="${blogVO.blogId}"/>
+    <input type="hidden" th:id="blogNm" th:name="blogNm"/>
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${blogVO.searchCondition}"/>
+    <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${blogVO.searchKeyword}"/>
+
+    <div class="def-list-wrap">
+        <dl class="def-list">
+            <dt th:text="#{comCopBlog.blogMasterVO.detail.blogNm}"></dt>
+            <dd id="blogName"></dd>
+            <dt th:text="#{table.reger}"></dt>
+            <dd id="frstRegisterId"></dd>
+            <dt th:text="#{table.regdate}"></dt>
+            <dd id="frstRegistPnttm"></dd>
+            <dt th:text="#{comCopBlog.blogMasterVO.detail.useAt}"></dt>
+            <dd id="useAt"></dd>
+            <dt th:text="#{comCopBlog.blogMasterVO.detail.blogIntrcn}"></dt>
+            <dd id="blogIntrcn"></dd>
+            <dt th:text="#{comCopBlog.blogMasterVO.detail.blogAdres}"></dt>
+            <dd id="blogAdres"></dd>
+        </dl>
+    </div>
+    <div class="page-btn-wrap">
+        <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="blogList()"></button>
+        <div class="btn-wrap">
+            <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="blogUpdate()"></button>
+        </div>
+    </div>
+    </form>
+</div>
+<script th:inline="javascript" defer>
+    blogDetail();
+
+    function blogList() {
+        $(location).attr('href', '/cop/bls/blogListView');
+    }
+
+    function blogDetail() {
+        $.ajax({
+            url: '/cop/bls/blogDetail',
+            method: 'POST',
+            data: $('#detailForm').serialize()
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                blogList();
+            } else {
+                $('#blogNm').val(response.result.blogNm);
+                $('#blogName').text(response.result.blogNm);
+                $('#frstRegisterId').text(response.result.userNm);
+                $('#frstRegistPnttm').text(response.result.frstRegistPnttm);
+                $('#useAt').text(response.result.useAt);
+                $('#blogIntrcn').text(response.result.blogIntrcn).css('white-space', 'pre-line');
+                let blogAdres = '/cop/bls/blogBoardList?blogId='+response.result.blogId;
+                $('#blogAdres').html('<a href="#" onclick="blogBoardList()">'+blogAdres+'</a>');
+            }
+        });
+    }
+
+    function blogUpdate() {
+        $('#detailForm').attr('method', 'post').attr('action', '/cop/bls/blogUpdateView').submit();
+    }
+
+    function blogBoardList() {
+        $('#detailForm').attr('method', 'post').attr('action', '/cop/bls/blogBoardList').submit();
+    }
+</script>
+
+</body>
+</html>

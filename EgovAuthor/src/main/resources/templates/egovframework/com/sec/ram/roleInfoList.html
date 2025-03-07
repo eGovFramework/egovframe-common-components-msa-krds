@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="#{comCopSecRam.authorRoleList.title}+' '+#{title.list}"></title>
+    <div th:replace="sec/ram/fragment/linkFragment"></div>
+</head>
+
+<body>
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.sec.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:text="#{comCopSecRam.authorRoleList.title}+' '+#{title.list}"></span></h2>
+
+    <form id="listForm" name="listForm">
+    <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="1"/>
+    <input type="hidden" th:id="authorCodes" th:name="authorCodes"/>
+    <input type="hidden" th:id="roleCodes" th:name="roleCodes"/>
+    <input type="hidden" th:id="regYns" th:name="regYns"/>
+    <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+
+        <div class="form-group">
+            <div class="search-wrap">
+                <h3 class="search-tit" th:text="#{comCopSecGmt.list.groupNm}"></h3>
+                <div class="form-conts btn-ico-wrap searchKeyword">
+                    <input type="text" id="searchKeyword" name="searchKeyword" class="krds-input medium" th:value="${authorInfoVO.authorCode}" readonly="readonly">
+                </div>
+                <button type="button" class="krds-btn tertiary medium" th:text="#{button.list}" th:onclick="authorInfoList()"></button>
+                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="roleInfoInsert()"></button>
+            </div>
+        </div>
+
+    <div class="krds-table-wrap">
+        <table class="tbl col data">
+<!--            <caption>사용자의 특성에 따라 정의된 권한에 특정 자원에 접근할 수 있는 롤을 관리하는 컴포넌트</caption>-->
+            <colgroup>
+                <col style="width: 5%;">
+                <col style="width: 16%;">
+                <col style="width: 18%;">
+                <col style="width: 7%;">
+                <col style="width: 7%;">
+                <col>
+                <col style="width: 11%;">
+                <col style="width: 15%;">
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col" class="text-center">
+                    <div class="krds-check-area">
+                        <div class="krds-form-check">
+                            <input type="checkbox" name="checkAll" id="checkAll" th:onclick="roleInfoAllChecked()">
+                            <label for="checkAll"></label>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="text-center"><span th:text="#{comCopSecRam.authorRoleList.rollId}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comCopSecRam.authorRoleList.rollNm}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comCopSecRam.authorRoleList.rollType}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comCopSecRam.authorRoleList.rollSort}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comCopSecRam.authorRoleList.rollDc}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{table.regdate}"></span></th>
+                <th scope="col" class="text-center"><span th:text="#{comCopSecRam.authorRoleList.regYn}"></span></th>
+            </tr>
+            </thead>
+            <tbody id="authorRole-list-container"></tbody>
+        </table>
+    </div>
+    <div id="pagination-container" class="krds-pagination w-page"></div>
+    </form>
+</div>
+
+<script th:inline="javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        roleInfoList();
+    });
+
+    function authorRoleSearch() {
+        if (notNullCheck(document.getElementById('searchKeyword').value)) {
+            authorInfoList();
+        } else {
+            alert('[(#{title.search})][(#{search.placeholder})]');
+        }
+    }
+
+    function roleInfoList() {
+        const listForm = document.getElementById('listForm');
+        const formData = new FormData(listForm);
+
+        fetch('/sec/ram/roleInfoList', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            document.getElementById('checkAll').checked = false;
+
+            const roleInfoList = response.roleInfoList;
+            const pagination = response.pagination;
+
+            let html = '';
+            if(roleInfoList.length === 0){
+                html = `<tr><td class="text-center" colspan="5">[(#{info.nodata.msg})]</td></tr>`
+            }else{
+                roleInfoList.forEach(function(roleInfo, index) {
+                    html += '<tr>';
+                    html += '<td class="text-center">'+
+                        '<div class="krds-check-area">'+
+                        '<div class="krds-form-check">'+
+                        '<input type="checkbox" name="chkbox" id="chk'+index+'">'+
+                        '<label for="chk'+index+'"></label>'+
+                        '</div>'+
+                        '</div>'+
+                        '<input type="hidden" name="chkId" value="'+roleInfo.roleCode+'">'+
+                        '</td>';
+                    html += '<td class="text-center">'+roleInfo.roleCode+'</td>';
+                    html += '<td>'+roleInfo.roleNm+'</td>';
+                    html += '<td class="text-center">'+roleInfo.roleTy+'</td>';
+                    html += '<td class="text-center">'+roleInfo.roleSort+'</td>';
+                    html += '<td>'+roleInfo.roleDc+'</td>';
+                    html += '<td class="text-center">'+roleInfo.creatDt+'</td>';
+                    html += '<td class="text-center"><select class="krds-form-select small" name="regYn"> ';
+                    if (roleInfo.regYn === 'Y') {
+                        html += '<option value="Y" selected>[(#{comCopSecRam.authorRoleList.regY})]</option>';
+                        html += '<option value="N">[(#{comCopSecRam.authorRoleList.regN})]</option>';
+                    } else {
+                        html += '<option value="Y">[(#{comCopSecRam.authorRoleList.regY})]</option>';
+                        html += '<option value="N" selected>[(#{comCopSecRam.authorRoleList.regN})]</option>';
+                    }
+                    html += '</select></td>';
+                    html += '</tr>';
+                });
+            }
+
+            document.getElementById('authorRole-list-container').innerHTML = html;
+            document.getElementById('pagination-container').innerHTML = pagination;
+        });
+    }
+
+    function linkPage(pageIndex) {
+        document.getElementById('pageIndex').value = pageIndex;
+        roleInfoList();
+    }
+
+    function authorInfoList() {
+        $(location).attr('method', 'post').attr('href', '/sec/ram/authorInfoListView');
+    }
+
+    function roleInfoInsert() {
+        if(!roleInfoChecked()) return;
+
+        const listForm = document.getElementById('listForm');
+        const formData = new FormData(listForm);
+
+        if(confirm('[(#{comCopSecRam.authorRoleList.validate.confirm.regist})]')) {
+            fetch('/sec/ram/roleInfoInsert', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(response => {
+                if (response.status === 'error') {
+                    alert('[(#{fail.common.insert})]');
+                    roleInfoList();
+                } else {
+                    alert('[(#{success.common.insert})]');
+                    roleInfoList();
+                }
+            });
+        }
+    }
+
+    function roleInfoAllChecked() {
+        let checkField = $('form[name="listForm"] input[name="chkbox"]');
+        let isChecked = document.listForm.checkAll.checked;
+        checkField.prop('checked', isChecked);
+    }
+
+    function roleInfoChecked() {
+        const checkField = $('form[name="listForm"] input[name="chkbox"]');
+        const authCode = $('#searchKeyword').val();
+        const roleCode = $('form[name="listForm"] input[name="chkId"]');
+        const regYn = $('form[name="listForm"] select[name="regYn"]');
+
+        let returnAuthorCode = '';
+        let returnRoleCode = '';
+        let returnRegYn = '';
+        let checkedCount = 0;
+
+        if (!checkField.length) {
+            alert('[(#{comCopSecRam.authorRoleList.validate.alert.noResult})]');
+            return false;
+        }
+
+        checkField.each(function (i) {
+            if ($(this).is(':checked')) {
+                checkedCount++;
+                let currentRoleCode = roleCode.eq(i).val();
+                let currentRegYn = regYn.eq(i).val();
+
+                returnAuthorCode += (returnAuthorCode ? ";" : "") + authCode;
+                returnRoleCode += (returnRoleCode ? ";" : "") + currentRoleCode;
+                returnRegYn += (returnRegYn ? ";" : "") + currentRegYn;
+            }
+        });
+
+        if (checkedCount === 0) {
+            alert('[(#{comCopSecRam.authorRoleList.validate.alert.noSelect})]');
+            return false;
+        }
+
+        document.getElementById('authorCodes').value = returnAuthorCode;
+        document.getElementById('roleCodes').value = returnRoleCode;
+        document.getElementById('regYns').value = returnRegYn;
+
+        return true;
+    }
+</script>
+
+</body>
+</html>

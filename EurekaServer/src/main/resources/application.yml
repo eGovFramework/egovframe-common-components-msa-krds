@@ -1,0 +1,13 @@
+server:
+    port: 8761
+
+spring:
+    application:
+        name: EurekaServer
+
+eureka:
+    client:
+        register-with-eureka: false # 서비스에 자신을 등록하지 않음
+        fetch-registry: false # 레지스트리 정보를 로컬에 캐싱하지 않음
+    server:
+        peer-node-read-timeout-ms: 10000

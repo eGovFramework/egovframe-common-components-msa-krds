@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:with="pageTitle=#{comCopBbs.articleVO.title}">
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle} + ' ' + #{title.create}"></title>
+    <div th:replace="cop/brd/fragment/linkFragment"></div>
+    <style>
+        .textarea-wrap .ck-content{
+            height:300px;
+        }
+    </style>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+</head>
+<body th:with="pageTitle=#{comCopBbs.articleVO.title}">
+<div id="container">
+    <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+            <li th:text="#{comCmm.cop.title}"></li>
+        </ol>
+    </nav>
+
+    <h2 class="heading-large"><span th:id="boardTitle" th:text="${bbsVO.bbsNm}+' '+#{comCopBbs.articleVO.title}+' '+#{title.create}"></span></h2>
+
+    <form id="updateForm" name="updateForm" th:object="${bbsVO}" enctype="multipart/form-data">
+        <input type="hidden" th:id="nttId" th:name="nttId" th:value="${bbsVO.nttId}"/>
+        <input type="hidden" th:id="bbsId" th:name="bbsId" th:value="${bbsVO.bbsId}"/>
+        <input type="hidden" th:id="bbsNm" th:name="bbsNm" th:value="${bbsVO.bbsNm}"/>
+        <input type="hidden" th:id="blogId" th:name="blogId" th:value="${bbsVO.blogId}"/>
+        <input type="hidden" th:id="blogNm" th:name="blogNm" th:value="${bbsVO.blogNm}"/>
+        <input type="hidden" th:id="cmmntyId" th:name="cmmntyId" th:value="${bbsVO.cmmntyId}"/>
+        <input type="hidden" th:id="cmmntyNm" th:name="cmmntyNm" th:value="${bbsVO.cmmntyNm}"/>
+        <input type="hidden" th:id="pageIndex" th:name="pageIndex" th:value="1"/>
+
+        <div class="conts-wrap">
+            <div class="fieldset input-form">
+                <div class="form-group">
+                    <div class="krds-check-area">
+                        <div class="krds-form-chip">
+                            <!--공지신청 여부-->
+                            <input type="checkbox" class="checkbox" id="noticeAt" name="noticeAt" th:title="#{comCopBbs.articleVO.regist.noticeAt}">
+                            <label class="krds-form-chip-outline" for="noticeAt" th:text="#{comCopBbs.articleVO.regist.noticeAt}"></label>
+                        </div>
+                        <div class="krds-form-chip">
+                            <!--비밀글 여부-->
+                            <input type="checkbox" class="checkbox" id="secretAt" name="secretAt" th:title="#{comCopBbs.articleVO.regist.secretAt}">
+                            <label class="krds-form-chip-outline" for="secretAt" th:text="#{comCopBbs.articleVO.regist.secretAt}"></label>
+                        </div>
+                        <div class="krds-form-chip">
+                            <!--익명등록 여부-->
+                            <input type="checkbox" class="checkbox" id="anonymousAt" name="anonymousAt" th:title="#{comCopBbs.articleVO.regist.anonymousAt}">
+                            <label class="krds-form-chip-outline" for="anonymousAt" th:text="#{comCopBbs.articleVO.regist.anonymousAt}"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="nttSj" th:text="#{comCopBbs.articleVO.regist.nttSj}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <input type="text" id="nttSj" name="nttSj" class="krds-input" maxlength="70"
+                               th:field="*{nttSj}"
+                               th:placeholder="#{comCopBbs.articleVO.regist.nttSj}+' '+#{input.input}">
+                        <div class="krds-form-chip">
+                            <!--제목 진하게 여부-->
+                            <input type="checkbox" class="checkbox" id="sjBoldAt" name="sjBoldAt" th:title="#{comCopBbs.articleVO.regist.sjBoldAt}">
+                            <label class="krds-form-chip-outline" for="sjBoldAt" th:text="#{comCopBbs.articleVO.regist.sjBoldAt}"></label>
+                        </div>
+                    </div>
+                    <p class="form-hint-invalid" id="nttSjError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-tit">
+                        <label for="editor" th:text="#{comCopBbs.articleVO.regist.nttCn}"></label>
+                    </div>
+                    <div class="form-conts">
+                        <div class="textarea-wrap"><div id="editor"></div></div>
+                        <input type="hidden" th:field="*{nttCn}"/>
+                    </div>
+                    <p class="form-hint-invalid" id="nttCnError" style="display:none"></p>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-conts">
+                        <div class="form-tit">
+                            <label for="startDate" th:text="#{comCopBbs.articleVO.regist.ntceBgnde}"></label>
+                        </div>
+                        <div class="form-conts datepicker-conts">
+                            <input type="date" id="startDate" name="ntceBgnde" class="krds-input">
+                        </div>
+                    </div>
+                    <div class="form-conts">
+                        <div class="form-tit">
+                            <label for="endDate" th:text="#{comCopBbs.articleVO.regist.ntceEndde}"></label>
+                        </div>
+                        <div class="form-conts datepicker-conts">
+                            <input type="date" id="endDate" name="ntceEndde" class="krds-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="krds-file-upload" id="fileAtchFrm">
+                    <div class="form-tit" th:text="#{comCopBbs.articleVO.regist.atchFile}"></div>
+                    <div class="file-upload">
+                        <p class="txt">첨부할 파일을 여기에 끌어다 놓거나,</br> 파일 선택 버튼을 눌러 파일을 직접 선택해주세요.</p>
+                        <div class="file-upload-btn-wrap">
+                            <input type="file" name="atchFile" id="fileUpload" class="sr-only" multiple="multiple">
+                            <label for="fileUpload">
+                                <button type="button" class="krds-btn medium" th:text="#{input.cSelect}"><i class="svg-icon ico-upload"></i></button>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="file-list" style="display: none">
+                        <div class="total"></div>
+                        <ul class="upload-list" id="upload-list"></ul>
+                    </div>
+                </div>
+
+            </div>
+            <div class="page-btn-wrap">
+                <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="boardList()"></button>
+                <button type="button" class="krds-btn medium" id="updateBtn" th:text="#{button.update}"></button>
+            </div>
+        </div>
+        <input type="hidden" th:field="*{parntscttNo}">
+        <input type="hidden" th:field="*{answerAt}">
+        <input type="hidden" th:field="*{answerLc}">
+        <input type="hidden" th:field="*{atchFileId}">
+    </form>
+</div>
+<script th:inline="javascript" th:type="module">
+    import {EditorConfig} from "/cop/brd/js/ckEditor_simple-main.js";
+    import {ClassicEditor} from "/cop/brd/ckeditor5_simple/ckeditor5.js";
+
+    let editorInstance; // 에디터 인스턴스를 저장할 변수
+
+    // 전역 스코프에 initEditor 등록
+    window.initEditor = function(initialData = '') {
+        ClassicEditor
+            .create(document.getElementById('editor'), EditorConfig)
+            .then(editor => {
+                editorInstance = editor; // 전역 변수에 저장
+                // 데이터 설정
+                // editor.setData(initialData);
+                editor.setData(decodeHtml(initialData));
+                document.getElementById("nttCn").value=decodeHtml(initialData);
+                // 에디터 변경 감지하여 nttCn 업데이트
+                editor.model.document.on('change:data', () => {
+                    document.getElementById("nttCn").value = editor.getData();
+                });
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
+</script>
+<script th:inline="javascript">
+        const bbsId = document.getElementById("bbsId").value;
+        const nttId = document.getElementById("nttId").value;
+        const answerAt = document.getElementById("answerAt").value;
+        let atchFileId = document.getElementById("atchFileId").value;
+        let deleteFileSn = [];
+
+        // 게시판 상세 정보 및 설정
+        $.ajax({
+            url: '/cop/brd/bbsMasterDetail',
+            method: 'POST',
+            data: $('#updateForm').serialize()
+        }).done(function(response) {
+            if (response.status === 'error') {
+                alert('[(#{fail.request.msg})]');
+                boardList();
+            } else {
+                if (response.result.atchPosblFileNumber == null || response.result.atchPosblFileNumber === 0 || response.result.fileAtchPosblAt === "N") {
+                    document.getElementById("fileUploadArea").style.display='none';
+                } else {
+                    const total = document.querySelector(".total");
+                    const html = `<span class='current'>0</span>개 / <span class='total-size'>${response.result.atchPosblFileNumber}</span>개`;
+                    total.insertAdjacentHTML("beforeend", html);
+                }
+
+                if (response.result.bbsTyCode === "BBST03") {
+                    const uploadElement = document.querySelector(".krds-file-upload");
+                    if (uploadElement) uploadElement.remove();
+                }
+                maxFiles = response.result.atchPosblFileNumber;
+            }
+        });
+
+        // 제목 진하게 속성 이벤트 설정
+        sjBoldAt.addEventListener('change', function () {
+            secretAt.disabled = !!this.checked;
+        });
+
+        // 공지사항 속성 이벤트 설정
+        noticeAt.addEventListener('change', function () {
+            anonymousAt.disabled = !!this.checked;
+            secretAt.disabled = !!this.checked;
+        });
+
+        // 비밀글 속성 이벤트 설정
+        secretAt.addEventListener('change', function () {
+            anonymousAt.disabled = !!this.checked;
+            noticeAt.disabled = !!this.checked;
+            sjBoldAt.disabled = !!this.checked;
+        });
+
+        // 익명글 속성 이벤트 설정
+        anonymousAt.addEventListener('change', function () {
+            noticeAt.disabled = !!this.checked;
+            secretAt.disabled = !!this.checked;
+        });
+        // Byte 단위 변경
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        const fileList = [];
+        const fileUpload = document.getElementById("fileUpload");
+
+        var fileMaxSize = 1048576
+        var fileExtensions =".gif.jpg.jpeg.png.xls.xlsx";
+
+        // 파일 크기, 확장자 Validaiton
+        fileUpload.addEventListener("change", function (e) {
+            if (fileList.length + e.target.files.length > parseInt(document.querySelector(".total-size").textContent)) {
+                alert("첨부파일 최대 갯수를 초과하였습니다.");
+            } else {
+                Array.from(e.target.files).forEach(file => {
+                    if (file.size > fileMaxSize) {
+                        alert(`첨부파일의 크기는 ${formatBytes(fileMaxSize)}까지만 가능합니다.`);
+                    } else if (!fileExtensions.includes(file.name.split(".").pop().toLowerCase())) {
+                        alert(`첨부파일의 확장자는 ${fileExtensions.join(", ")}만 가능합니다.`);
+                    } else {
+                        fileList.push(file);
+                        document.querySelector(".file-list").style.display = "block";
+                        fileAppend(fileList);
+                    }
+                });
+            }
+        });
+
+        // 추가된 파일의 리스트 생성
+        function fileAppend(fileList) {
+            const uploadList = document.getElementById("upload-list");
+            uploadList.innerHTML = "";
+
+            fileList.forEach((item, index) => {
+                var name;
+                var type;
+                var size;
+                var sn = 1;
+                if(item instanceof File){
+                    name= item.name;
+                    type= item.type.split('/')[1];
+                    size= item.size;
+                }else{
+                    name= item.orignlFileNm;
+                    type= item.fileExtsn;
+                    size= item.fileSize;
+                    sn= item.fileSn;
+                }
+                console.log(item);
+                const li = document.createElement("li");
+                li.id = `file_${index}`;
+                li.innerHTML = `
+                <div class="file-info">
+                    <div class="file-name">${name} [${type}], ${formatBytes(size)}]</div>
+                    <div class="btn-wrap" onclick="fileDel(${index}, ${sn})">
+                        <button type="button" class="krds-btn medium text">삭제<i class='svg-icon ico-delete-fill'></i></button>
+                    </div>
+                </div>
+            `;
+                uploadList.appendChild(li);
+            });
+
+            document.querySelector(".current").textContent = fileList.length;
+        }
+
+        function fileAppendHtmlUpdate(fileList) {
+            const uploadList = document.getElementById("upload-list");
+            const fileListContainer = document.querySelector(".file-list");
+            const currentCount = document.querySelector(".current");
+
+            fileList.forEach(function (item, index) {
+                const sn = item.fileSn;
+                const listItem = document.createElement("li");
+                listItem.id = `file_${index}`;
+                listItem.innerHTML = `
+                    <div class='file-info'>
+                        <div class='file-name'>${item.orignlFileNm} [${item.fileExtsn}, ${formatBytes(item.fileSize)}]</div>
+                        <div class='btn-wrap'>
+                            <button type='button' class='krds-btn medium text' onclick='fileDel(${index}, ${sn})'>
+                                삭제<i class='svg-icon ico-delete-fill'></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                fileListContainer.style.display = "block";
+                currentCount.textContent = fileList.length;
+                uploadList.appendChild(listItem);
+            });
+        }
+
+        // 파일 목록에 있는 파일 삭제
+        function fileDel(index, sn) {
+            fileList.splice(index, 1);
+            document.getElementById(`file_${index}`).remove();
+            document.querySelector(".current").textContent = fileList.length;
+            fileAppend(fileList);
+            if(index != null){
+                deleteFileSn.push(sn);
+            }
+        }
+
+        // 파일 추가 (드래그 앤 드롭)
+        document.addEventListener("dragover", event => event.preventDefault());
+        document.addEventListener("drop", event => event.preventDefault());
+
+        document.querySelector(".file-upload").addEventListener("drop", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (fileList.length + e.dataTransfer.files.length > parseInt(document.querySelector(".total-size").textContent)) {
+                alert("첨부파일 최대 갯수를 초과하였습니다.");
+            } else {
+                Array.from(e.dataTransfer.files).forEach(file => {
+                    if (file.size > fileMaxSize) {
+                        alert(`첨부파일의 크기는 ${formatBytes(fileMaxSize)}까지만 가능합니다.`);
+                    } else if (!fileExtensions.includes(file.name.split(".").pop().toLowerCase())) {
+                        alert(`첨부파일의 확장자는 ${fileExtensions.join(", ")}만 가능합니다.`);
+                    } else {
+                        fileList.push(file);
+                        document.querySelector(".file-list").style.display = "block";
+                        fileAppend(fileList);
+                    }
+                });
+            }
+        });
+
+        function boardList() {
+            const updateForm = document.getElementById('updateForm');
+            updateForm.method = 'POST';
+            updateForm.action = '/cop/brd/boardListView';
+            updateForm.submit();
+        }
+
+        function boardDetail(){
+            $.ajax({
+                url: '/cop/brd/boardDetail',
+                method: 'POST',
+                data: $('#updateForm').serialize()
+            }).done(function(response) {
+                if (response.status === 'error') {
+                    alert('[(#{fail.request.msg})]');
+                    boardList();
+                } else {
+                    const result = response.result;
+                    console.log(result);
+                    document.getElementById("nttSj").value = result.nttSj;
+                    document.getElementById("nttCn").value = result.nttCn;
+                    document.getElementById("startDate").value = result.ntceBgnde;
+                    document.getElementById("endDate").value = result.ntceEndde;
+                    document.getElementById("atchFileId").value = result.atchFileId;
+
+                    if (result.noticeAt === "Y") {
+                        document.getElementById("noticeAt").checked = true;
+                    }
+                    if (result.secretAt === "Y") {
+                        document.getElementById("secretAt").checked = true;
+                    }
+                    if (result.sjBoldAt === "Y") {
+                        document.getElementById("sjBoldAt").checked = true;
+                    }
+
+                    const decodedNttCn = decodeHtml(result.nttCn);
+                    if (window.initEditor) {
+                        window.initEditor(decodedNttCn);
+                    } else {
+                        console.error("initEditor 함수가 정의되지 않았습니다.");
+                    }
+
+                    if (result.atchFileId != null) {
+                        atchFileId = result.atchFileId;
+                        fetch("/cop/brd/selectFileInfs", {
+                            method: "POST",
+                            headers: { 'Content-Type': 'application/json' },
+                            body: atchFileId
+                        })
+                            .then(response => response.json())
+                            .then(fileResult => {
+                                console.log(fileResult);
+                                fileResult.forEach(file => {
+                                    fileList.push(file);
+                                });
+                                fileAppendHtmlUpdate(fileList);
+                            });
+                    }
+                }
+            });
+        }
+
+        function decodeHtml(html) {
+            let txt = document.createElement("textarea");
+            txt.innerHTML = html;
+            return txt.value;
+        }
+
+        boardDetail();
+
+        document.getElementById("updateBtn").addEventListener("click", function () {
+            document.getElementById("sjBoldAt").value = document.getElementById("sjBoldAt").checked ? "Y" : "N";
+            document.getElementById("noticeAt").value = document.getElementById("noticeAt").checked ? "Y" : "N";
+            document.getElementById("secretAt").value = document.getElementById("secretAt").checked ? "Y" : "N";
+            document.getElementById("anonymousAt").value = document.getElementById("anonymousAt").checked ? "Y" : "N";
+
+            fn_egov_update_bbs();
+        });
+
+        /*********************************************************
+         * 게시글 수정 처리 함수
+         ******************************************************** */
+        function fn_egov_update_bbs() {
+            const frm = document.getElementById("updateForm");
+            const formData = new FormData(frm);
+
+            if (fileList && fileList.length > 0) {
+                fileList.forEach(file => formData.append("fileList", file));
+            }
+
+            const delData = {
+                atchFileId: atchFileId,
+                deleteFileSn: deleteFileSn
+            };
+
+            // 기존 저장되어 있는 파일 삭제
+            if (deleteFileSn.length !== 0) {
+                console.log(deleteFileSn);
+                $.ajax({
+                    url: '/cop/brd/deleteFileInfs',
+                    method: 'POST',
+                    data: delData
+                }).done(function(result){
+                    alert('성공')
+                });
+
+            }
+
+            for (const [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+
+            // 서버로 데이터 전송
+            fetch('/cop/brd/boardUpdate', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errors => {
+                            throw errors
+                        });
+                    }
+                    return response;
+                })
+                .then(response => {
+                    boardList();
+                })
+                .catch(error => {
+                    console.log(error);
+                    error.errors.forEach(error=>{
+                        document.getElementById(error.field+"Error").innerText=error.defaultMessage;
+                    })
+                });
+        }
+
+</script>
+
+</body>
+</html>
