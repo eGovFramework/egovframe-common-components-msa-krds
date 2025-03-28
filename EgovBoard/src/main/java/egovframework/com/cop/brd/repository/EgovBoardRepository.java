@@ -167,7 +167,7 @@ public interface EgovBoardRepository extends JpaRepository<Bbs, BbsId> {
     )
     int updataRdcnt(int rdcnt, String lastUpdusrId, LocalDateTime lastUpdtPnttm, String bbsId, Long nttId);
 
-    List<Bbs> findAllByBbsIdAndSortOrdr(BbsId bbsId, Long SortOrdr);
+    List<Bbs> findAllByBbsIdAndSortOrdr(BbsId bbsId, Long sortOrdr);
 
     List<Bbs> findAllByParntscttNo(int parntscttNo);
 

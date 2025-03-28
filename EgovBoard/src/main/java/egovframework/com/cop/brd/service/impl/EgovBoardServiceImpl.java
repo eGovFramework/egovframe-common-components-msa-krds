@@ -14,6 +14,7 @@ import egovframework.com.cop.brd.util.EgovBoardUtility;
 import egovframework.com.cop.brd.util.EgovFileUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +41,6 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
     private final EgovBoardRepository repository;
     private final EgovBbsSyncLogRepository bbsSyncLogRepository;
     private final EgovCommentRepository egovCommentRepository;
-
     private final EgovFileUtility egovFileUtility;
     private final EgovFileService egovFileService;
     @Qualifier("egovBoardIdGnrService")
@@ -49,7 +50,7 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
     private final StreamBridge streamBridge;
 
     @Value("${opensearch.synclog.enabled}")
-    private boolean SYNCLOG_ENABLED;
+    private boolean syncLogEnabled;
 
     public EgovBoardServiceImpl(
             EgovBoardRepository repository,
@@ -111,135 +112,86 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
 
     @Transactional
     @Override
-    public BbsVO insert(BbsVO bbsVO, List<MultipartFile> files, Map<String, String> userInfo) throws Exception {
+    public BbsVO insert(BbsVO bbsVO, List<MultipartFile> files, Map<String, String> userInfo) throws IOException, FdlException {
+
         String attachFileId = null;
-        if (!files.isEmpty()) {
-            List<FileVO> filsVOList = egovFileUtility.parseFile(files);
-            attachFileId = egovFileService.insertFiles(filsVOList);
-        }
-
-        bbsVO.setAtchFileId(attachFileId);
-        bbsVO.setFrstRegisterId(userInfo.get("uniqId"));
-        bbsVO.setLastUpdusrId(userInfo.get("uniqId"));
-        bbsVO.setUseAt("Y");
-
-        /* 답글 처리 */
-        if ("Y".equals(bbsVO.getAnswerAt())) {
-            bbsVO.setParntscttNo(Math.toIntExact(bbsVO.getNttId()));
-            BoardDTO boardDTO = repository.selectBbsDetail(bbsVO.getBbsId(), (long) bbsVO.getParntscttNo());
-
-            long nttId = boardIdGnrService.getNextLongId();
-            bbsVO.setNttNo(boardDTO.getNttNo() + 1);
-            bbsVO.setAnswerLc(boardDTO.getAnswerLc() + 1);
-            bbsVO.setRdcnt(0);
-            bbsVO.setNttId(nttId);
-            bbsVO.setSortOrdr(boardDTO.getSortOrdr());
-        } else {
-            bbsVO.setParntscttNo(0);
-            bbsVO.setAnswerLc(0);
-            bbsVO.setNttNo(1);
-            bbsVO.setAnswerAt("N");
-            bbsVO.setNttId(boardIdGnrService.getNextLongId());
-            bbsVO.setSortOrdr(Math.toIntExact(bbsVO.getNttId()));
-        }
-
-        /* 익명글 처리 */
-        if (!ObjectUtils.isEmpty(bbsVO.getAnonymousAt())) {
-            bbsVO.setNtcrId("annoymous");
-            bbsVO.setNtcrNm("익명");
-            bbsVO.setFrstRegisterId("annoymous");
-        } else {
-            bbsVO.setNtcrId(userInfo.get("uniqId"));
-            bbsVO.setNtcrNm(userInfo.get("userName"));
-        }
-
-        bbsVO = EgovBoardUtility.bbsEntityToVO(repository.save(EgovBoardUtility.bbsVOToEntity(bbsVO)));
-
-        if (SYNCLOG_ENABLED) {
-            try {
-                // 검색엔진 연계용 데이터 저장
-                BbsSyncLog syncLog = new BbsSyncLog();
-                syncLog.setSyncId(bbsSyncLogIdGnrService.getNextStringId());
-                syncLog.setNttId(bbsVO.getNttId());
-                syncLog.setBbsId(bbsVO.getBbsId());
-                syncLog.setSyncSttusCode("P"); // Pending
-                syncLog.setRegistPnttm(LocalDateTime.now());
-                bbsSyncLogRepository.save(syncLog);
-
-                // 게시글 저장 후 이벤트 발행
-                BoardEvent event = BoardEvent.builder()
-                        .eventType(BoardEventType.CREATE)
-                        .nttId(bbsVO.getNttId())
-                        .bbsId(bbsVO.getBbsId())
-                        .nttSj(bbsVO.getNttSj())
-                        .nttCn(bbsVO.getNttCn())
-                        .eventDateTime(LocalDateTime.now())
-                        .build();
-
-                streamBridge.send("searchProducer-out-0", event);
-            } catch (Exception e) {
-                log.warn("Failed to send event to RabbitMQ. Event will be processed later via COMTNBBSSYNCLOG: {}", e.getMessage());
+            if (!files.isEmpty()) {
+                List<FileVO> filsVOList = egovFileUtility.parseFile(files);
+                attachFileId = egovFileService.insertFiles(filsVOList);
             }
-        }
+
+            bbsVO.setAtchFileId(attachFileId);
+            bbsVO.setFrstRegisterId(userInfo.get("uniqId"));
+            bbsVO.setLastUpdusrId(userInfo.get("uniqId"));
+            bbsVO.setUseAt("Y");
+
+            /* 답글 처리 */
+            if ("Y".equals(bbsVO.getAnswerAt())) {
+                bbsVO.setParntscttNo(Math.toIntExact(bbsVO.getNttId()));
+                BoardDTO boardDTO = repository.selectBbsDetail(bbsVO.getBbsId(), (long) bbsVO.getParntscttNo());
+
+                long nttId = boardIdGnrService.getNextLongId();
+                bbsVO.setNttNo(boardDTO.getNttNo() + 1);
+                bbsVO.setAnswerLc(boardDTO.getAnswerLc() + 1);
+                bbsVO.setRdcnt(0);
+                bbsVO.setNttId(nttId);
+                bbsVO.setSortOrdr(boardDTO.getSortOrdr());
+            } else {
+                bbsVO.setParntscttNo(0);
+                bbsVO.setAnswerLc(0);
+                bbsVO.setNttNo(1);
+                bbsVO.setAnswerAt("N");
+                bbsVO.setNttId(boardIdGnrService.getNextLongId());
+                bbsVO.setSortOrdr(Math.toIntExact(bbsVO.getNttId()));
+            }
+
+            /* 익명글 처리 */
+            if (!ObjectUtils.isEmpty(bbsVO.getAnonymousAt())) {
+                bbsVO.setNtcrId("annoymous");
+                bbsVO.setNtcrNm("익명");
+                bbsVO.setFrstRegisterId("annoymous");
+            } else {
+                bbsVO.setNtcrId(userInfo.get("uniqId"));
+                bbsVO.setNtcrNm(userInfo.get("userName"));
+            }
+
+            bbsVO = EgovBoardUtility.bbsEntityToVO(repository.save(EgovBoardUtility.bbsVOToEntity(bbsVO)));
+
+            syncLogProcess(bbsVO);
 
         return bbsVO;
     }
 
     @Override
-    public BbsVO update(BbsVO bbsVO, List<MultipartFile> files, Map<String, String> userInfo) throws Exception {
-        if (!files.isEmpty()) {
-            List<FileVO> filsVOList = egovFileUtility.parseFile(files);
-            for (int i = 0; i < filsVOList.size(); i++) {
-                filsVOList.get(i).setAtchFileId(bbsVO.getAtchFileId());
+    public BbsVO update(BbsVO bbsVO, List<MultipartFile> files, Map<String, String> userInfo) throws IOException, FdlException {
+
+            if (!files.isEmpty()) {
+                List<FileVO> filsVOList = egovFileUtility.parseFile(files);
+                for (int i = 0; i < filsVOList.size(); i++) {
+                    filsVOList.get(i).setAtchFileId(bbsVO.getAtchFileId());
+                }
+                egovFileService.insertFiles(filsVOList);
             }
-            String atchFileId = egovFileService.insertFiles(filsVOList);
-        }
 
-        BoardDTO dto = repository.selectBbsDetail(bbsVO.getBbsId(), bbsVO.getNttId());
-        dto.setNoticeAt(bbsVO.getNoticeAt());
-        dto.setSecretAt(bbsVO.getSecretAt());
-        dto.setSjBoldAt(bbsVO.getSjBoldAt());
-        dto.setNttCn(bbsVO.getNttCn());
-        dto.setNttSj(bbsVO.getNttSj());
-        dto.setNtceBgnde(bbsVO.getNtceBgnde());
-        dto.setNtceEndde(bbsVO.getNtceEndde());
-        dto.setAtchFileId(bbsVO.getAtchFileId());
-        BeanUtils.copyProperties(dto, bbsVO);
+            BoardDTO dto = repository.selectBbsDetail(bbsVO.getBbsId(), bbsVO.getNttId());
+            dto.setNoticeAt(bbsVO.getNoticeAt());
+            dto.setSecretAt(bbsVO.getSecretAt());
+            dto.setSjBoldAt(bbsVO.getSjBoldAt());
+            dto.setNttCn(bbsVO.getNttCn());
+            dto.setNttSj(bbsVO.getNttSj());
+            dto.setNtceBgnde(bbsVO.getNtceBgnde());
+            dto.setNtceEndde(bbsVO.getNtceEndde());
+            dto.setAtchFileId(bbsVO.getAtchFileId());
+            BeanUtils.copyProperties(dto, bbsVO);
 
-        bbsVO.setLastUpdtPnttm(String.valueOf(LocalDateTime.now()));
-        bbsVO.setLastUpdusrId(userInfo.get("uniqId"));
+            bbsVO.setLastUpdtPnttm(String.valueOf(LocalDateTime.now()));
+            bbsVO.setLastUpdusrId(userInfo.get("uniqId"));
 
-        repository.save(EgovBoardUtility.bbsVOToEntity(bbsVO));
+            repository.save(EgovBoardUtility.bbsVOToEntity(bbsVO));
 
-        bbsVO = EgovBoardUtility.bbsEntityToVO(repository.save(EgovBoardUtility.bbsVOToEntity(bbsVO)));
+            bbsVO = EgovBoardUtility.bbsEntityToVO(repository.save(EgovBoardUtility.bbsVOToEntity(bbsVO)));
 
-        if (SYNCLOG_ENABLED) {
-            try {
-                // 검색엔진 연계용 데이터 저장
-                BbsSyncLog syncLog = new BbsSyncLog();
-                syncLog.setSyncId(bbsSyncLogIdGnrService.getNextStringId());
-                syncLog.setNttId(bbsVO.getNttId());
-                syncLog.setBbsId(bbsVO.getBbsId());
-                syncLog.setSyncSttusCode("P"); // Pending
-                syncLog.setRegistPnttm(LocalDateTime.now());
-                bbsSyncLogRepository.save(syncLog);
-
-                // 게시글 저장 후 이벤트 발행
-                BoardEvent event = BoardEvent.builder()
-                        .eventType(BoardEventType.CREATE)
-                        .nttId(bbsVO.getNttId())
-                        .bbsId(bbsVO.getBbsId())
-                        .nttSj(bbsVO.getNttSj())
-                        .nttCn(bbsVO.getNttCn())
-                        .eventDateTime(LocalDateTime.now())
-                        .build();
-
-                streamBridge.send("searchProducer-out-0", event);
-            } catch (Exception e) {
-                log.warn("Failed to send event to RabbitMQ. Event will be processed later via COMTNBBSSYNCLOG: {}", e.getMessage());
-            }
-        }
-
+            syncLogProcess(bbsVO);
         return bbsVO;
     }
 
@@ -250,7 +202,7 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
         bbsId.setNttId(bbsVO.getNttId());
 
         // 메인(최상위)게시글인 경우
-        if (bbsVO.getNoticeAt() == "N") {
+        if ("N".equals(bbsVO.getNoticeAt())) {
             List<Bbs> bbsList = repository.findAllByBbsIdAndSortOrdr(bbsId, (long) bbsVO.getSortOrdr());
             List<Comment> commentList = egovCommentRepository.findAllByCommentId_BbsIdAndCommentId_NttId(bbsVO.getBbsId(), bbsVO.getNttId());
             if (bbsList != null) {
@@ -277,7 +229,33 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
             repository.save(bbs);
             parntsItem(bbs.getBbsId().getBbsId(), bbs.getBbsId().getNttId());
         }
-        if (SYNCLOG_ENABLED) {
+
+        syncLogProcess(bbsVO);
+
+        return bbsVO;
+    }
+
+    private void parntsItem(String bbsId, long nttId) {
+        List<Bbs> rList = repository.findAllByParntscttNo((int) nttId);
+        List<Comment> commentList = egovCommentRepository.findAllByCommentId_BbsIdAndCommentId_NttId(bbsId, nttId);
+        if (rList.isEmpty()) {
+            log.debug("더 이상 답글 없음");
+        } else {
+            for (int i = 0; i < rList.size(); i++) {
+                rList.get(i).setUseAt("N");
+                repository.save(rList.get(i));
+                parntsItem(rList.get(i).getBbsId().getBbsId(), rList.get(i).getBbsId().getNttId());
+            }
+
+            for (Comment comment : commentList) {
+                comment.setUseAt("N");
+                egovCommentRepository.save(comment);
+            }
+        }
+    }
+
+    private void syncLogProcess(BbsVO bbsVO) {
+        if (syncLogEnabled) {
             try {
                 // 검색엔진 연계용 데이터 저장
                 BbsSyncLog syncLog = new BbsSyncLog();
@@ -303,26 +281,6 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
                 log.warn("Failed to send event to RabbitMQ. Event will be processed later via COMTNBBSSYNCLOG: {}", e.getMessage());
             }
         }
-
-        return bbsVO;
     }
 
-    public void parntsItem(String bbsId, long nttId) {
-        List<Bbs> rList = repository.findAllByParntscttNo((int) nttId);
-        List<Comment> commentList = egovCommentRepository.findAllByCommentId_BbsIdAndCommentId_NttId(bbsId, nttId);
-        if (rList.isEmpty()) {
-            log.debug("더 이상 답글 없음");
-        } else {
-            for (int i = 0; i < rList.size(); i++) {
-                rList.get(i).setUseAt("N");
-                repository.save(rList.get(i));
-                parntsItem(rList.get(i).getBbsId().getBbsId(), rList.get(i).getBbsId().getNttId());
-            }
-
-            for (Comment comment : commentList) {
-                comment.setUseAt("N");
-                egovCommentRepository.save(comment);
-            }
-        }
-    }
 }

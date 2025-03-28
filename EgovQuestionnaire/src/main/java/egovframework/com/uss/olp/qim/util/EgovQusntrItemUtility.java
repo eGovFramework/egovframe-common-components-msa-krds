@@ -3,8 +3,10 @@ package egovframework.com.uss.olp.qim.util;
 import egovframework.com.uss.olp.qim.entity.QustnrIem;
 import egovframework.com.uss.olp.qim.entity.QustnrIemId;
 import egovframework.com.uss.olp.qim.service.QustnrIemVO;
+import lombok.experimental.UtilityClass;
 import org.springframework.beans.BeanUtils;
 
+@UtilityClass
 public class EgovQusntrItemUtility {
 
     public static QustnrIemVO qustnrIemEntityToVO(QustnrIem qustnrIem) {
@@ -17,7 +19,7 @@ public class EgovQusntrItemUtility {
         return qustnrIemVO;
     }
 
-    public static QustnrIem QustnrIemVOToEntity(QustnrIemVO qustnrIemVO) {
+    public static QustnrIem qustnrIemVOToEntity(QustnrIemVO qustnrIemVO) {
         QustnrIem qustnrIem = new QustnrIem();
         QustnrIemId qustnrIemId = new QustnrIemId();
         qustnrIemId.setQustnrTmplatId(qustnrIemVO.getQustnrTmplatId());

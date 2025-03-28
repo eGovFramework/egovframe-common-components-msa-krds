@@ -8,11 +8,12 @@ public interface EgovFileService {
 
     List<FileVO> selectFileInfs(String atchFileId) throws FdlException;
 
-    public String insertFileInf(FileVO fvo) throws Exception;
+    String insertFileInf(FileVO fvo);
 
-    String insertFiles(List<FileVO> fileList) throws Exception;
+    String insertFiles(List<FileVO> fileList) throws FdlException;
 
-    void deleteFileInfs(FileVO fileVO) throws FdlException;
-    FileVO detailFileInf(FileVO fileVO) throws Exception;
+    void deleteFileInfs(FileVO fileVO);
+
+    FileVO detailFileInf(FileVO fileVO);
 
 }

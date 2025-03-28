@@ -10,7 +10,6 @@ import egovframework.com.cop.bls.service.EgovBlogService;
 import egovframework.com.cop.bls.util.EgovBlogUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -23,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Slf4j
-@Service("blsEgovBlogServiceImpl")
+@Service("blsEgovBlogService")
 public class EgovBlogServiceImpl extends EgovAbstractServiceImpl implements EgovBlogService {
 
     private final EgovBlogRepository repository;
@@ -55,21 +54,26 @@ public class EgovBlogServiceImpl extends EgovAbstractServiceImpl implements Egov
 
     @Transactional
     @Override
-    public BlogVO insert(BlogVO blogVO, Map<String, String> userInfo) throws FdlException {
-        String blogId = idgenService.getNextStringId();
+    public BlogVO insert(BlogVO blogVO, Map<String, String> userInfo) {
+        try {
+            String blogId = idgenService.getNextStringId();
 
-        blogVO.setBlogId(blogId);
-        blogVO.setRegistSeCode("REGC02");
-        blogVO.setFrstRegistPnttm(LocalDateTime.now());
-        blogVO.setFrstRegisterId(userInfo.get("uniqId"));
-        blogVO.setLastUpdtPnttm(LocalDateTime.now());
-        blogVO.setLastUpdusrId(userInfo.get("uniqId"));
-        Blog blog = repository.save(EgovBlogUtility.blogVOToEntity(blogVO));
+            blogVO.setBlogId(blogId);
+            blogVO.setRegistSeCode("REGC02");
+            blogVO.setFrstRegistPnttm(LocalDateTime.now());
+            blogVO.setFrstRegisterId(userInfo.get("uniqId"));
+            blogVO.setLastUpdtPnttm(LocalDateTime.now());
+            blogVO.setLastUpdusrId(userInfo.get("uniqId"));
+            Blog blog = repository.save(EgovBlogUtility.blogVOToEntity(blogVO));
 
-        BlogUserVO blogUserVO = getBlogUserVO(blogId, userInfo.get("uniqId"));
-        userRepository.save(EgovBlogUtility.blogUserVOToEntity(blogUserVO));
+            BlogUserVO blogUserVO = getBlogUserVO(blogId, userInfo.get("uniqId"));
+            userRepository.save(EgovBlogUtility.blogUserVOToEntity(blogUserVO));
 
-        return EgovBlogUtility.blogEntityToVO(blog);
+            return EgovBlogUtility.blogEntityToVO(blog);
+        } catch (Exception ex) {
+            leaveaTrace("fail.common.insert");
+            return null;
+        }
     }
 
     @Transactional

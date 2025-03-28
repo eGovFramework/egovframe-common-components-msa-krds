@@ -1,4 +1,4 @@
-package egovframework.com.uss.olp.qri.service.Impl;
+package egovframework.com.uss.olp.qri.service.impl;
 
 import egovframework.com.uss.olp.qri.entity.QustnrRespondInfo;
 import egovframework.com.uss.olp.qri.entity.QustnrRspnsResult;
@@ -59,7 +59,7 @@ public class EgovQustnrRspnsResultServiceImpl extends EgovAbstractServiceImpl im
             qustnrRespondInfoVO.setSexdstnCode(qustnrRspnsResultVO.getSexdstnCode());
             qustnrRespondInfoVO.setOccpTyCode(qustnrRspnsResultVO.getOccpTyCode());
             qustnrRespondInfoVO.setRespondNm(qustnrRspnsResultVO.getRespondNm());
-            QustnrRespondInfo qustnrRespondInfo = EgovQustnrRspnsResultUtility.QustnrRespondInfoVOTOEntity(qustnrRespondInfoVO);
+            QustnrRespondInfo qustnrRespondInfo = EgovQustnrRspnsResultUtility.qustnrRespondInfoVOTOEntity(qustnrRespondInfoVO);
             qustnrRespondInfo.setFrstRegistPnttm(LocalDateTime.now());
             qustnrRespondInfo.setFrstRegisterId(userInfo.get("uniqId"));
             qustnrRespondInfo.setLastUpdtPnttm(LocalDateTime.now());

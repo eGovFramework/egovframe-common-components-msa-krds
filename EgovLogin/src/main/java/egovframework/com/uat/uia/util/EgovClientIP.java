@@ -1,36 +1,24 @@
 package egovframework.com.uat.uia.util;
 
-import org.springframework.util.ObjectUtils;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
+@UtilityClass
+@Slf4j
 public class EgovClientIP {
 
-    public static String getClientIp(HttpServletRequest request) {
-        String[] headers = {
-                "X-Forwarded-For",
-                "Proxy-Client-IP",
-                "WL-Proxy-Client-IP",
-                "HTTP_CLIENT_IP",
-                "HTTP_X_FORWARDED_FOR",
-                "X-Real-IP",
-                "X-RealIP",
-                "REMOTE_ADDR"
-        };
-
-        String ipAddr = null;
-        for (String header : headers) {
-            ipAddr = request.getHeader(header);
-            if (!ObjectUtils.isEmpty(ipAddr) && !"unknown".equalsIgnoreCase(ipAddr)) {
-                break;
-            }
+    public static String getClientIp() {
+        InetAddress address;
+        try {
+            address = InetAddress.getLocalHost();
+            return address.getHostAddress();
+        } catch (UnknownHostException e) {
+            log.error("GatewayJwtProvider.getClientIp Client Ip Invalid", e);
+            return "0.0.0.0";
         }
-
-        if (ObjectUtils.isEmpty(ipAddr) || "unknown".equalsIgnoreCase(ipAddr)) {
-            ipAddr = request.getRemoteAddr();
-        }
-
-        return ipAddr;
     }
 
 }

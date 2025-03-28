@@ -7,8 +7,10 @@ import egovframework.com.sym.ccm.cde.entity.CmmnDetailCodeId;
 import egovframework.com.sym.ccm.cde.service.CmmnClCodeVO;
 import egovframework.com.sym.ccm.cde.service.CmmnCodeVO;
 import egovframework.com.sym.ccm.cde.service.CmmnDetailCodeVO;
+import lombok.experimental.UtilityClass;
 import org.springframework.beans.BeanUtils;
 
+@UtilityClass
 public class EgovCmmnDetailCodeUtility {
 
     public static CmmnClCodeVO clCodeEntityTOVO(CmmnClCode cmmnClCode) {
@@ -38,7 +40,7 @@ public class EgovCmmnDetailCodeUtility {
         return cmmnDetailCodeVO;
     }
 
-    public static CmmnDetailCode VOToEntity(CmmnDetailCodeVO cmmnDetailCodeVO) {
+    public static CmmnDetailCode vOToEntity(CmmnDetailCodeVO cmmnDetailCodeVO) {
         CmmnDetailCodeId cmmnDetailCodeId = new CmmnDetailCodeId();
         cmmnDetailCodeId.setCodeId(cmmnDetailCodeVO.getCodeId());
         cmmnDetailCodeId.setCode(cmmnDetailCodeVO.getCode());

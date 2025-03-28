@@ -1,6 +1,5 @@
 package egovframework.com.uss.olp.qrm.service;
 
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.springframework.data.domain.Page;
 
 public interface EgovQustnrRespondInfoService {
@@ -9,7 +8,7 @@ public interface EgovQustnrRespondInfoService {
 
     QustnrRespondInfoDTO detail(QustnrRespondInfoVO qustnrRespondInfoVO);
 
-    QustnrRespondInfoVO insert(QustnrRespondInfoVO qustnrRespondInfoVO) throws FdlException;
+    QustnrRespondInfoVO insert(QustnrRespondInfoVO qustnrRespondInfoVO);
 
     QustnrRespondInfoVO update(QustnrRespondInfoVO qustnrRespondInfoVO);
 

@@ -1,10 +1,10 @@
 package egovframework.com.ext.ops.service.impl;
 
-import com.google.gson.Gson;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.OnnxEmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.PoolingMode;
+import egovframework.com.config.ConfigUtils;
 import egovframework.com.config.EgovSearchConfig;
 import egovframework.com.ext.ops.service.BoardVO;
 import egovframework.com.ext.ops.service.BoardVectorVO;
@@ -24,8 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 @Service("opsEgovOpenSearchService")
 @RequiredArgsConstructor
@@ -41,27 +39,19 @@ public class EgovOpenSearchServiceImpl extends EgovAbstractServiceImpl implement
     @Value("${app.search-config-path}")
     private String configPath;
 
-    private String modelPath;
-    private String tokenizerPath;
+    private EmbeddingModel embeddingModel;
     private final OpenSearchClient client;
+    
+    private final ConfigUtils configUtils;
 
     @Override
     public void afterPropertiesSet() {
-        loadConfig();
-    }
-
-    private void loadConfig() {
-        try {
-            String jsonStr = new String(Files.readAllBytes(Paths.get(configPath)));
-            EgovSearchConfig config = new Gson().fromJson(jsonStr, EgovSearchConfig.class);
-
-            this.modelPath = config.getModelPath();
-            this.tokenizerPath = config.getTokenizerPath();
-
-        } catch (IOException e) {
-            log.error("Failed to load search config: " + e.getMessage());
-            throw new RuntimeException("Failed to load configuration", e);
-        }
+    	EgovSearchConfig config = configUtils.loadConfig();
+    	if (config != null) {
+            String modelPath = config.getModelPath();
+            String tokenizerPath = config.getTokenizerPath();
+            this.embeddingModel = new OnnxEmbeddingModel(modelPath, tokenizerPath, PoolingMode.MEAN);
+        } 
     }
 
     @Override
@@ -70,14 +60,12 @@ public class EgovOpenSearchServiceImpl extends EgovAbstractServiceImpl implement
             performOpenSearchTextOperation(nttId, boardVO);
             performOpenSearchVectorOperation(nttId, boardVO);
         } catch (Exception e) {
-            log.error("Error processing OpenSearch operations for nttId: {}", nttId, e);
-            throw new RuntimeException("Failed to process OpenSearch operations", e);
+            log.warn("Error processing OpenSearch operations for nttId: {}", nttId, e);
         }
     }
 
-    private void performOpenSearchTextOperation(Long nttId, BoardVO boardVO) throws IOException {
+    private void performOpenSearchTextOperation(Long nttId, BoardVO boardVO) {
         try {
-
             // HTML 태그 제거
             BoardVO cleanedBoardVO = new BoardVO();
             BeanUtils.copyProperties(boardVO, cleanedBoardVO);
@@ -117,12 +105,11 @@ public class EgovOpenSearchServiceImpl extends EgovAbstractServiceImpl implement
                 log.info("Inserted new document in text index for nttId: {}", nttId);
             }
         } catch (IOException e) {
-            log.error("Error in text operation for nttId: {}", nttId, e);
-            throw new RuntimeException("Failed to load configuration", e);
+            log.warn("Error in text operation for nttId: {}", nttId, e);
         }
     }
 
-    private void performOpenSearchVectorOperation(Long nttId, BoardVO boardVO) throws IOException {
+    private void performOpenSearchVectorOperation(Long nttId, BoardVO boardVO) {
         try {
             // HTML 태그 제거
             BoardVO cleanedBoardVO = new BoardVO();
@@ -165,16 +152,14 @@ public class EgovOpenSearchServiceImpl extends EgovAbstractServiceImpl implement
                 log.info("Inserted new document in vector index for nttId: {}", nttId);
             }
         } catch (IOException e) {
-            log.error("Error in vector operation for nttId: {}", nttId);
-            throw new RuntimeException("Failed to load configuration", e);
+            log.warn("Error in vector operation for nttId: {}", nttId);
         }
     }
 
     private BoardVectorVO addVector(BoardVO boardVO) {
-        EmbeddingModel model = new OnnxEmbeddingModel(modelPath, tokenizerPath, PoolingMode.MEAN);
         String combinedText = boardVO.getNttSj() + " " + boardVO.getNttCn();
 
-        Embedding articleResponse = model.embed(StrUtil.cleanString(combinedText)).content();
+        Embedding articleResponse = embeddingModel.embed(StrUtil.cleanString(combinedText)).content();
         float[] bbsArticleVector = articleResponse.vector();
 
         BoardVectorVO boardVectorVO = new BoardVectorVO();

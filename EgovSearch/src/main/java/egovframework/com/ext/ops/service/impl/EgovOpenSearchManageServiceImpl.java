@@ -1,10 +1,10 @@
 package egovframework.com.ext.ops.service.impl;
 
-import com.google.gson.Gson;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.OnnxEmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.PoolingMode;
+import egovframework.com.config.ConfigUtils;
 import egovframework.com.config.EgovSearchConfig;
 import egovframework.com.ext.ops.entity.BbsSyncLog;
 import egovframework.com.ext.ops.repository.EgovBbsRepository;
@@ -36,8 +36,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,37 +53,24 @@ public class EgovOpenSearchManageServiceImpl extends EgovAbstractServiceImpl imp
     @Value("${index.batch.size}")
     private int batchSize;
 
-    @Value("${app.search-config-path}")
-    private String configPath;
-
-    private String modelPath;
-    private String tokenizerPath;
     private String stopTagsPath;
     private String synonymsPath;
     private String dictionaryRulesPath;
     private EmbeddingModel embeddingModel;
-
-    private void loadConfig() {
-        try {
-            String jsonStr = new String(Files.readAllBytes(Paths.get(configPath)));
-            EgovSearchConfig config = new Gson().fromJson(jsonStr, EgovSearchConfig.class);
-
-            this.modelPath = config.getModelPath();
-            this.tokenizerPath = config.getTokenizerPath();
-            this.stopTagsPath = config.getStopTagsPath();
-            this.synonymsPath = config.getSynonymsPath();
-            this.dictionaryRulesPath = config.getDictionaryRulesPath();
-
-        } catch (IOException e) {
-            log.error("Failed to load search config: " + e.getMessage());
-            throw new RuntimeException("Failed to load configuration", e);
-        }
-    }
+    
+    private final ConfigUtils configUtils;
 
     @Override
     public void afterPropertiesSet() {
-        loadConfig();
-        this.embeddingModel = new OnnxEmbeddingModel(modelPath, tokenizerPath, PoolingMode.MEAN);
+    	EgovSearchConfig config = configUtils.loadConfig();
+    	if (config != null) {
+            String modelPath = config.getModelPath();
+            String tokenizerPath = config.getTokenizerPath();
+            this.stopTagsPath = config.getStopTagsPath();
+            this.synonymsPath = config.getSynonymsPath();
+            this.dictionaryRulesPath = config.getDictionaryRulesPath();
+            this.embeddingModel = new OnnxEmbeddingModel(modelPath, tokenizerPath, PoolingMode.MEAN);
+        }
     }
 
     private final OpenSearchClient client;

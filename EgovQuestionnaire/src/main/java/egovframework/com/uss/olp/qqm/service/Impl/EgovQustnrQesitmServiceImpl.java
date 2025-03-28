@@ -1,4 +1,4 @@
-package egovframework.com.uss.olp.qqm.service.Impl;
+package egovframework.com.uss.olp.qqm.service.impl;
 
 import egovframework.com.uss.olp.qqm.entity.QustnrQesitm;
 import egovframework.com.uss.olp.qqm.entity.QustnrQesitmId;
@@ -8,7 +8,6 @@ import egovframework.com.uss.olp.qqm.service.QustnrQesitmDTO;
 import egovframework.com.uss.olp.qqm.service.QustnrQesitmVO;
 import egovframework.com.uss.olp.qqm.util.EgovQustnrQesitmUtility;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -50,17 +49,22 @@ public class EgovQustnrQesitmServiceImpl extends EgovAbstractServiceImpl impleme
 
     @Transactional
     @Override
-    public QustnrQesitmVO insert(QustnrQesitmVO qustnrQesitmVO, Map<String, String> userInfo) throws FdlException {
-        String qustnrQesitmId = idgenService.getNextStringId();
-        qustnrQesitmVO.setQustnrQesitmId(qustnrQesitmId);
+    public QustnrQesitmVO insert(QustnrQesitmVO qustnrQesitmVO, Map<String, String> userInfo) {
+        try {
+            String qustnrQesitmId = idgenService.getNextStringId();
+            qustnrQesitmVO.setQustnrQesitmId(qustnrQesitmId);
 
-        QustnrQesitm qustnrQesitm = EgovQustnrQesitmUtility.QustnrQesitmVOToEntity(qustnrQesitmVO);
-        qustnrQesitm.setFrstRegistPnttm(LocalDateTime.now());
-        qustnrQesitm.setFrstRegisterId(userInfo.get("uniqId"));
-        qustnrQesitm.setLastUpdtPnttm(LocalDateTime.now());
-        qustnrQesitm.setLastUpdusrId(userInfo.get("uniqId"));
+            QustnrQesitm qustnrQesitm = EgovQustnrQesitmUtility.qustnrQesitmVOToEntity(qustnrQesitmVO);
+            qustnrQesitm.setFrstRegistPnttm(LocalDateTime.now());
+            qustnrQesitm.setFrstRegisterId(userInfo.get("uniqId"));
+            qustnrQesitm.setLastUpdtPnttm(LocalDateTime.now());
+            qustnrQesitm.setLastUpdusrId(userInfo.get("uniqId"));
 
-        return EgovQustnrQesitmUtility.QustnrQesitmEntityToVO(repository.save(qustnrQesitm));
+            return EgovQustnrQesitmUtility.qustnrQesitmEntityToVO(repository.save(qustnrQesitm));
+        } catch (Exception ex) {
+            leaveaTrace("fail.common.insert");
+            return null;
+        }
     }
 
     @Transactional
@@ -74,7 +78,7 @@ public class EgovQustnrQesitmServiceImpl extends EgovAbstractServiceImpl impleme
         return repository.findById(qustnrQesitmId)
                 .map(item -> updateItem(item, qustnrQesitmVO, userInfo.get("uniqId")))
                 .map(repository::save)
-                .map(EgovQustnrQesitmUtility::QustnrQesitmEntityToVO)
+                .map(EgovQustnrQesitmUtility::qustnrQesitmEntityToVO)
                 .orElse(null);
     }
 
@@ -108,7 +112,6 @@ public class EgovQustnrQesitmServiceImpl extends EgovAbstractServiceImpl impleme
     public List<QustnrQesitmDTO> qustnrQusitmList(QustnrQesitmVO qustnrQesitmVO) {
         String qustnrTmplatId = qustnrQesitmVO.getQustnrTmplatId();
         String qestnrId = qustnrQesitmVO.getQestnrId();
-        String qustnrQesitmId = qustnrQesitmVO.getQustnrQesitmId();
         return repository.qustnrQusitmList(qustnrTmplatId, qestnrId);
     }
 

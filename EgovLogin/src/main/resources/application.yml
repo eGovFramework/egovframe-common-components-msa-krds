@@ -18,25 +18,6 @@ spring:
     import: optional:configserver:http://localhost:8888
   profiles:
     active: local
-  datasource:
-    driver-class-name: ${datasource.driver-class-name:com.mysql.cj.jdbc.Driver}
-    url: ${datasource.url:jdbc:mysql://localhost:3306/com}
-    username: ${datasource.username:com}
-    password: ${datasource.password:com01}
-    hikari:
-      maximum-pool-size: ${datasource.hikari.maximum-pool-size:20}
-      connection-timeout: ${datasource.hikari.connection-timeout:20000}
-      idle-timeout: ${datasource.hikari.idle-timeout:30000}
-      minimum-idle: ${datasource.hikari.minimum-idle:5}
-      max-lifetime: ${datasource.hikari.max-lifetime:180000}
-  jpa:
-    hibernate:
-      ddl-auto: ${jpa.hibernate.ddl-auto:update}
-    open-in-view: ${jpa.open-in-view:false}
-    show-sql: ${jpa.show-sql:true}
-    properties:
-      hibernate:
-        format_sql: ${jpa.properties.hibernate.format_sql:true}
 
 logging:
   level:
@@ -55,12 +36,11 @@ eureka:
     register-with-eureka: true # Eureka 등록 여부
     fetch-registry: true # Eureka 조회 여부
     registry-fetch-interval-seconds: 5 # 클라이어트 측에서 레지스트리를 캐싱하는 시간
-    initial-instance-info-replication-interval-secondsL: 5 # 서버 재시작 후 즉시 등록 시도
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
     instance:
-      leaseRenewalIntervalInSeconds: 5  # 기본값 30초 → 5초로 변경 (더 자주 heartbeat 전송)
-      leaseExpirationDurationInSeconds: 10  # 기본값 90초 → 10초로 변경 (서비스 제거 시간 단축)
+      lease-renewal-interval-in-seconds: 3  # 기본값 30초 → 3초로 변경 (더 자주 heartbeat 전송)
+      lease-expiration-duration-in-seconds: 10  # 기본값 90초 → 10초로 변경 (서비스 제거 시간 단축)
       instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
 management:
@@ -69,10 +49,50 @@ management:
       exposure:
         include: health, info
 
+Globals:
+  auth: security
+
 org:
   egovframe:
     crypto:
       algorithm: SHA-256
       algorithmKey: egovframe
       algorithmKeyHash: gdyYs/IZqY86VcWhT8emCYfqY1ahw2vtLG+/FzNqtrQ=
-      plainDigest: false
+
+    security:
+      loginUrl: /uat/uia/loginView                          # 로그인 페이지 URL
+      logoutSuccessUrl: /uat/uia/loginView                  # 로그아웃 후 이동 URL
+      loginFailureUrl: /uat/uia/loginFailure                # 로그인 실패 시 이동 URL
+      accessDeniedUrl: /uat/uia/accessDenied                # 접근 거부 시 URL
+      csrfAccessDeniedUrl: /uat/uia/csrfAccessDenied        # CSRF 거부 시 URL
+      defaultTargetUrl: /main                               # 로그인 성공 후 이동 URL
+      dataSource: dataSource
+      excludeList: /css/**, /images/**, /js/**, /uat/** # 인증 제외 경로
+      csrf: false                                           # CSRF 사용 여부
+      xframeOptions: sameorigin                             # iframe 허용 정책 (sameorigin | deny | disable)
+      sniff: true                                           # X-Content-Type-Options 설정 여부
+      xssProtection: true                                   # 브라우저 XSS 보호 활성화 여부
+      cacheControl: false                                   # 캐시 방지 헤더 사용 여부
+      concurrentMaxSessons: 1                               # 동시 로그인 허용 수 (1이면 1개 세션만 유지)
+      errorIfMaximumExceeded: false                         # 초과 세션 시 예외 발생 여부
+      concurrentExpiredUrl: /uat/uia/loginView              # 세션 만료 시 이동할 URL
+      hash: plaintext                                       # 비밀번호 인코딩 방식 (noop, md5, sha-256 등)
+      hashBase64: false                                     # Base64 인코딩 여부
+      requestMatcherType: ant                               # URL 패턴 방식 (ant, regex 등)
+      jdbcMapClass: org.egovframe.boot.security.userdetails.DefaultMapUserDetailsMapping
+      jdbcUsersByUsernameQuery: >
+        SELECT USER_ID, PASSWORD, 'TRUE' AS ENABLED
+        FROM COMVNUSERMASTER
+        WHERE USER_ID = ?
+      jdbcAuthoritiesByUsernameQuery: >
+        SELECT A.SCRTY_DTRMN_TRGET_ID USER_ID, A.AUTHOR_CODE AUTHORITY
+        FROM MSATNEMPLYRSCRTYESTBS A, COMVNUSERMASTER B WHERE
+        A.SCRTY_DTRMN_TRGET_ID = B.ESNTL_ID AND B.USER_ID = ?
+      sqlRolesAndUrl: >
+        SELECT A.ROLE_PTTRN URL, B.AUTHOR_CODE AUTHORITY
+        FROM MSATNROLEINFO A, MSATNAUTHORROLERELATE B
+        WHERE A.ROLE_CODE = B.ROLE_CODE  AND A.ROLE_TY = 'url'
+        ORDER BY A.ROLE_SORT
+      sqlHierarchicalRoles: >
+        SELECT A.CHLDRN_ROLE AS CHILD, A.PARNTS_ROLE PARENT
+        FROM MSATNROLES_HIERARCHY A LEFT JOIN MSATNROLES_HIERARCHY B ON (A.CHLDRN_ROLE = B.PARNTS_ROLE)

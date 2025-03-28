@@ -17,22 +17,19 @@ spring:
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials # 헤더 중복 제거
       globalcors:
-        cors-configurations:
+        cors-configurations: # 모든 경로(/**)에 대해 CORS 정책을 적용
           '[/**]':
-            allowed-origins:
-              - http://localhost:9000
-            allowedMethods:
+            allowed-origins: # 해당 origin(도메인)에서 오는 요청을 허용
+              - http://localhost
+            allowedMethods: # 허용할 HTTP 메서드 지정(GET, POST 만 허용)
               - GET
               - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowedHeaders: "*"
-            allowCredentials: true
+            allowedHeaders: "*" # 요청에서 어떤 헤더든 허용함
+            allowCredentials: true # 클라이언트가 쿠키, 인증 정보, Authorization 헤더 등을 포함한 요청을 보낼 수 있도록 허용
 
       routes:
         - id: RedirectToMain
-          uri: http://localhost:9000
+          uri: lb://GATEWAYSERVER
           predicates:
             - Path=/ # 루트 경로("/")로 접근할 때
           filters:
@@ -53,7 +50,7 @@ spring:
             - RewritePath=/uat/uia/(?<segment>.*), /uat/uia/${segment}
 
         - id: EgovLoginPolicy
-          uri: lb://EGOVLOGIN
+          uri: lb://EGOVLOGINPOLICY
           predicates:
             - Path=/uat/uap/**
           filters:
@@ -237,14 +234,13 @@ eureka:
   client:
     register-with-eureka: true # Eureka 등록 여부
     fetch-registry: true # Eureka 조회 여부
-    registry-fetch-interval-seconds: 5 # 클라이어트 측에서 eureka registry를 캐싱하는 시간
-    initial-instance-info-replication-interval-secondsL: 5 # 서버 재시작 후 즉시 등록 시도
+    registry-fetch-interval-seconds: 5 # 클라이어트 측에서 레지스트리를 캐싱하는 시간
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
-  instance:
-    leaseRenewalIntervalInSeconds: 5  # 기본값 30초 → 5초로 변경 (더 자주 heartbeat 전송)
-    leaseExpirationDurationInSeconds: 10  # 기본값 90초 → 10초로 변경 (서비스 제거 시간 단축)
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    instance:
+      lease-renewal-interval-in-seconds: 3  # 기본값 30초 → 3초로 변경 (더 자주 heartbeat 전송)
+      lease-expiration-duration-in-seconds: 10  # 기본값 90초 → 10초로 변경 (서비스 제거 시간 단축)
+      instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
 management:
   endpoints:
@@ -258,4 +254,3 @@ org:
       algorithm: SHA-256
       algorithmKey: egovframe
       algorithmKeyHash: gdyYs/IZqY86VcWhT8emCYfqY1ahw2vtLG+/FzNqtrQ=
-      plainDigest: false

@@ -1,8 +1,9 @@
 package egovframework.com.filter;
 
 import egovframework.com.config.GatewayJwtProvider;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -22,21 +23,10 @@ import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Component
 @Slf4j
 public class AuthGatewayFilterFactory extends AbstractGatewayFilterFactory<AuthGatewayFilterFactory.Config> {
-
-    @Value("${roles.roleAdmin}")
-    private String roleAdminPaths;
-
-    @Value("${roles.roleUser}")
-    private String roleUserPaths;
-
     private final WebClient.Builder webClientBuilder;
     private final GatewayJwtProvider gatewayJwtProvider;
 
@@ -48,7 +38,6 @@ public class AuthGatewayFilterFactory extends AbstractGatewayFilterFactory<AuthG
 
     @Override
     public GatewayFilter apply(Config config) {
-
         return (exchange, chain) -> {
             String path = exchange.getRequest().getURI().getPath();
 
@@ -100,14 +89,12 @@ public class AuthGatewayFilterFactory extends AbstractGatewayFilterFactory<AuthG
             }
 
             // URL별로 접근 가능한 역할 확인
-            String role = gatewayJwtProvider.extractAuthId(accessToken);
+            String authList = gatewayJwtProvider.extractAuthLs(accessToken);
             String param = getParamFromPath(path);
-            log.debug("##### AuthGatewayFilterFactory role {}, param {}", role, param);
-            if (!isAuthorized(role, path)) {
+            if (!isPathAuthorized(path, authList)) {
                 return onForbidden(exchange, param);
             }
 
-            // Proceed with valid accessToken
             ServerHttpRequest request = gatewayJwtProvider.headerSetting(exchange, accessToken);
             return chain.filter(exchange.mutate().request(request).build());
         };
@@ -138,25 +125,6 @@ public class AuthGatewayFilterFactory extends AbstractGatewayFilterFactory<AuthG
                 });
     }
 
-    private boolean isAuthorized(String role, String path) {
-        Map<String, List<String>> roleAccessMap = new HashMap<>();
-        roleAccessMap.put("ROLE_ADMIN", Arrays.asList(roleAdminPaths.split(",\\s*")));
-        roleAccessMap.put("ROLE_USER", Arrays.asList(roleUserPaths.split(",\\s*")));
-
-        List<String> allowedPaths = roleAccessMap.get(role);
-        if (allowedPaths == null) {
-            return false;
-        }
-
-        AntPathMatcher pathMatcher = new AntPathMatcher();
-        for (String allowedPath : allowedPaths) {
-            if (pathMatcher.match(allowedPath, path)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private Mono<Void> onError(ServerWebExchange exchange) {
         // Remove accessToken, refreshToken cookie
         deleteCookie(exchange, "accessToken");
@@ -171,8 +139,6 @@ public class AuthGatewayFilterFactory extends AbstractGatewayFilterFactory<AuthG
     private Mono<Void> redirectToErrorPage(ServerWebExchange exchange, String errorPage, String param) {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(HttpStatus.FOUND); // 302 Redirect
-
-        log.debug("##### Redirect to param: {}", param);
         String redirectUrl = "";
         if ("0".equals(param)) {
             redirectUrl = UriComponentsBuilder.fromUriString(errorPage)
@@ -220,7 +186,22 @@ public class AuthGatewayFilterFactory extends AbstractGatewayFilterFactory<AuthG
         return "0";
     }
 
+    private boolean isPathAuthorized(String path, String authorizedPatternCsv) {
+        AntPathMatcher matcher = new AntPathMatcher();
+        String[] patterns = authorizedPatternCsv.split(",");
+        for (String pattern : patterns) {
+            if (matcher.match(pattern.trim(), path)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Setter
+    @Getter
     public static class Config {
+        private boolean preLogger;
+        private boolean postLogger;
     }
 
 }

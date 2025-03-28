@@ -1,6 +1,5 @@
 package egovframework.com.uss.olp.qqm.service;
 
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -12,7 +11,7 @@ public interface EgovQustnrQesitmService {
 
     QustnrQesitmDTO detail(QustnrQesitmVO qustnrQesitmVO);
 
-    QustnrQesitmVO insert(QustnrQesitmVO qustnrQesitmVO, Map<String, String> userInfo) throws FdlException;
+    QustnrQesitmVO insert(QustnrQesitmVO qustnrQesitmVO, Map<String, String> userInfo);
 
     QustnrQesitmVO update(QustnrQesitmVO qustnrQesitmVO, Map<String, String> userInfo);
 

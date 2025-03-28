@@ -1,0 +1,7 @@
+{
+  "modelPath": "${HOME}/EgovSearch-Config/model/model.onnx",
+  "tokenizerPath": "${HOME}/EgovSearch-Config/model/tokenizer.json",
+  "stopTagsPath": "${HOME}/EgovSearch-Config/example/stoptags.txt",
+  "synonymsPath": "${HOME}/EgovSearch-Config/example/synonyms.txt",
+  "dictionaryRulesPath": "${HOME}/EgovSearch-Config/example/dictionaryRules.txt"
+}

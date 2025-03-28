@@ -5,8 +5,10 @@ import egovframework.com.cop.bls.service.BbsMasterOptnVO;
 import egovframework.com.cop.bls.service.BbsMasterVO;
 import egovframework.com.cop.bls.service.BlogUserVO;
 import egovframework.com.cop.bls.service.BlogVO;
+import lombok.experimental.UtilityClass;
 import org.springframework.beans.BeanUtils;
 
+@UtilityClass
 public class EgovBlogUtility {
 
     public static BlogVO blogEntityToVO(Blog blog) {

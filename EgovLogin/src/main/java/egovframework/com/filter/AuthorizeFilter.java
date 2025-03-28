@@ -20,12 +20,12 @@ public class AuthorizeFilter extends OncePerRequestFilter {
         String secretCodeId = request.getHeader("X-CODE-ID");
 
         if (!request.getRequestURI().contains("/uat/uia")) {
-            String SECRET_CODE = "-WzAnecnlNewSEQwDgJ2BQ";
-            if (ObjectUtils.isEmpty(SECRET_CODE) || !SECRET_CODE.equals(secretCodeId)) {
+            String secretCode = "-WzAnecnlNewSEQwDgJ2BQ";
+            if (ObjectUtils.isEmpty(secretCodeId) || !secretCode.equals(secretCodeId)) {
                 log.warn("##### Access Denied: Unauthorized Access Attempt");
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                String ERROR_PAGE = "/error/403.html";
-                response.sendRedirect(request.getContextPath() + ERROR_PAGE);
+                String errorPage = "/error/403.html";
+                response.sendRedirect(request.getContextPath() + errorPage);
                 return;
             }
         }

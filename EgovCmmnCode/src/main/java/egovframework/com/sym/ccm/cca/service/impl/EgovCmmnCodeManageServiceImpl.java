@@ -33,36 +33,36 @@ public class EgovCmmnCodeManageServiceImpl extends EgovAbstractServiceImpl imple
         Specification<CmmnCode> spec = (root, query, criteriaBuilder) -> null;
         if (!ObjectUtils.isEmpty(cmmnCodeVO.getSearchKeyword()) && "1".equals(cmmnCodeVO.getSearchCondition())) {
             spec = spec.and(EgovCmmnCodeManageSpecification.codeIdContains(cmmnCodeVO.getSearchKeyword()));
-            return repository.findAll(spec, pageable).map(EgovCmmnCodeUtility::CmmnCodeAllEntityToVO);
+            return repository.findAll(spec, pageable).map(EgovCmmnCodeUtility::cmmnCodeAllEntityToVO);
         } else if (!ObjectUtils.isEmpty(cmmnCodeVO.getSearchKeyword()) && "2".equals(cmmnCodeVO.getSearchCondition())) {
             spec = spec.and(EgovCmmnCodeManageSpecification.codeIdNmContains(cmmnCodeVO.getSearchKeyword()));
-            return repository.findAll(spec, pageable).map(EgovCmmnCodeUtility::CmmnCodeAllEntityToVO);
+            return repository.findAll(spec, pageable).map(EgovCmmnCodeUtility::cmmnCodeAllEntityToVO);
         } else {
-            return repository.findAll(pageable).map(EgovCmmnCodeUtility::CmmnCodeAllEntityToVO);
+            return repository.findAll(pageable).map(EgovCmmnCodeUtility::cmmnCodeAllEntityToVO);
         }
     }
 
     @Override
     public CmmnCodeVO detail(CmmnCodeVO cmmnCodeVO) {
         String codeId = cmmnCodeVO.getCodeId();
-        return repository.findById(codeId).map(EgovCmmnCodeUtility::CmmnCodeAllEntityToVO).orElse(null);
+        return repository.findById(codeId).map(EgovCmmnCodeUtility::cmmnCodeAllEntityToVO).orElse(null);
     }
 
     @Transactional
     @Override
     public CmmnCodeVO insert(CmmnCodeVO cmmnCodeVO, Map<String, String> userInfo) {
-        CmmnCode cmmnCode = EgovCmmnCodeUtility.CmmnCodeVOToEntity(cmmnCodeVO);
+        CmmnCode cmmnCode = EgovCmmnCodeUtility.cmmnCodeVOToEntity(cmmnCodeVO);
         cmmnCode.setFrstRegistPnttm(LocalDateTime.now());
         cmmnCode.setFrstRegisterId(userInfo.get("uniqId"));
         cmmnCode.setLastUpdtPnttm(LocalDateTime.now());
         cmmnCode.setLastUpdusrId(userInfo.get("uniqId"));
-        return EgovCmmnCodeUtility.CmmnCodeEntityToVO(repository.save(cmmnCode));
+        return EgovCmmnCodeUtility.cmmnCodeEntityToVO(repository.save(cmmnCode));
     }
 
     @Transactional
     @Override
     public CmmnCodeVO update(CmmnCodeVO cmmnCodeVO, Map<String, String> userInfo) {
-        CmmnCode cmmnCode = EgovCmmnCodeUtility.CmmnCodeVOToEntity(cmmnCodeVO);
+        CmmnCode cmmnCode = EgovCmmnCodeUtility.cmmnCodeVOToEntity(cmmnCodeVO);
         return repository.findById(cmmnCode.getCodeId())
                 .map(result -> {
                     result.setCodeIdNm(cmmnCode.getCodeIdNm());
@@ -72,13 +72,13 @@ public class EgovCmmnCodeManageServiceImpl extends EgovAbstractServiceImpl imple
                     result.setLastUpdusrId(userInfo.get("uniqId"));
                     return repository.save(result);
                 })
-                .map(EgovCmmnCodeUtility::CmmnCodeEntityToVO).orElse(null);
+                .map(EgovCmmnCodeUtility::cmmnCodeEntityToVO).orElse(null);
     }
 
     @Transactional
     @Override
     public CmmnCodeVO delete(CmmnCodeVO cmmnCodeVO, Map<String, String> userInfo) {
-        CmmnCode cmmnCode = EgovCmmnCodeUtility.CmmnCodeVOToEntity(cmmnCodeVO);
+        CmmnCode cmmnCode = EgovCmmnCodeUtility.cmmnCodeVOToEntity(cmmnCodeVO);
         return repository.findById(cmmnCode.getCodeId())
                 .map(result -> {
                     result.setUseAt("N");
@@ -86,7 +86,7 @@ public class EgovCmmnCodeManageServiceImpl extends EgovAbstractServiceImpl imple
                     result.setLastUpdusrId(userInfo.get("uniqId"));
                     return repository.save(result);
                 })
-                .map(EgovCmmnCodeUtility::CmmnCodeEntityToVO).orElse(null);
+                .map(EgovCmmnCodeUtility::cmmnCodeEntityToVO).orElse(null);
     }
 
 }

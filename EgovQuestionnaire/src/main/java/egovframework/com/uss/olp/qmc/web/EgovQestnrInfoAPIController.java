@@ -4,7 +4,6 @@ import egovframework.com.pagination.EgovPaginationFormat;
 import egovframework.com.uss.olp.qmc.service.*;
 import lombok.RequiredArgsConstructor;
 import org.egovframe.boot.crypto.service.impl.EgovEnvCryptoServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -88,7 +87,7 @@ public class EgovQestnrInfoAPIController {
     }
 
     @PostMapping(value="/qestnrInfoInsert")
-    public ResponseEntity<?> qestnrInfoInsert(@Valid @ModelAttribute QestnrInfoVO qestnrInfoVO, BindingResult bindingResult, HttpServletRequest request) throws FdlException {
+    public ResponseEntity<?> qestnrInfoInsert(@Valid @ModelAttribute QestnrInfoVO qestnrInfoVO, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             for (FieldError error : bindingResult.getFieldErrors()) {

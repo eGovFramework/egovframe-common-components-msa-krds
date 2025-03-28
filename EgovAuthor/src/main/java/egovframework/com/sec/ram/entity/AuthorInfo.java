@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @Entity(name="ramAuthorInfo")
 @Getter
 @Setter
-@Table(name="COMTNAUTHORINFO")
+@Table(name="MSATNAUTHORINFO")
 public class AuthorInfo {
 
     @Id

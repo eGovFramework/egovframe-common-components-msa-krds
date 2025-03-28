@@ -136,19 +136,21 @@
 import {EditorConfig} from "/cop/brd/js/ckEditor_simple-main.js";
 import {ClassicEditor} from "/cop/brd/ckeditor5_simple/ckeditor5.js";
 
-let nttCn = document.getElementById('nttCn');
+document.addEventListener("DOMContentLoaded", function () {
+    let nttCn = document.getElementById('nttCn');
 
-ClassicEditor
-    .create(document.getElementById('editor'), EditorConfig)
-    .then(editor => {
-        document.getElementById("insertBtn").addEventListener("click", function () {
-            nttCn.value = editor.getData();
-            boardCreate();
+    ClassicEditor
+        .create(document.getElementById('editor'), EditorConfig)
+        .then(editor => {
+            document.getElementById("insertBtn").addEventListener("click", function () {
+                nttCn.value = editor.getData();
+                boardCreate();
+            });
+        })
+        .catch(error => {
+            console.error(error);
         });
-    })
-    .catch(error => {
-        console.error(error);
-    });
+});
 </script>
 
 <script th:inline="javascript" defer>
@@ -181,6 +183,8 @@ ClassicEditor
         secretAt.disabled = !!this.checked;
     });
 
+    secretAt.disabled = document.getElementById("answerAt").value === "Y";
+
     $.ajax({
         url: '/cop/brd/bbsMasterDetail',
         method: 'POST',
@@ -191,7 +195,7 @@ ClassicEditor
             boardList();
         } else {
             if (response.result.atchPosblFileNumber == null || response.result.atchPosblFileNumber === 0 || response.result.fileAtchPosblAt === "N") {
-                document.getElementById("fileUploadArea").style.display='none';
+                document.getElementById("fileAtchFrm").style.display='none';
             } else {
                 const total = document.querySelector(".total");
                 const html = `<span class='current'>0</span>개 / <span class='total-size'>${response.result.atchPosblFileNumber}</span>개`;
@@ -224,7 +228,7 @@ ClassicEditor
     const fileUpload = document.getElementById("fileUpload");
 
     var fileMaxSize = 1048576
-    var fileExtensions =".gif.jpg.jpeg.png.xls.xlsx";
+    var fileExtensions =".gif.jpg.jpeg.png.bmp.pdf";
 
     // 파일 크기, 확장자 Validaiton
     fileUpload.addEventListener("change", function (e) {
@@ -235,7 +239,7 @@ ClassicEditor
                 if (file.size > fileMaxSize) {
                     alert(`첨부파일의 크기는 ${formatBytes(fileMaxSize)}까지만 가능합니다.`);
                 } else if (!fileExtensions.includes(file.name.split(".").pop().toLowerCase())) {
-                    alert(`첨부파일의 확장자는 ${fileExtensions.join(", ")}만 가능합니다.`);
+                    alert(`첨부파일의 확장자는 ${fileExtensions}만 가능합니다.`);
                 } else {
                     fileList.push(file);
                     document.querySelector(".file-list").style.display = "block";
@@ -290,7 +294,7 @@ ClassicEditor
                 if (file.size > fileMaxSize) {
                     alert(`첨부파일의 크기는 ${formatBytes(fileMaxSize)}까지만 가능합니다.`);
                 } else if (!fileExtensions.includes(file.name.split(".").pop().toLowerCase())) {
-                    alert(`첨부파일의 확장자는 ${fileExtensions.join(", ")}만 가능합니다.`);
+                    alert(`첨부파일의 확장자는 ${fileExtensions}만 가능합니다.`);
                 } else {
                     fileList.push(file);
                     document.querySelector(".file-list").style.display = "block";
@@ -347,7 +351,6 @@ ClassicEditor
                 formData.append("fileList",file);
             });
 
-            console.log("답글 > " + document.getElementById("answerAt").value);
 
             $.ajax({
                 url: '/cop/brd/boardInsert',

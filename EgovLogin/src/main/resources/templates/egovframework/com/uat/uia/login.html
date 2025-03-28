@@ -103,7 +103,6 @@
                userSe = tab.querySelector("button").value;
            }
         });
-        // let userSe = document.getElementById('userSe').value;
 
         if (userId.length === 0) {
             alert('[(#{comUatUia.validate.idCheck})]');
@@ -113,7 +112,6 @@
             return false;
         } else {
             const param = {userId: userId, userPw: userPw, userSe: userSe};
-            console.log(param);
             fetch('/uat/uia/actionLogin', {
                 method: 'POST',
                 headers: {

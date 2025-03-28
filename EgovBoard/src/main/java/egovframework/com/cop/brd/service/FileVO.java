@@ -35,6 +35,6 @@ public class FileVO extends EgovDefaultVO implements Serializable {
 
     private Long fileSize;
 
-    public String[] deleteFileSn;
+    private String[] deleteFileSn;
 
 }

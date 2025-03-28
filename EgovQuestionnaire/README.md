@@ -1,0 +1,95 @@
+# 설문조사
+
+설문 문항,답변 등록 및 설문 조사를 실시할 수 있는 컴포넌트
+
+## 프로젝트 구성
+
+``` text
+  EgovQuestionnaire
+    ├ /src/main
+    │   ├ java
+    │   │   └ egovframework.com.uss
+    │   │       ├ config
+    │   │       ├ filter
+    │   │       ├ pagination
+    │   │       ├ olp
+    │   │       │  ├ qim
+    │   │       │  ├ qmc
+    │   │       │  ├ qqm
+    │   │       │  ├ qri
+    │   │       │  ├ qrm
+    │   │       │  └ qtm
+    │   │       └ EgovLoginApplication
+    │   │
+    │   └ resources
+    │       ├ messages.egovframework.com
+    │       ├ static
+    │       ├ templates.egovframework.com.uss.olp
+    │       │   ├ qim
+    │       │   ├ qmc
+    │       │   ├ qqm
+    │       │   ├ qri
+    │       │   ├ qrm
+    │       │   └ qtm
+    │       └ application.yml
+    └ pom.xml
+```
+
+- 항목관리 (`/com/uss/olp/qim`)
+- 설문관리 (`/com/uss/olp/qmc`)
+- 질문관리 (`/com/uss/olp/qqm`)
+- 설문조사 (`/com/uss/olp/qri`)
+- 응답자관리 (`/com/uss/olp/qrm`)
+- 설문템플릿관리 (`/com/uss/olp/qtm`)
+
+## 화면 구성
+
+ - 설문 등록은 "업무사용자" 권한을 가진 계정으로 '설문템플릿관리' > '설문관리' > '질문관리' > '항목관리' 순으로 등록
+ - 설문 참여는 "일반사용자" 권한을 가진 계정으로 '설문조사' 에서 등록
+ - 응답자관리는 등록/수정을 제공하지 않고 설문 참여 시 작성한 정보를 목록형태로 확인할 수 있다.   
+
+### 1. 설문템플릿관리
+
+  1. 설문 템플릿 목록
+  ![Tmplat_list](https://github.com/user-attachments/assets/3b77a2d4-321b-496e-982b-70cd9a4cb747)
+  <br/>
+  *설문템플릿의 경우 템플릿으로서의 기능은 현재 제공하고있지 않음
+  
+### 2. 설문관리
+
+  1. 설문관리 등록   
+    ![qmc_insert](https://github.com/user-attachments/assets/a800ce48-7551-4b78-87ee-097e3356a82d)
+    <br/><br/>
+     - 등록된 설문으로 설문 질문과 항목을 연관하여 생성
+     - 설문기간의 경우 시작일이 '오늘'보다 빠를 수 없고 종료일은 '시작일'보다 빠를 수 없음
+     - 수정 시 '템플릿 유형'은 변경 불가능   
+    <br/>
+  2. 설문관리 상세
+    ![qmc_detail](https://github.com/user-attachments/assets/dd4add06-ad02-4299-8ebc-52c5711adcda)   
+    <br/><br/>
+  3. 설문관리 목록
+     - 등록한 설문들에 대한 목록이 출력되는 페이지
+      ![qmc_list](https://github.com/user-attachments/assets/8979a6cb-2ef4-4a6d-a3d5-bec613cedad2)
+       <br/><br/>
+     - 연관된 설문 문항이 있는 경우 버튼 클릭시 모달창 오픈   
+        ![qim_list](https://github.com/user-attachments/assets/ae5d3a3d-3102-4db8-a1ec-87d34e81d107)
+       <br/><br/>
+     - 등록된 설문조사를 참여한 사람이 있는 경우 '응답자 정보'에 표시   
+        ![qrm_list](https://github.com/user-attachments/assets/67d2dc6b-e918-43c1-bae4-e76aa1d3dc77)
+       <br/><br/>
+     - 통계는 설문조사에 대한 결과 표시   
+        ![result_list](https://github.com/user-attachments/assets/87777233-fec0-47e0-9f5b-2b993a72e31a)   
+
+### 3. 질문관리
+
+### 4. 항목관리
+
+### 5. 설문조사
+
+### 6. 응답자관리
+
+
+
+## 유의사항
+
+## 참조

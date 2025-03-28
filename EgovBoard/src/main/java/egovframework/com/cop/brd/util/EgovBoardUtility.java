@@ -2,10 +2,12 @@ package egovframework.com.cop.brd.util;
 
 import egovframework.com.cop.brd.entity.*;
 import egovframework.com.cop.brd.service.*;
+import lombok.experimental.UtilityClass;
 import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 
+@UtilityClass
 public class EgovBoardUtility {
 
     public static BbsVO bbsEntityToVO(Bbs bbs) {
@@ -87,7 +89,7 @@ public class EgovBoardUtility {
         return comment;
     }
 
-    public static StsfdgVO StsfdgEntiyToVO(Stsfdg stsfdg) {
+    public static StsfdgVO stsfdgEntiyToVO(Stsfdg stsfdg) {
         StsfdgVO stsfdgVO = new StsfdgVO();
         BeanUtils.copyProperties(stsfdg, stsfdgVO);
         return stsfdgVO;

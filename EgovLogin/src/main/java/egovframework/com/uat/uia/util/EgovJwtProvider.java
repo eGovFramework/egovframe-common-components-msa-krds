@@ -63,7 +63,7 @@ public class EgovJwtProvider {
                 .add("userId", ObjectUtils.isEmpty(loginVO.getUserId()) ? "" : encrypt(loginVO.getUserId()))
                 .add("userNm", ObjectUtils.isEmpty(loginVO.getName()) ? "" : encrypt(loginVO.getName()))
                 .add("uniqId", ObjectUtils.isEmpty(loginVO.getUniqId()) ? "" : encrypt(loginVO.getUniqId()))
-                .add("authId", ObjectUtils.isEmpty(loginVO.getAuthorCode()) ? "" : encrypt(loginVO.getAuthorCode()))
+                .add("authLs", ObjectUtils.isEmpty(loginVO.getAuthorList()) ? "" : encrypt(loginVO.getAuthorList()))
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + Long.parseLong(expiration)));
 

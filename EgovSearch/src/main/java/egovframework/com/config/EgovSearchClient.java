@@ -77,7 +77,7 @@ public class EgovSearchClient {
                     .loadTrustMaterial(keyStore, new TrustSelfSignedStrategy())
                     .build();
         } catch (CertificateException | KeyStoreException | IOException | NoSuchAlgorithmException | KeyManagementException e) {
-            throw new RuntimeException("Failed to get KeyStore instance...");
+            throw new IllegalStateException("Failed to get KeyStore instance...", e);
         }
 
         // ObjectMapper 설정

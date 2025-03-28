@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @Entity(name="rgmEmplyrscrtyestbs")
 @Getter
 @Setter
-@Table(name="COMTNEMPLYRSCRTYESTBS")
+@Table(name="MSATNEMPLYRSCRTYESTBS")
 public class Emplyrscrtyestbs {
 
     @Id

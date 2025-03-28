@@ -32,7 +32,6 @@ public class EgovBoardController {
     @PostMapping(value = "/boardInsertView")
     public String boardInsertView(BbsVO bbsVO, Model model) {
         model.addAttribute("bbsVO", bbsVO);
-        System.out.println("답글 - Controller > " + bbsVO.getAnswerAt());
         return "cop/brd/boardInsert";
     }
 

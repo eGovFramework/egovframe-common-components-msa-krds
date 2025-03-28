@@ -45,16 +45,9 @@ public class EgovBbsMasterAPIController {
 
     @PostMapping("/selectBBSMasterOptn")
     public ResponseEntity<?> selectBBSMasterOptn(String bbsId) {
-        System.out.println("게시판 아이디  >> " + bbsId);
         BbsMasterOptnVO bbsMasterOptnVO = service.selectBBSMasterOptn(bbsId);
-        System.out.println("컨트롤러 >> " + bbsMasterOptnVO.getBbsId());
 
-        if (bbsMasterOptnVO == null) {
-            return ResponseEntity.noContent().build(); // HTTP 204 No Content 응답
-        } else {
-            System.out.println("성공 >> " + bbsMasterOptnVO.getBbsId());
-            return ResponseEntity.ok(bbsMasterOptnVO);
-        }
+        return ResponseEntity.ok(bbsMasterOptnVO);
     }
 
 }

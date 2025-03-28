@@ -71,26 +71,6 @@ public class EgovBoardIdGeneration {
         return egovTableIdGnrServiceImpl;
     }
 
-    @Bean(name="tmplatStrategy")
-    public EgovIdGnrStrategyImpl tmplatStrategy() {
-        EgovIdGnrStrategyImpl egovIdGnrStrategyImpl = new EgovIdGnrStrategyImpl();
-        egovIdGnrStrategyImpl.setPrefix("TMPLAT_");
-        egovIdGnrStrategyImpl.setCipers(13);
-        egovIdGnrStrategyImpl.setFillChar('0');
-        return egovIdGnrStrategyImpl;
-    }
-
-    @Bean(name="egovTmplatIdGnrService", destroyMethod="destroy")
-    public EgovTableIdGnrServiceImpl egovTmplatIdGnrService(DataSource dataSource) {
-        EgovTableIdGnrServiceImpl egovTableIdGnrServiceImpl = new EgovTableIdGnrServiceImpl();
-        egovTableIdGnrServiceImpl.setDataSource(dataSource);
-        egovTableIdGnrServiceImpl.setStrategy(cmmntyStrategy());
-        egovTableIdGnrServiceImpl.setBlockSize(10);
-        egovTableIdGnrServiceImpl.setTable("COMTECOPSEQ");
-        egovTableIdGnrServiceImpl.setTableName("TMPLAT_ID");
-        return egovTableIdGnrServiceImpl;
-    }
-
     @Bean(name = "nttIdStrategy")
     public EgovIdGnrStrategyImpl nttIdStrategy() {
         EgovIdGnrStrategyImpl strategy = new EgovIdGnrStrategyImpl();

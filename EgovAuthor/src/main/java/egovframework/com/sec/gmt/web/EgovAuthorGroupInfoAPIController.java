@@ -4,7 +4,6 @@ import egovframework.com.pagination.EgovPaginationFormat;
 import egovframework.com.sec.gmt.service.AuthorGroupInfoVO;
 import egovframework.com.sec.gmt.service.EgovAuthorGroupInfoService;
 import lombok.RequiredArgsConstructor;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -75,7 +74,7 @@ public class EgovAuthorGroupInfoAPIController {
     }
 
     @PostMapping(value="/authorGroupInfoInsert")
-    public ResponseEntity<?> authorGroupInfoInsert(@Valid @ModelAttribute AuthorGroupInfoVO authorGroupInfoVO, BindingResult bindingResult) throws FdlException {
+    public ResponseEntity<?> authorGroupInfoInsert(@Valid @ModelAttribute AuthorGroupInfoVO authorGroupInfoVO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             for (FieldError error : bindingResult.getFieldErrors()) {

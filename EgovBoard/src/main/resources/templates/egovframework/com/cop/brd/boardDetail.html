@@ -16,7 +16,7 @@
         </ol>
     </nav>
 
-    <h2 class="heading-large"><span th:id="boardTitle" th:text="${bbsVO.bbsNm}+' '+#{comCopBbs.articleVO.title}+' '+#{title.create}"></span></h2>
+    <h2 class="heading-large"><span th:id="boardTitle" th:text="${bbsVO.bbsNm}+' '+#{comCopBbs.articleVO.title}+' '+#{title.detail}"></span></h2>
 
     <form id="detailForm" name="detailForm" th:object="${bbsVO}">
         <input type="hidden" th:id="nttId" th:name="nttId" th:value="${bbsVO.nttId}"/>
@@ -29,6 +29,7 @@
         <input type="hidden" th:id="searchCondition" th:name="searchCondition" th:value="${bbsVO.searchCondition}"/>
         <input type="hidden" th:id="searchKeyword" th:name="searchKeyword" th:value="${bbsVO.searchKeyword}"/>
         <input type="hidden" th:id="answerAt" th:name="answerAt" th:value="N">
+        <input type="hidden" th:id="replyPosblAt" th:name="replyPosblAt" th:value="N">
 
         <div class="def-list-wrap">
             <dl class="def-list">
@@ -54,7 +55,7 @@
         <div class="page-btn-wrap">
             <button type="button" class="krds-btn medium tertiary" th:text="#{button.list}" th:onclick="boardList()"></button>
             <div class="btn-wrap">
-                <button type="button" class="krds-btn medium tertiary" th:text="#{button.reply}" th:onclick="boardReply()"></button>
+                <button type="button" class="krds-btn medium tertiary" id="replyBtn" th:text="#{button.reply}" th:onclick="boardReply()"></button>
                 <button type="button" class="krds-btn medium secondary" th:text="#{button.delete}" th:onclick="boardDelete()"></button>
                 <button type="button" class="krds-btn medium" th:text="#{button.update}" th:onclick="boardUpdate()"></button>
             </div>
@@ -92,7 +93,6 @@
             method: 'POST',
             data: $('#detailForm').serialize()
         }).done(function(response) {
-            console.log(response.result);
             userId= response.userId;
             if (response.status === 'error') {
                 alert('[(#{fail.request.msg})]');
@@ -105,9 +105,34 @@
                 $('#nttCn').html(decodeHTML(response.result.nttCn));
                 $('#ntceDe').text(response.result.ntceBgnde+' ~ '+response.result.ntceEndde);
                 renderArticleDetail(response);
+                // 공지사항인 경우 답글 비활성화
+                if (response.result.noticeAt === "Y") {
+                    document.querySelector("#replyBtn").disabled = true;
+                } else {
+                    document.querySelector("#replyBtn").disabled = false;
+                }
             }
         });
     }
+
+    /*********************************************************
+     * 게시판 답글 속성 호출
+     *********************************************************/
+    $.ajax({
+        url: '/cop/brd/bbsMasterDetail',
+        method: 'POST',
+        data: $('#detailForm').serialize()
+    }).done(function(response) {
+        var frm = document.getElementById("detailForm");
+        var result = response.result;
+        if(result.replyPosblAt === "Y"){
+            frm.querySelector("#replyPosblAt").value = "Y";
+            document.querySelector("#replyBtn").disabled = false;
+        }else{
+            frm.querySelector("#replyPosblAt").value = "N";
+            document.querySelector("#replyBtn").disabled = true;
+        }
+    });
 
     /*********************************************************
      * 게시판 속성 호출
@@ -120,7 +145,6 @@
         }).done(function(result){
             let html = "";
             if (result.answerAt === "Y") {
-                console.log("댓글");
                 fn_egov_comment_view_list(bbsId, nttId);
                 html += `<div class="comment-list-wrap">
                             <div class="comment_cnt">
@@ -151,7 +175,6 @@
                             </ol>
                         </div>`;
             } else if (result.stsfdgAt === "Y") {
-                console.log("만족도");
                 fn_egov_satistaction_view_list(bbsId, nttId);
                 html += `<div class="comment-list-wrap">
                             <div class="comment-list-top">
@@ -211,12 +234,10 @@
             })
                 .then(res => res.json())
                 .then(result => {
-                    console.log(result);
                     const atchFiles = document.querySelector('.atchfiles ul');
                     result.forEach(item => {
                         const li = document.createElement('li');
-                        console.log(item);
-                        li.innerHTML = `<p onclick="fileDownload('${item.atchFileId}','${item.fileSn}','${item.orignlFileNm}')">${item.orignlFileNm}</p>`;
+                        li.innerHTML = `<a href = "#" id="fileDownload" onclick="fileDownload('${item.atchFileId}','${item.orignlFileNm}')">${item.orignlFileNm}</a>`;
                         atchFiles.appendChild(li)
                     });
                 })
@@ -252,22 +273,20 @@
                 boardList();
             })
             .catch(error => {
-                console.log("에러");
                 console.log(error);
             });
 
     }
 
-    function fileDownload(atchFileId,fileSn,fileNm){
+    function fileDownload(atchFileId, fileNm){
         $.ajax({
             url: "/cop/brd/fileDownload",
             method: 'GET',
-            data: {atchFileId:atchFileId, fileSn:fileSn},
+            data: {atchFileId:atchFileId},
             xhrFields: {
                 responseType: "blob"
             },
         }).done(function(data, status, xhr){
-            console.log(data);
             const blob = new Blob([data], { type: xhr.getResponseHeader("Content-Type") });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement("a");
@@ -283,6 +302,7 @@
     function boardReply(){
         var frm = document.getElementById("detailForm");
         frm.querySelector("#answerAt").value = "Y";
+        frm.querySelector("#replyPosblAt").value = "Y";
         frm.setAttribute("method","post");
         frm.setAttribute("action","/cop/brd/boardInsertView");
         frm.submit();

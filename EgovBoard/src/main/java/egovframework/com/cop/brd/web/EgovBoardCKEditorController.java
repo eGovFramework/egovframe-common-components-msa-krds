@@ -47,7 +47,7 @@ public class EgovBoardCKEditorController {
     public void init() {
         File uploadDirectory = new File(uploadDir);
         if (!uploadDirectory.exists() && !uploadDirectory.mkdirs()) {
-            throw new RuntimeException("Failed to create upload directory: " + uploadDir);
+            log.warn("Failed to create upload directory >>> {}", uploadDir);
         }
 
         // 확장자 목록을 설정 값에서 가져와 Set으로 변환
@@ -77,7 +77,6 @@ public class EgovBoardCKEditorController {
             return response;
         }
 
-        String originalFilename = uploadFile.getOriginalFilename();
         String newFileName = getFileName(uploadFile);
 
         // 파일 확장자 검사
@@ -98,9 +97,6 @@ public class EgovBoardCKEditorController {
 
     @GetMapping("/cop/brd/ckeditor/{filename}")
     public void ckeditorImage(@PathVariable String filename, HttpServletResponse response) {
-        log.debug("##### EgovBoardCKEditorController filename : " + filename);
-
-        String uploadDir = System.getProperty("user.home") + "/upload/ckeditor/";
         Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
         File file = new File(filePath.toFile().getAbsolutePath());
 
@@ -114,7 +110,7 @@ public class EgovBoardCKEditorController {
             }
             outStream.flush(); // 스트림 비우기
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.warn("Failed to create image >>> {}", e.getMessage());
         }
     }
 

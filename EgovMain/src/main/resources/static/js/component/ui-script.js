@@ -1623,7 +1623,6 @@ const krds_calendar = {
             if (startTd) {
               const startDate = new Date(startTd.getAttribute("data-date"));
               if (currentDate < startDate) {
-                console.log("시작날짜 이전은 선택할 수 없습니다.");
                 startTd = null;
                 clickCount = 0;
                 // return;

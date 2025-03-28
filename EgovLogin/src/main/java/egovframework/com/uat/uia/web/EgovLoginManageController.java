@@ -21,14 +21,13 @@ public class EgovLoginManageController {
     private final EgovJwtProvider jwtProvider;
 
     @GetMapping(value="/index")
-    public String login(LoginVO loginVO, Model model, HttpServletRequest request) throws Exception {
+    public String login(LoginVO loginVO, Model model, HttpServletRequest request) {
         return this.loginView(loginVO, model, request);
     }
 
     @RequestMapping(value="/loginView", method={RequestMethod.GET, RequestMethod.POST})
     public String loginView(LoginVO loginVO, Model model, HttpServletRequest request) {
         String accessToken = jwtProvider.getCookie(request, "accessToken");
-        System.out.println("##### EgovLoginManageController loginView >>> " + accessToken);
         if (ObjectUtils.isEmpty(accessToken)) {
             loginVO = new LoginVO();
             model.addAttribute("loginVO", loginVO);

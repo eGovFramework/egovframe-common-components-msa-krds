@@ -14,10 +14,8 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.util.UriUtils;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 
 @Configuration
 @Getter
@@ -104,9 +102,9 @@ public class GatewayJwtProvider {
                 "" : accessExtractClaims(token).get("uniqId").toString();
     }
 
-    public String extractAuthId(String token) {
-        return ObjectUtils.isEmpty(accessExtractClaims(token).get("authId")) ?
-                "" : UriUtils.encode(decrypt(accessExtractClaims(token).get("authId").toString()), StandardCharsets.UTF_8);
+    public String extractAuthLs(String token) {
+        return ObjectUtils.isEmpty(accessExtractClaims(token).get("authLs")) ?
+                "" : decrypt(accessExtractClaims(token).get("authLs").toString());
     }
 
     public ServerHttpRequest headerSetting(ServerWebExchange exchange, String accessToken) {

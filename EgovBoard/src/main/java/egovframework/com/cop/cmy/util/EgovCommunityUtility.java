@@ -5,8 +5,10 @@ import egovframework.com.cop.cmy.service.BbsMasterOptnVO;
 import egovframework.com.cop.cmy.service.BbsMasterVO;
 import egovframework.com.cop.cmy.service.CommunityUserVO;
 import egovframework.com.cop.cmy.service.CommunityVO;
+import lombok.experimental.UtilityClass;
 import org.springframework.beans.BeanUtils;
 
+@UtilityClass
 public class EgovCommunityUtility {
 
     public static CommunityVO cmmntyEntityToVO(Cmmnty cmmnty) {

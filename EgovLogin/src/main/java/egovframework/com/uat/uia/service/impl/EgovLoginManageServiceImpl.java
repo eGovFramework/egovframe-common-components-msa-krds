@@ -1,14 +1,12 @@
 package egovframework.com.uat.uia.service.impl;
 
 import egovframework.com.uat.uia.entity.CommonEntity;
+import egovframework.com.uat.uia.entity.LoginPolicy;
 import egovframework.com.uat.uia.repository.EgovEmployMemberRepository;
 import egovframework.com.uat.uia.repository.EgovEnterpriseMemberRepository;
 import egovframework.com.uat.uia.repository.EgovGeneralMemberRepository;
-import egovframework.com.uat.uia.service.EgovLoginManageService;
-import egovframework.com.uat.uia.service.LoginDTO;
-import egovframework.com.uat.uia.service.LoginIncorrectVO;
-import egovframework.com.uat.uia.service.LoginVO;
-import egovframework.com.uat.uia.util.EgovJwtProvider;
+import egovframework.com.uat.uia.repository.EgovLoginPolicyRepository;
+import egovframework.com.uat.uia.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
@@ -16,6 +14,7 @@ import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -30,7 +29,7 @@ public class EgovLoginManageServiceImpl extends EgovAbstractServiceImpl implemen
     private final EgovGeneralMemberRepository genRepository; // 일반회원
     private final EgovEnterpriseMemberRepository entRepository; // 기업회원
     private final EgovEmployMemberRepository empRepository; // 업무사용자
-    private final EgovJwtProvider jwtProvider;
+    private final EgovLoginPolicyRepository loginPolicyRepository; // 로그인정책관리
 
     @Override
     public LoginDTO actionLogin(LoginVO loginVO) {
@@ -47,6 +46,17 @@ public class EgovLoginManageServiceImpl extends EgovAbstractServiceImpl implemen
             default:
                 return null;
         }
+    }
+
+    @Override
+    public LoginPolicyVO loginPolicy(LoginPolicyVO loginPolicyVO) {
+        LoginPolicy loginPolicy = loginPolicyRepository.findById(loginPolicyVO.getEmployerId()).orElse(null);
+        if (!ObjectUtils.isEmpty(loginPolicy)) {
+            loginPolicyVO.setEmployerId(loginPolicy.getEmployerId());
+            loginPolicyVO.setLmttAt(loginPolicy.getLmttAt());
+            loginPolicyVO.setIpInfo(loginPolicy.getIpInfo());
+        }
+        return loginPolicyVO;
     }
 
     @Override
@@ -150,6 +160,8 @@ public class EgovLoginManageServiceImpl extends EgovAbstractServiceImpl implemen
                     empRepository.save(emplyrInfo);
                 });
                 break;
+            default:
+                break;
         }
     }
 
@@ -170,6 +182,8 @@ public class EgovLoginManageServiceImpl extends EgovAbstractServiceImpl implemen
                 entity.setLockCnt(lockCnt + 1);
                 entity.setLockLastPnttm(now);
                 break;
+            default:
+                break;
         }
     }
 
@@ -177,8 +191,8 @@ public class EgovLoginManageServiceImpl extends EgovAbstractServiceImpl implemen
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.reset();
-            md.update(salt.getBytes());
-            return new String(Base64.encodeBase64(md.digest(key.getBytes())));
+            md.update(salt.getBytes(StandardCharsets.UTF_8));
+            return Base64.encodeBase64String(md.digest(key.getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException e) {
             log.debug("##### EgovLoginManageServiceImpl NoSuchAlgorithmException >>> {}", e.getMessage());
             return "0";

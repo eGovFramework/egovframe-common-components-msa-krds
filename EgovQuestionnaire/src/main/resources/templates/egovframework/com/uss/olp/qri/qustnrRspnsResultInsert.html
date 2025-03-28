@@ -185,7 +185,6 @@
             const checkedItem = checkedItems();
             if (checkedItem.length > 0) {
                 checkedItem.forEach(function(item, index) {
-                    console.log(item);
                     formData.append(`qustnrItemList[${index}]`, item);
                 });
             }

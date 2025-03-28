@@ -6,7 +6,6 @@ import egovframework.com.uss.olp.qim.service.QustnrIemDTO;
 import egovframework.com.uss.olp.qim.service.QustnrIemVO;
 import lombok.RequiredArgsConstructor;
 import org.egovframe.boot.crypto.service.impl.EgovEnvCryptoServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -79,7 +78,7 @@ public class EgovQustnrItemAPIController {
     }
 
     @PostMapping(value="/qustnrItemInsert")
-    public ResponseEntity<?> qustnrItemInsert(@Valid @ModelAttribute QustnrIemVO qustnrIemVO, BindingResult bindingResult, HttpServletRequest request) throws FdlException {
+    public ResponseEntity<?> qustnrItemInsert(@Valid @ModelAttribute QustnrIemVO qustnrIemVO, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             for (FieldError error : bindingResult.getFieldErrors()) {

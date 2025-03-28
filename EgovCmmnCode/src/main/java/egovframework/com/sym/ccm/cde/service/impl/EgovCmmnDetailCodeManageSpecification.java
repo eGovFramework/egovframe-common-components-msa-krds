@@ -1,6 +1,7 @@
 package egovframework.com.sym.ccm.cde.service.impl;
 
 import egovframework.com.sym.ccm.cde.entity.CmmnDetailCode;
+import lombok.experimental.UtilityClass;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.ObjectUtils;
 
@@ -8,6 +9,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+@UtilityClass
 public class EgovCmmnDetailCodeManageSpecification {
 
     public static Specification<CmmnDetailCode> codeIdContains(String searchKeyword) {
@@ -47,9 +49,8 @@ public class EgovCmmnDetailCodeManageSpecification {
     }
 
     public static Specification<CmmnDetailCode> useAtContains() {
-        return (Root<CmmnDetailCode> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get("cmmnCode").get("useAt"), "Y");
-        };
+        return (Root<CmmnDetailCode> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("cmmnCode").get("useAt"), "Y");
     }
 
 }

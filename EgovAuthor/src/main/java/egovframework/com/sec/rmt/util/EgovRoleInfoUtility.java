@@ -2,8 +2,10 @@ package egovframework.com.sec.rmt.util;
 
 import egovframework.com.sec.rmt.entity.RoleInfo;
 import egovframework.com.sec.rmt.service.RoleInfoVO;
+import lombok.experimental.UtilityClass;
 import org.springframework.beans.BeanUtils;
 
+@UtilityClass
 public class EgovRoleInfoUtility {
 
     public static RoleInfoVO roleEntityToVO(RoleInfo roleInfo) {

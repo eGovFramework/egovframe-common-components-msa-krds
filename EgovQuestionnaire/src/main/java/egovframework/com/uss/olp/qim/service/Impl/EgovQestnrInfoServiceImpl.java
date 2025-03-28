@@ -1,4 +1,4 @@
-package egovframework.com.uss.olp.qim.service.Impl;
+package egovframework.com.uss.olp.qim.service.impl;
 
 import egovframework.com.uss.olp.qim.repository.EgovQestnrInfoRepository;
 import egovframework.com.uss.olp.qim.service.EgovQestnrInfoService;

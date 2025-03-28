@@ -4,7 +4,6 @@ import egovframework.com.cop.bls.service.*;
 import egovframework.com.pagination.EgovPaginationFormat;
 import lombok.RequiredArgsConstructor;
 import org.egovframe.boot.crypto.service.impl.EgovEnvCryptoServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -81,7 +80,7 @@ public class EgovBbsMasterAPIController {
     }
 
     @PostMapping(value="/bbsMasterInsert")
-    public ResponseEntity<?> bbsMasterInsert(@Valid @ModelAttribute BbsMasterVO bbsMasterVO, BindingResult bindingResult, HttpServletRequest request) throws FdlException {
+    public ResponseEntity<?> bbsMasterInsert(@Valid @ModelAttribute BbsMasterVO bbsMasterVO, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             for (FieldError error : bindingResult.getFieldErrors()) {
@@ -107,7 +106,7 @@ public class EgovBbsMasterAPIController {
     }
 
     @PostMapping(value="/bbsMasterUpdate")
-    public ResponseEntity<?> bbsMasterUpdate(@Valid @ModelAttribute BbsMasterVO bbsMasterVO, BindingResult bindingResult,  HttpServletRequest request) throws FdlException {
+    public ResponseEntity<?> bbsMasterUpdate(@Valid @ModelAttribute BbsMasterVO bbsMasterVO, BindingResult bindingResult,  HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             for (FieldError error : bindingResult.getFieldErrors()) {

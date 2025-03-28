@@ -13,6 +13,7 @@
 		<module>EgovBoard</module>
 		<module>EgovCmmnCode</module>
 		<module>EgovLogin</module>
+		<module>EgovLoginPolicy</module>
 		<module>EgovMain</module>
 		<module>EgovMobileId</module>
 		<module>EgovQuestionnaire</module>

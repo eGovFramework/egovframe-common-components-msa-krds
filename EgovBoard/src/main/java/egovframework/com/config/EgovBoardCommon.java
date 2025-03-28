@@ -27,7 +27,6 @@ public class EgovBoardCommon {
                 "classpath:/messages/egovframework/com/cop/bls/message",
                 "classpath:/messages/egovframework/com/cop/brd/message",
                 "classpath:/messages/egovframework/com/cop/cmy/message",
-                "classpath:/messages/egovframework/com/cop/tpl/message",
                 "classpath:/org/egovframe/rte/fdl/idgnr/messages/idgnr",
                 "classpath:/org/egovframe/rte/fdl/property/messages/properties"
         );

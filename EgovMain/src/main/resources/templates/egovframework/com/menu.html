@@ -4,10 +4,10 @@
         <div class="lnb-submenu">
             <ul id="lnbmenu-1" role="menu">
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/uat/uia/loginView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'10. ' + #{comCmm.left.10}"></a>
+                    <a href="#" data-url="/uat/uia/loginView" class="lnb-btn lnb-link" role="menuitem" th:text="'10. ' + #{comCmm.left.10}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/uat/uap/loginPolicyListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'30. '+#{comCmm.left.30}"></a>
+                    <a href="#" data-url="/uat/uap/loginPolicyListView" class="lnb-btn lnb-link" role="menuitem" th:text="'30. '+#{comCmm.left.30}"></a>
                 </li>
             </ul>
         </div>
@@ -17,19 +17,19 @@
         <div class="lnb-submenu">
             <ul id="lnbmenu-2" role="menu">
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/sec/ram/authorInfoListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'60. ' + #{comCmm.left.60}"></a>
+                    <a href="#" data-url="/sec/ram/authorInfoListView" class="lnb-btn lnb-link" role="menuitem" th:text="'60. ' + #{comCmm.left.60}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/sec/rgm/authorGroupListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'70. ' + #{comCmm.left.70}"></a>
+                    <a href="#" data-url="/sec/rgm/authorGroupListView" class="lnb-btn lnb-link" role="menuitem" th:text="'70. ' + #{comCmm.left.70}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/sec/gmt/authorGroupInfoListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'80. '+#{comCmm.left.80}"></a>
+                    <a href="#" data-url="/sec/gmt/authorGroupInfoListView" class="lnb-btn lnb-link" role="menuitem" th:text="'80. ' + #{comCmm.left.80}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/sec/rmt/roleInfoListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'90. '+#{comCmm.left.90}"></a>
+                    <a href="#" data-url="/sec/rmt/roleInfoListView" class="lnb-btn lnb-link" role="menuitem" th:text="'90. ' + #{comCmm.left.90}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-            		<a href="#" onclick="loadContent('/mip/main'); return false;" class="lnb-btn lnb-link" role="menuitem"  th:text="'112. ' + #{comCmm.left.110}"></a>
+                    <a href="#" data-url="/mip/main" class="lnb-btn lnb-link" role="menuitem" th:text="'110. ' + #{comCmm.left.110}"></a>
                 </li>
             </ul>
         </div>
@@ -39,16 +39,13 @@
         <div class="lnb-submenu">
             <ul id="lnbmenu-3" role="menu">
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/cop/bls/blogListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'170. ' + #{comCmm.left.170}"></a>
+                    <a href="#" data-url="/cop/bls/blogListView" class="lnb-btn lnb-link" role="menuitem" th:text="'170. ' + #{comCmm.left.170}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/cop/bbs/bbsMasterListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'180. ' + #{comCmm.left.180}"></a>
+                    <a href="#" data-url="/cop/bbs/bbsMasterListView" class="lnb-btn lnb-link" role="menuitem" th:text="'180. ' + #{comCmm.left.180}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/cop/tpl/templateListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'200. ' + #{comCmm.left.200}"></a>
-                </li>
-                <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/cop/cmy/communityListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'270. ' + #{comCmm.left.270}"></a>
+                    <a href="#" data-url="/cop/cmy/communityListView" class="lnb-btn lnb-link" role="menuitem" th:text="'270. ' + #{comCmm.left.270}"></a>
                 </li>
             </ul>
         </div>
@@ -58,22 +55,22 @@
         <div class="lnb-submenu">
             <ul id="lnbmenu-4" role="menu">
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/uss/olp/qmc/qestnrInfoListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'590. ' + #{comCmm.left.590}"></a>
+                    <a href="#" data-url="/uss/olp/qmc/qestnrInfoListView" class="lnb-btn lnb-link" role="menuitem" th:text="'590. ' + #{comCmm.left.590}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/uss/olp/qri/qustnrRspnsResultListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'600. ' + #{comCmm.left.600}"></a>
+                    <a href="#" data-url="/uss/olp/qri/qustnrRspnsResultListView" class="lnb-btn lnb-link" role="menuitem" th:text="'600. ' + #{comCmm.left.600}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/uss/olp/qtm/qustnrTmplatListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'610. ' + #{comCmm.left.610}"></a>
+                    <a href="#" data-url="/uss/olp/qtm/qustnrTmplatListView" class="lnb-btn lnb-link" role="menuitem" th:text="'610. ' + #{comCmm.left.610}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/uss/olp/qrm/qustnrRespondInfoListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'620. ' + #{comCmm.left.620}"></a>
+                    <a href="#" data-url="/uss/olp/qrm/qustnrRespondInfoListView" class="lnb-btn lnb-link" role="menuitem" th:text="'620. ' + #{comCmm.left.620}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/uss/olp/qqm/qustnrQesitmListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'630. ' + #{comCmm.left.630}"></a>
+                    <a href="#" data-url="/uss/olp/qqm/qustnrQesitmListView" class="lnb-btn lnb-link" role="menuitem" th:text="'630. ' + #{comCmm.left.630}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/uss/olp/qim/qusntrItemListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'640. ' + #{comCmm.left.640}"></a>
+                    <a href="#" data-url="/uss/olp/qim/qusntrItemListView" class="lnb-btn lnb-link" role="menuitem" th:text="'640. ' + #{comCmm.left.640}"></a>
                 </li>
             </ul>
         </div>
@@ -83,13 +80,13 @@
         <div class="lnb-submenu">
             <ul id="lnbmenu-5" role="menu">
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/sym/ccm/ccc/cmmnClCodeListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'960. ' + #{comCmm.left.960}"></a>
+                    <a href="#" data-url="/sym/ccm/ccc/cmmnClCodeListView" class="lnb-btn lnb-link" role="menuitem" th:text="'960. ' + #{comCmm.left.960}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/sym/ccm/cde/cmmnDetailCodeListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'970. ' + #{comCmm.left.970}"></a>
+                    <a href="#" data-url="/sym/ccm/cde/cmmnDetailCodeListView" class="lnb-btn lnb-link" role="menuitem" th:text="'970. ' + #{comCmm.left.970}"></a>
                 </li>
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/sym/ccm/cca/cmmnCodeListView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'980. ' + #{comCmm.left.980}"></a>
+                    <a href="#" data-url="/sym/ccm/cca/cmmnCodeListView" class="lnb-btn lnb-link" role="menuitem" th:text="'980. ' + #{comCmm.left.980}"></a>
                 </li>
             </ul>
         </div>
@@ -99,7 +96,7 @@
         <div class="lnb-submenu">
             <ul id="lnbmenu-6" role="menu">
                 <li class="lnb-subitem" role="none">
-                    <a href="#" onclick="loadContent('/ext/ops/searchPageView'); return false;" class="lnb-btn lnb-link" role="menuitem" th:text="'4000. ' + #{comCmm.left.4000}"></a>
+                    <a href="#" data-url="/ext/ops/searchPageView" class="lnb-btn lnb-link" role="menuitem" th:text="'4000. ' + #{comCmm.left.4000}"></a>
                 </li>
             </ul>
         </div>

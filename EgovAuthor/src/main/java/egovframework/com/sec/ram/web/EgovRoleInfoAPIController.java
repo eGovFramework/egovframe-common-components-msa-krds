@@ -5,6 +5,7 @@ import egovframework.com.sec.ram.service.AuthorRoleRelatedVO;
 import egovframework.com.sec.ram.service.EgovAuthorRoleService;
 import egovframework.com.sec.ram.service.RoleInfoDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,7 @@ import java.util.Map;
 @Controller("ramEgovRoleInfoAPIController")
 @RequestMapping("/sec/ram")
 @RequiredArgsConstructor
+@Slf4j
 public class EgovRoleInfoAPIController {
 
     @Value("${egov.page.unit}")
@@ -31,6 +34,7 @@ public class EgovRoleInfoAPIController {
     private int pageSize;
 
     private final EgovAuthorRoleService service;
+    private final WebClient.Builder webClientBuilder;
 
     @PostMapping(value="/roleInfoList")
     public ResponseEntity<?> roleInfoList(@ModelAttribute AuthorRoleRelatedVO authorRoleRelatedVO) {
@@ -83,6 +87,12 @@ public class EgovRoleInfoAPIController {
 
         Map<String, Object> response = new HashMap<>();
         if (!ObjectUtils.isEmpty(result)) {
+            webClientBuilder.build().post()
+                    .uri("lb://EGOVLOGIN/uat/uia/reload")
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
             response.put("status", "success");
             return ResponseEntity.ok(response);
         } else {

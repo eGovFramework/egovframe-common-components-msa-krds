@@ -26,7 +26,7 @@ public interface EgovAuthorGroupRepository extends JpaRepository<Emplyrscrtyestb
             "LEFT OUTER JOIN rgmEmplyrscrtyestbs b " +
             "ON a.esntlId = b.scrtyDtrmnTrgetId " +
             "LEFT OUTER JOIN rgmCmmnDetailCode c " +
-            "ON (CASE WHEN a.userSe = 'GNR' THEN 'USR01' WHEN a.userSe = 'ENT' THEN 'USR02' ELSE 'USR03' END = c.cmmnDetailCodeId.code) " +
+            "ON c.cmmnDetailCodeId.code = (CASE WHEN a.userSe = 'GNR' THEN 'USR01' WHEN a.userSe = 'ENT' THEN 'USR02' ELSE 'USR03' END) " +
             "AND c.useAt = 'Y' " +
             "AND c.cmmnDetailCodeId.codeId = 'COM012' " +
             "WHERE ( " +

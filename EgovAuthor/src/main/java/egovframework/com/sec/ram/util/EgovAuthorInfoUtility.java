@@ -5,8 +5,10 @@ import egovframework.com.sec.ram.entity.AuthorRoleRelated;
 import egovframework.com.sec.ram.entity.AuthorRoleRelatedId;
 import egovframework.com.sec.ram.service.AuthorInfoVO;
 import egovframework.com.sec.ram.service.AuthorRoleRelatedVO;
+import lombok.experimental.UtilityClass;
 import org.springframework.beans.BeanUtils;
 
+@UtilityClass
 public class EgovAuthorInfoUtility {
 
     public static AuthorInfoVO authorInfoEntityToVO(AuthorInfo authorInfo) {

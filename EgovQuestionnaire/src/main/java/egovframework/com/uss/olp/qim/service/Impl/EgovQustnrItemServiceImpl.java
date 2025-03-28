@@ -1,4 +1,4 @@
-package egovframework.com.uss.olp.qim.service.Impl;
+package egovframework.com.uss.olp.qim.service.impl;
 
 import egovframework.com.uss.olp.qim.entity.QustnrIem;
 import egovframework.com.uss.olp.qim.entity.QustnrIemId;
@@ -8,7 +8,6 @@ import egovframework.com.uss.olp.qim.service.QustnrIemDTO;
 import egovframework.com.uss.olp.qim.service.QustnrIemVO;
 import egovframework.com.uss.olp.qim.util.EgovQusntrItemUtility;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -49,15 +48,20 @@ public class EgovQustnrItemServiceImpl extends EgovAbstractServiceImpl implement
 
     @Transactional
     @Override
-    public QustnrIemVO insert(QustnrIemVO qustnrIemVO, Map<String, String> userInfo) throws FdlException {
-        String itemId = idgenService.getNextStringId();
-        qustnrIemVO.setQustnrIemId(itemId);
-        QustnrIem qustnrIem = EgovQusntrItemUtility.QustnrIemVOToEntity(qustnrIemVO);
-        qustnrIem.setFrstRegistPnttm(LocalDateTime.now());
-        qustnrIem.setFrstRegisterId(userInfo.get("uniqId"));
-        qustnrIem.setLastUpdtPnttm(LocalDateTime.now());
-        qustnrIem.setLastUpdusrId(userInfo.get("uniqId"));
-        return EgovQusntrItemUtility.qustnrIemEntityToVO(repository.save(qustnrIem));
+    public QustnrIemVO insert(QustnrIemVO qustnrIemVO, Map<String, String> userInfo) {
+        try {
+            String itemId = idgenService.getNextStringId();
+            qustnrIemVO.setQustnrIemId(itemId);
+            QustnrIem qustnrIem = EgovQusntrItemUtility.qustnrIemVOToEntity(qustnrIemVO);
+            qustnrIem.setFrstRegistPnttm(LocalDateTime.now());
+            qustnrIem.setFrstRegisterId(userInfo.get("uniqId"));
+            qustnrIem.setLastUpdtPnttm(LocalDateTime.now());
+            qustnrIem.setLastUpdusrId(userInfo.get("uniqId"));
+            return EgovQusntrItemUtility.qustnrIemEntityToVO(repository.save(qustnrIem));
+        } catch (Exception ex) {
+            leaveaTrace("fail.common.insert");
+            return null;
+        }
     }
 
     @Transactional

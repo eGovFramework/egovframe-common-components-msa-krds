@@ -3,7 +3,6 @@ package egovframework.com.uss.olp.qrm.web;
 import egovframework.com.pagination.EgovPaginationFormat;
 import egovframework.com.uss.olp.qrm.service.*;
 import lombok.RequiredArgsConstructor;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -85,7 +84,7 @@ public class EgovQustnrRespondInfoAPIController {
             @Valid @ModelAttribute QustnrRespondInfoVO qustnrRespondInfoVO,
             BindingResult bindingResult,
             @RequestHeader("X-UNIQ-ID") String uniqId
-    ) throws FdlException {
+    ) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             for (FieldError error : bindingResult.getFieldErrors()) {

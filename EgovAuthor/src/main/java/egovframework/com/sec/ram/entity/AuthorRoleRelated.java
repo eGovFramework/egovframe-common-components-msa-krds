@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Entity(name="ramAuthorRoleRelated")
 @Getter
 @Setter
-@Table(name="COMTNAUTHORROLERELATE")
+@Table(name="MSATNAUTHORROLERELATE")
 public class AuthorRoleRelated {
 
     @EmbeddedId

@@ -19,12 +19,12 @@ public class AuthorizeFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String secretCodeId = request.getHeader("X-CODE-ID");
 
-        String SECRET_CODE = "-WzAnecnlNewSEQwDgJ2BQ";
-        if (ObjectUtils.isEmpty(secretCodeId) || !SECRET_CODE.equals(secretCodeId)) {
+        String secretCode = "-WzAnecnlNewSEQwDgJ2BQ";
+        if (ObjectUtils.isEmpty(secretCodeId) || !secretCode.equals(secretCodeId)) {
             log.warn("##### Access Denied: Unauthorized Access Attempt");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            String ERROR_PAGE = "/error/403.html";
-            response.sendRedirect(request.getContextPath() + ERROR_PAGE);
+            String errorPage = "/error/403.html";
+            response.sendRedirect(request.getContextPath() + errorPage);
             return;
         }
         filterChain.doFilter(request, response);

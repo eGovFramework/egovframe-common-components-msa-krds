@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @Entity(name="ramMenuCreateDetail")
 @Getter
 @Setter
-@Table(name="COMTNMENUCREATDTLS")
+@Table(name="MSATNMENUCREATDTLS")
 public class MenuCreateDetail {
 
     @EmbeddedId

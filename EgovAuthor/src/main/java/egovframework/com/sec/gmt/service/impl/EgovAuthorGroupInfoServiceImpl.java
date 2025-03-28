@@ -6,7 +6,6 @@ import egovframework.com.sec.gmt.service.AuthorGroupInfoVO;
 import egovframework.com.sec.gmt.service.EgovAuthorGroupInfoService;
 import egovframework.com.sec.gmt.util.EgovAuthorGroupInfoUtility;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -58,17 +57,22 @@ public class EgovAuthorGroupInfoServiceImpl extends EgovAbstractServiceImpl impl
 
     @Transactional
     @Override
-    public AuthorGroupInfoVO insert(AuthorGroupInfoVO authorGroupInfoVO) throws FdlException {
-        AuthorGroupInfo authorGroupInfo = EgovAuthorGroupInfoUtility.VOToEntity(authorGroupInfoVO);
-        authorGroupInfo.setGroupId(idgenService.getNextStringId());
-        authorGroupInfo.setGroupCreatDe(LocalDateTime.now().format(formatter));
-        return EgovAuthorGroupInfoUtility.entityToVO(repository.save(authorGroupInfo));
+    public AuthorGroupInfoVO insert(AuthorGroupInfoVO authorGroupInfoVO) {
+        try{
+            AuthorGroupInfo authorGroupInfo = EgovAuthorGroupInfoUtility.vOToEntity(authorGroupInfoVO);
+            authorGroupInfo.setGroupId(idgenService.getNextStringId());
+            authorGroupInfo.setGroupCreatDe(LocalDateTime.now().format(formatter));
+            return EgovAuthorGroupInfoUtility.entityToVO(repository.save(authorGroupInfo));
+        } catch (Exception ex) {
+            leaveaTrace("fail.common.insert");
+            return null;
+        }
     }
 
     @Transactional
     @Override
     public AuthorGroupInfoVO update(AuthorGroupInfoVO authorGroupInfoVO) {
-        AuthorGroupInfo authorGroupInfo = EgovAuthorGroupInfoUtility.VOToEntity(authorGroupInfoVO);
+        AuthorGroupInfo authorGroupInfo = EgovAuthorGroupInfoUtility.vOToEntity(authorGroupInfoVO);
         return repository.findById(authorGroupInfo.getGroupId())
                 .map(result -> {
                     result.setGroupNm(authorGroupInfoVO.getGroupNm());

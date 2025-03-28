@@ -4,8 +4,10 @@ import egovframework.com.cop.bbs.entity.BbsMaster;
 import egovframework.com.cop.bbs.entity.BbsMasterOptn;
 import egovframework.com.cop.bbs.service.BbsMasterOptnVO;
 import egovframework.com.cop.bbs.service.BbsMasterVO;
+import lombok.experimental.UtilityClass;
 import org.springframework.beans.BeanUtils;
 
+@UtilityClass
 public class EgovBbsMasterUtility {
 
     public static BbsMasterVO bbsMasterEntityTOVO(BbsMaster bbsMaster) {

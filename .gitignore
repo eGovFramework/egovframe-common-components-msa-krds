@@ -33,5 +33,9 @@ local.properties
 .recommenders
 .sts4-cache/
 
+#sonar
+sonar-project.properties
+.scannerwork
+
 model/
 target/

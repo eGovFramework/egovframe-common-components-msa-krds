@@ -6,11 +6,13 @@ import egovframework.com.uss.olp.qri.entity.QustnrRspnsResult;
 import egovframework.com.uss.olp.qri.entity.QustnrRspnsResultId;
 import egovframework.com.uss.olp.qri.service.QustnrRespondInfoVO;
 import egovframework.com.uss.olp.qri.service.QustnrRspnsResultVO;
+import lombok.experimental.UtilityClass;
 import org.springframework.beans.BeanUtils;
 
+@UtilityClass
 public class EgovQustnrRspnsResultUtility {
 
-    public static QustnrRspnsResultVO QustnrRspnsResultEntityToVO(QustnrRspnsResult qustnrRspnsResult) {
+    public static QustnrRspnsResultVO qustnrRspnsResultEntityToVO(QustnrRspnsResult qustnrRspnsResult) {
         QustnrRspnsResultVO qustnrRspnsResultVO = new QustnrRspnsResultVO();
         BeanUtils.copyProperties(qustnrRspnsResult, qustnrRspnsResultVO);
         qustnrRspnsResultVO.setQustnrTmplatId(qustnrRspnsResult.getQustnrRspnsResultId().getQustnrTmplatId());
@@ -33,7 +35,7 @@ public class EgovQustnrRspnsResultUtility {
         return qustnrRspnsResult;
     }
 
-    public static QustnrRespondInfoVO QustnrRespondInfoEntityToVO(QustnrRespondInfo qustnrRespondInfo) {
+    public static QustnrRespondInfoVO qustnrRespondInfoEntityToVO(QustnrRespondInfo qustnrRespondInfo) {
         QustnrRespondInfoVO qustnrRespondInfoVO = new QustnrRespondInfoVO();
         BeanUtils.copyProperties(qustnrRespondInfo, qustnrRespondInfoVO);
         qustnrRespondInfoVO.setQustnrTmplatId(qustnrRespondInfo.getQustnrRespondInfoId().getQustnrTmplatId());
@@ -42,7 +44,7 @@ public class EgovQustnrRspnsResultUtility {
         return qustnrRespondInfoVO;
     }
 
-    public static QustnrRespondInfo QustnrRespondInfoVOTOEntity(QustnrRespondInfoVO qustnrRespondInfoVO) {
+    public static QustnrRespondInfo qustnrRespondInfoVOTOEntity(QustnrRespondInfoVO qustnrRespondInfoVO) {
         QustnrRespondInfoId qustnrRespondInfoId = new QustnrRespondInfoId();
         qustnrRespondInfoId.setQustnrTmplatId(qustnrRespondInfoVO.getQustnrTmplatId());
         qustnrRespondInfoId.setQestnrId(qustnrRespondInfoVO.getQestnrId());

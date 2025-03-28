@@ -1,13 +1,13 @@
 package egovframework.com.cop.brd.web;
 
 import egovframework.com.cop.brd.service.CommentVO;
+import egovframework.com.cop.brd.service.EgovCommentService;
+import egovframework.com.cop.brd.service.EgovStsfdgService;
 import egovframework.com.cop.brd.service.StsfdgVO;
-import egovframework.com.cop.brd.service.impl.EgovCommentServiceImpl;
-import egovframework.com.cop.brd.service.impl.EgovStsfdgServiceImpl;
 import egovframework.com.pagination.EgovPaginationFormat;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.egovframe.boot.crypto.service.impl.EgovEnvCryptoServiceImpl;
+import org.egovframe.boot.crypto.service.EgovEnvCryptoService;
 import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,9 +38,9 @@ public class EgovCommentAPIController {
     @Value("${egov.page.size}")
     private int pageSize;
 
-    private final EgovCommentServiceImpl articleCommentService;
-    private final EgovStsfdgServiceImpl bbsStsfdgService;
-    private final EgovEnvCryptoServiceImpl egovEnvCryptoService;
+    private final EgovCommentService articleCommentService;
+    private final EgovStsfdgService bbsStsfdgService;
+    private final EgovEnvCryptoService egovEnvCryptoService;
 
     @PostMapping("/selectCommentList")
     public ResponseEntity<?> selectCommentList(@RequestBody CommentVO commentVO) {

@@ -23,7 +23,7 @@ public class EgovHtmlTagFilterWrapper extends HttpServletRequestWrapper {
     public String[] getParameterValues(String name) {
         String[] values = super.getParameterValues(name);
         if (values == null) {
-            return null;
+            return new String[0]; // 빈 배열 반환
         }
         for (int i = 0; i < values.length; i++) {
             values[i] = sanitize(values[i]);

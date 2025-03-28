@@ -6,8 +6,10 @@ import egovframework.com.sec.rgm.entity.Emplyrscrtyestbs;
 import egovframework.com.sec.rgm.service.AuthorGroupInfoVO;
 import egovframework.com.sec.rgm.service.AuthorGroupVO;
 import egovframework.com.sec.rgm.service.AuthorInfoVO;
+import lombok.experimental.UtilityClass;
 import org.springframework.beans.BeanUtils;
 
+@UtilityClass
 public class EgovAuthorGroupUtility {
 
     public static AuthorGroupVO authorGroupEntityToVO(Emplyrscrtyestbs emplyrscrtyestbs) {

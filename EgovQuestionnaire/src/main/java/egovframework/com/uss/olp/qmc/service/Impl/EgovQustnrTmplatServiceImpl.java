@@ -1,4 +1,4 @@
-package egovframework.com.uss.olp.qmc.service.Impl;
+package egovframework.com.uss.olp.qmc.service.impl;
 
 import egovframework.com.uss.olp.qmc.repository.EgovQustnrTmplatRepository;
 import egovframework.com.uss.olp.qmc.service.EgovQustnrTmplatService;
@@ -19,7 +19,7 @@ public class EgovQustnrTmplatServiceImpl extends EgovAbstractServiceImpl impleme
 
     @Override
     public List<QustnrTmplatVO> list() {
-        return repository.findAll().stream().map(EgovQestnrInfoUtility::QustnrTmplatEntityToVO).collect(Collectors.toList());
+        return repository.findAll().stream().map(EgovQestnrInfoUtility::qustnrTmplatEntityToVO).collect(Collectors.toList());
     }
 
     @Override

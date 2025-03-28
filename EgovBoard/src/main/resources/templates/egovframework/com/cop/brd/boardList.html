@@ -83,7 +83,6 @@
 
 <script th:inline="javascript" defer>
     boardList();
-    // var userId = "USRCNFRM_00000000001";
 
     function boardSearch() {
         if (notNullCheck($('#searchKeyword').val())) {
@@ -146,6 +145,7 @@
             } else {
                 let noDataMsg = '[(#{common.nodata.msg})]';
                 html += '<tr><td class="text-center" colspan="5">'+noDataMsg+'</td></tr>';
+                $('#board-list-container').append(html);
             }
 
             $('#pagination-container').html(pagination);

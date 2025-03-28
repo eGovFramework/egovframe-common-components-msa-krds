@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@Service("brdEgovCommentServiceImpl")
+@Service("brdEgovCommentService")
 public class EgovCommentServiceImpl extends EgovAbstractServiceImpl implements EgovCommentService {
 
     private final EgovCommentRepository commentRepository;

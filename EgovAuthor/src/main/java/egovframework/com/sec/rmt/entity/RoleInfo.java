@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @Entity(name="rmtRoleInfo")
 @Getter
 @Setter
-@Table(name="COMTNROLEINFO")
+@Table(name="MSATNROLEINFO")
 public class RoleInfo {
 
     @Id

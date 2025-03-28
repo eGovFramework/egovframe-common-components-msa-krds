@@ -23,7 +23,6 @@ public class EgovLoginCommon {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasenames(
                 "classpath:/messages/egovframework/com/message-common",
-                "classpath:/messages/egovframework/com/uat/uap/message",
                 "classpath:/messages/egovframework/com/uat/uia/message",
                 "classpath:/org/egovframe/rte/fdl/idgnr/messages/idgnr",
                 "classpath:/org/egovframe/rte/fdl/property/messages/properties"

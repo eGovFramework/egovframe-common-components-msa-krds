@@ -57,7 +57,7 @@ public class LoginVO extends EgovDefaultVO implements Serializable {
     /** 사용자 IP정보 */
     private String ip;
 
-    /** 사용자 권한정보 */
-    private String authorCode;
+    /** 사용자 권한패턴정보 */
+    private String authorList;
 
 }

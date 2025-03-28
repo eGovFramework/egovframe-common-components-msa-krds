@@ -41,8 +41,10 @@
                         </button>
                     </div>
                 </div>
-                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="bbsMasterCreate()"></button>
-                <button type="button" class="krds-btn medium" th:text="#{comCopBlog.blogMasterVO.title}+''+#{button.list}" th:onclick="blogList()"></button>
+                <div class="page-btn-wrap">
+                    <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="bbsMasterCreate()"></button>
+                    <button type="button" class="krds-btn medium tertiary" th:text="#{comCopBlog.blogMasterVO.title}+''+#{button.list}" th:onclick="blogList()"></button>
+                </div>
             </div>
         </div>
 
@@ -95,18 +97,23 @@
             let lineNumber = response.lineNumber;
 
             let html = '';
-            bbsMasterList.forEach(function(bbsMaster, index) {
-                let number = lineNumber + (index + 1);
-                html += '<tr>';
-                html += '<td class="text-center">'+number+'</td>';
-                html += '<td class="text-center">'+
-                    '<a class="krds-btn text medium" onclick="bbsMasterDetail(\''+bbsMaster.bbsId+'\',\''+bbsMaster.blogId+'\')">'+
-                    bbsMaster.bbsNm+'</a></td>';
-                html += '<td class="text-center">'+bbsMaster.userNm+'</td>';
-                html += '<td class="text-center">'+bbsMaster.frstRegistPnttm+'</td>';
-                html += '<td class="text-center">'+bbsMaster.useAt+'</td>';
-                html += '</tr>';
-            });
+            if(bbsMasterList.length > 0 ){
+                bbsMasterList.forEach(function(bbsMaster, index) {
+                    let number = lineNumber + (index + 1);
+                    html += '<tr>';
+                    html += '<td class="text-center">'+number+'</td>';
+                    html += '<td class="text-center">'+
+                        '<a class="krds-btn text medium" onclick="bbsMasterDetail(\''+bbsMaster.bbsId+'\',\''+bbsMaster.blogId+'\')">'+
+                        bbsMaster.bbsNm+'</a></td>';
+                    html += '<td class="text-center">'+bbsMaster.userNm+'</td>';
+                    html += '<td class="text-center">'+bbsMaster.frstRegistPnttm+'</td>';
+                    html += '<td class="text-center">'+bbsMaster.useAt+'</td>';
+                    html += '</tr>';
+                });
+            }else{
+                let noDataMsg = '[(#{common.nodata.msg})]';
+                html += '<tr><td class="text-center" colspan="5">'+noDataMsg+'</td></tr>';
+            }
 
             $('#bbsMaster-list-container').html(html);
             $('#pagination-container').html(pagination);

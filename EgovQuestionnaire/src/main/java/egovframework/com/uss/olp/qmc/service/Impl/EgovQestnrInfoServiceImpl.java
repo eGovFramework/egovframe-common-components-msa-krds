@@ -1,4 +1,4 @@
-package egovframework.com.uss.olp.qmc.service.Impl;
+package egovframework.com.uss.olp.qmc.service.impl;
 
 import egovframework.com.uss.olp.qmc.entity.QestnrInfo;
 import egovframework.com.uss.olp.qmc.entity.QestnrInfoId;
@@ -8,7 +8,6 @@ import egovframework.com.uss.olp.qmc.service.QestnrInfoDTO;
 import egovframework.com.uss.olp.qmc.service.QestnrInfoVO;
 import egovframework.com.uss.olp.qmc.util.EgovQestnrInfoUtility;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -61,18 +60,23 @@ public class EgovQestnrInfoServiceImpl extends EgovAbstractServiceImpl implement
 
     @Transactional
     @Override
-    public QestnrInfoVO insert(QestnrInfoVO qestnrInfoVO, Map<String, String> userInfo) throws FdlException {
-        String qestnrId = idgenService.getNextStringId();
-        qestnrInfoVO.setQestnrId(qestnrId);
+    public QestnrInfoVO insert(QestnrInfoVO qestnrInfoVO, Map<String, String> userInfo) {
+        try {
+            String qestnrId = idgenService.getNextStringId();
+            qestnrInfoVO.setQestnrId(qestnrId);
 
-        QestnrInfo qestnrInfo = EgovQestnrInfoUtility.QestnrInfoVOToEntiry(qestnrInfoVO);
-        qestnrInfo.setQustnrBgnde(qestnrInfo.getQustnrBgnde().replace("-", ""));
-        qestnrInfo.setQustnrEndde(qestnrInfo.getQustnrEndde().replace("-", ""));
-        qestnrInfo.setFrstRegistPnttm(LocalDateTime.now());
-        qestnrInfo.setFrstRegisterId(userInfo.get("uniqId"));
-        qestnrInfo.setLastUpdtPnttm(LocalDateTime.now());
-        qestnrInfo.setLastUpdusrId(userInfo.get("uniqId"));
-        return EgovQestnrInfoUtility.QuesnrInfoEntityToVO(repository.save(qestnrInfo));
+            QestnrInfo qestnrInfo = EgovQestnrInfoUtility.qestnrInfoVOToEntiry(qestnrInfoVO);
+            qestnrInfo.setQustnrBgnde(qestnrInfo.getQustnrBgnde().replace("-", ""));
+            qestnrInfo.setQustnrEndde(qestnrInfo.getQustnrEndde().replace("-", ""));
+            qestnrInfo.setFrstRegistPnttm(LocalDateTime.now());
+            qestnrInfo.setFrstRegisterId(userInfo.get("uniqId"));
+            qestnrInfo.setLastUpdtPnttm(LocalDateTime.now());
+            qestnrInfo.setLastUpdusrId(userInfo.get("uniqId"));
+            return EgovQestnrInfoUtility.quesnrInfoEntityToVO(repository.save(qestnrInfo));
+        } catch (Exception ex) {
+            leaveaTrace("fail.common.insert");
+            return null;
+        }
     }
 
     @Transactional
@@ -85,7 +89,7 @@ public class EgovQestnrInfoServiceImpl extends EgovAbstractServiceImpl implement
         return repository.findById(qestnrInfoId)
                 .map(item -> updateItem(item, qestnrInfoVO, userInfo.get("uniqId")))
                 .map(repository::save)
-                .map(EgovQestnrInfoUtility::QuesnrInfoEntityToVO)
+                .map(EgovQestnrInfoUtility::quesnrInfoEntityToVO)
                 .orElse(null);
     }
 

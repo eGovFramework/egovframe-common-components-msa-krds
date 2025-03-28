@@ -1,6 +1,5 @@
 package egovframework.com.sec.rmt.service;
 
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.springframework.data.domain.Page;
 
 public interface EgovRoleInfoService {
@@ -9,7 +8,7 @@ public interface EgovRoleInfoService {
 
     RoleInfoVO detail(RoleInfoVO roleInfoVO);
 
-    RoleInfoVO insert(RoleInfoVO roleInfoVO) throws FdlException;;
+    RoleInfoVO insert(RoleInfoVO roleInfoVO);
 
     RoleInfoVO update(RoleInfoVO roleInfoVO);
 

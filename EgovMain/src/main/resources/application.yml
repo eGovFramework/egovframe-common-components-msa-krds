@@ -24,12 +24,11 @@ eureka:
     register-with-eureka: true # Eureka 등록 여부
     fetch-registry: true # Eureka 조회 여부
     registry-fetch-interval-seconds: 5 # 클라이어트 측에서 레지스트리를 캐싱하는 시간
-    initial-instance-info-replication-interval-secondsL: 5 # 서버 재시작 후 즉시 등록 시도
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
     instance:
-      leaseRenewalIntervalInSeconds: 5  # 기본값 30초 → 5초로 변경 (더 자주 heartbeat 전송)
-      leaseExpirationDurationInSeconds: 10  # 기본값 90초 → 10초로 변경 (서비스 제거 시간 단축)
+      lease-renewal-interval-in-seconds: 3  # 기본값 30초 → 3초로 변경 (더 자주 heartbeat 전송)
+      lease-expiration-duration-in-seconds: 10  # 기본값 90초 → 10초로 변경 (서비스 제거 시간 단축)
       instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
 management:

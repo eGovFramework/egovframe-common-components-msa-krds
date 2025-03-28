@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service("brdEgovSatisfactionServiceImpl")
+@Service("brdEgovStsfdgService")
 @Slf4j
 public class EgovStsfdgServiceImpl extends EgovAbstractServiceImpl implements EgovStsfdgService {
 
@@ -37,11 +37,10 @@ public class EgovStsfdgServiceImpl extends EgovAbstractServiceImpl implements Eg
 
     @Override
     public Map<String, Object> selectStsfdgList(StsfdgVO stsfdgVO) {
-
         Sort sort = Sort.by(Sort.Direction.DESC, "frstRegistPnttm");
         Pageable pageable = PageRequest.of(stsfdgVO.getFirstIndex(), stsfdgVO.getRecordCountPerPage(), sort);
-        Page<StsfdgVO> sList = egovStsfdgRepository.findAllByBbsIdAndNttIdAndUseAt(stsfdgVO.getBbsId(), stsfdgVO.getNttId(), "Y", pageable).map(EgovBoardUtility::StsfdgEntiyToVO);
-        List<StsfdgVO> cntList = egovStsfdgRepository.findAllByBbsIdAndNttIdAndUseAt(stsfdgVO.getBbsId(), stsfdgVO.getNttId(), "Y").stream().map(EgovBoardUtility::StsfdgEntiyToVO).collect(Collectors.toList());
+        Page<StsfdgVO> sList = egovStsfdgRepository.findAllByBbsIdAndNttIdAndUseAt(stsfdgVO.getBbsId(), stsfdgVO.getNttId(), "Y", pageable).map(EgovBoardUtility::stsfdgEntiyToVO);
+        List<StsfdgVO> cntList = egovStsfdgRepository.findAllByBbsIdAndNttIdAndUseAt(stsfdgVO.getBbsId(), stsfdgVO.getNttId(), "Y").stream().map(EgovBoardUtility::stsfdgEntiyToVO).collect(Collectors.toList());
 
         // 만족도 평균값
         double cnts = 0;
@@ -84,10 +83,10 @@ public class EgovStsfdgServiceImpl extends EgovAbstractServiceImpl implements Eg
     }
 
     @Override
-    public int deleteStsfdg(String StsfdgNo) {
-        log.debug("삭제할 번호 >> " + StsfdgNo);
-        if (!StsfdgNo.isEmpty()) {
-            egovStsfdgRepository.deleteById(StsfdgNo);
+    public int deleteStsfdg(String stsfdgNo) {
+        log.debug("삭제할 번호 >> " + stsfdgNo);
+        if (!stsfdgNo.isEmpty()) {
+            egovStsfdgRepository.deleteById(stsfdgNo);
         }
         return 1;
     }

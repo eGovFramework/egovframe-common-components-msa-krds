@@ -16,19 +16,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service("brdEgovFileServiceImpl")
+@Service("brdEgovFileService")
 @Slf4j
 public class EgovFileServiceImpl extends EgovAbstractServiceImpl implements EgovFileService {
 
@@ -46,14 +40,16 @@ public class EgovFileServiceImpl extends EgovAbstractServiceImpl implements Egov
         this.idGnrService = idGnrService;
     }
 
-
     @Override
-    public List<FileVO> selectFileInfs(String atchFileId) throws FdlException {
-        return fileDetailRepository.findAllByFileDetailId_AtchFileId(atchFileId).stream().map(EgovBoardUtility::fileDeatailEntityToVO).collect(Collectors.toList());
+    public List<FileVO> selectFileInfs(String atchFileId) {
+        return fileDetailRepository.findAllByFileDetailId_AtchFileId(atchFileId)
+                .stream()
+                .map(EgovBoardUtility::fileDeatailEntityToVO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public String insertFileInf(FileVO fvo) throws Exception {
+    public String insertFileInf(FileVO fvo) {
         int fileCount = fileDetailRepository.findAllByFileDetailId_AtchFileId(fvo.getAtchFileId()).size();
 
         if (fileCount > 0) {
@@ -88,7 +84,7 @@ public class EgovFileServiceImpl extends EgovAbstractServiceImpl implements Egov
 
     @Transactional
     @Override
-    public String insertFiles(List<FileVO> fileList) throws Exception {
+    public String insertFiles(List<FileVO> fileList) throws FdlException {
         String attachFileId = idGnrService.getNextStringId();
         for (int i = 0; i < fileList.size(); i++) {
             if (fileList.get(i).getAtchFileId() != null) {
@@ -107,8 +103,7 @@ public class EgovFileServiceImpl extends EgovAbstractServiceImpl implements Egov
     }
 
     @Override
-    public void deleteFileInfs(FileVO fileVO) throws FdlException {
-
+    public void deleteFileInfs(FileVO fileVO) {
         for (String num : fileVO.getDeleteFileSn()) {
             FileDetailId filedetailId = new FileDetailId();
             filedetailId.setAtchFileId(fileVO.getAtchFileId());
@@ -151,7 +146,7 @@ public class EgovFileServiceImpl extends EgovAbstractServiceImpl implements Egov
     }
 
     @Override
-    public FileVO detailFileInf(FileVO fileVO) throws Exception {
+    public FileVO detailFileInf(FileVO fileVO) {
         FileDetailId fileDetailId = new FileDetailId();
         fileDetailId.setAtchFileId(fileVO.getAtchFileId());
         fileDetailId.setFileSn(fileVO.getFileSn());

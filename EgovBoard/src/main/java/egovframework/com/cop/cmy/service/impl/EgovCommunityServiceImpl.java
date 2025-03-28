@@ -9,7 +9,6 @@ import egovframework.com.cop.cmy.service.CommunityVO;
 import egovframework.com.cop.cmy.service.EgovCommunityService;
 import egovframework.com.cop.cmy.util.EgovCommunityUtility;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -53,21 +52,26 @@ public class EgovCommunityServiceImpl extends EgovAbstractServiceImpl implements
 
     @Transactional
     @Override
-    public CommunityVO insert(CommunityVO communityVO, Map<String, String> userInfo) throws FdlException {
-        String cmmntyId = idgenService.getNextStringId();
+    public CommunityVO insert(CommunityVO communityVO, Map<String, String> userInfo) {
+        try {
+            String cmmntyId = idgenService.getNextStringId();
 
-        communityVO.setCmmntyId(cmmntyId);
-        communityVO.setRegistSeCode("REGC02");
-        communityVO.setFrstRegistPnttm(LocalDateTime.now());
-        communityVO.setFrstRegisterId(userInfo.get("uniqId"));
-        communityVO.setLastUpdtPnttm(LocalDateTime.now());
-        communityVO.setLastUpdusrId(userInfo.get("uniqId"));
-        Cmmnty cmmnty = repository.save(EgovCommunityUtility.communityVOToEntity(communityVO));
+            communityVO.setCmmntyId(cmmntyId);
+            communityVO.setRegistSeCode("REGC02");
+            communityVO.setFrstRegistPnttm(LocalDateTime.now());
+            communityVO.setFrstRegisterId(userInfo.get("uniqId"));
+            communityVO.setLastUpdtPnttm(LocalDateTime.now());
+            communityVO.setLastUpdusrId(userInfo.get("uniqId"));
+            Cmmnty cmmnty = repository.save(EgovCommunityUtility.communityVOToEntity(communityVO));
 
-        CommunityUserVO communityUserVO = getCommunityUserVO(cmmntyId, userInfo.get("uniqId"));
-        userRepository.save(EgovCommunityUtility.communityUsereVOToEntity(communityUserVO));
+            CommunityUserVO communityUserVO = getCommunityUserVO(cmmntyId, userInfo.get("uniqId"));
+            userRepository.save(EgovCommunityUtility.communityUsereVOToEntity(communityUserVO));
 
-        return EgovCommunityUtility.cmmntyEntityToVO(cmmnty);
+            return EgovCommunityUtility.cmmntyEntityToVO(cmmnty);
+        } catch (Exception ex) {
+            leaveaTrace("fail.common.insert");
+            return null;
+        }
     }
 
     @Transactional

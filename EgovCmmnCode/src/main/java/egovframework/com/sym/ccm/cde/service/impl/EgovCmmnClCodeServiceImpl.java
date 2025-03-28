@@ -19,7 +19,7 @@ public class EgovCmmnClCodeServiceImpl extends EgovAbstractServiceImpl implement
 
     @Override
     public List<CmmnClCodeVO> list() {
-        return repository.findAll()
+        return repository.findAllByUseAtEquals("Y")
                 .stream()
                 .map(EgovCmmnDetailCodeUtility::clCodeEntityTOVO)
                 .collect(Collectors.toList());

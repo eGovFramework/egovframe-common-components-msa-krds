@@ -1,5 +1,6 @@
 package egovframework.com.ext.ops.util;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@UtilityClass
 @Slf4j
 public class StrUtil {
 

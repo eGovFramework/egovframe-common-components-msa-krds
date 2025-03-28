@@ -6,7 +6,6 @@ import egovframework.com.uss.olp.qtm.service.QustnrTmplatDTO;
 import egovframework.com.uss.olp.qtm.service.QustnrTmplatVO;
 import lombok.RequiredArgsConstructor;
 import org.egovframe.boot.crypto.service.impl.EgovEnvCryptoServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -79,7 +78,7 @@ public class EgovQustnrTmplatAPIController {
     }
 
     @PostMapping(value="/qustnrTmplatInsert")
-    public ResponseEntity<?> qustnrTmplatInsert(@Valid @ModelAttribute QustnrTmplatVO qustnrTmplatVO, BindingResult bindingResult, HttpServletRequest request) throws FdlException, IOException {
+    public ResponseEntity<?> qustnrTmplatInsert(@Valid @ModelAttribute QustnrTmplatVO qustnrTmplatVO, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             for (FieldError error : bindingResult.getFieldErrors()) {
@@ -105,7 +104,7 @@ public class EgovQustnrTmplatAPIController {
     }
 
     @PostMapping(value="/qustnrTmplatUpdate")
-    public ResponseEntity<?> qustnrTmplatUpdate(@Valid @ModelAttribute QustnrTmplatVO qustnrTmplatVO, BindingResult bindingResult, HttpServletRequest request) throws FdlException, IOException {
+    public ResponseEntity<?> qustnrTmplatUpdate(@Valid @ModelAttribute QustnrTmplatVO qustnrTmplatVO, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             for (FieldError error : bindingResult.getFieldErrors()) {

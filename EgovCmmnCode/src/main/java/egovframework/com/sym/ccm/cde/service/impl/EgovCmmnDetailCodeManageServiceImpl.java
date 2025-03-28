@@ -60,7 +60,7 @@ public class EgovCmmnDetailCodeManageServiceImpl extends EgovAbstractServiceImpl
         CmmnCode cmmnCode = new CmmnCode();
         cmmnCode.setCodeId(cmmnDetailCodeVO.getCodeId());
 
-        CmmnDetailCode cmmnDetailCode = EgovCmmnDetailCodeUtility.VOToEntity(cmmnDetailCodeVO);
+        CmmnDetailCode cmmnDetailCode = EgovCmmnDetailCodeUtility.vOToEntity(cmmnDetailCodeVO);
         cmmnDetailCode.setFrstRegistPnttm(LocalDateTime.now());
         cmmnDetailCode.setFrstRegisterId(userInfo.get("uniqId"));
         cmmnDetailCode.setLastUpdtPnttm(LocalDateTime.now());
@@ -77,7 +77,7 @@ public class EgovCmmnDetailCodeManageServiceImpl extends EgovAbstractServiceImpl
     public CmmnDetailCodeVO update(CmmnDetailCodeVO cmmnDetailCodeVO, Map<String, String> userInfo) {
         String codeId = cmmnDetailCodeVO.getCodeId();
         String code = cmmnDetailCodeVO.getCode();
-        CmmnDetailCode cmmnDetailCode = EgovCmmnDetailCodeUtility.VOToEntity(cmmnDetailCodeVO);
+        CmmnDetailCode cmmnDetailCode = EgovCmmnDetailCodeUtility.vOToEntity(cmmnDetailCodeVO);
         return repository.findByCmmnDetailCodeId_CodeIdAndCmmnDetailCodeId_Code(codeId, code)
                 .map(result -> {
                     result.setCodeNm(cmmnDetailCode.getCodeNm());

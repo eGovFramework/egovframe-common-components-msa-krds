@@ -21,7 +21,7 @@ public class EgovCmmnClCodeServiceImpl extends EgovAbstractServiceImpl implement
     public List<CmmnClCodeVO> list() {
         return repository.findAllByUseAtEquals("Y")
                 .stream()
-                .map(EgovCmmnCodeUtility::CmmnClCodeEntityToVO)
+                .map(EgovCmmnCodeUtility::cmmnClCodeEntityToVO)
                 .collect(Collectors.toList());
     }
 

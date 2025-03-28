@@ -6,7 +6,6 @@ import egovframework.com.cop.cmy.service.EgovCommunityService;
 import egovframework.com.pagination.EgovPaginationFormat;
 import lombok.RequiredArgsConstructor;
 import org.egovframe.boot.crypto.service.impl.EgovEnvCryptoServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -79,7 +78,7 @@ public class EgovCommunityAPIController {
     }
 
     @PostMapping(value="/communityInsert")
-    public ResponseEntity<?> communityInsert(@Valid @ModelAttribute CommunityVO communityVO, BindingResult bindingResult, HttpServletRequest request) throws FdlException {
+    public ResponseEntity<?> communityInsert(@Valid @ModelAttribute CommunityVO communityVO, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             for (FieldError error : bindingResult.getFieldErrors()) {

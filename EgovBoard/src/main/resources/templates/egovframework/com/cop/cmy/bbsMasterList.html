@@ -40,8 +40,10 @@
                         </button>
                     </div>
                 </div>
-                <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="bbsMasterCreate()"></button>
-                <button type="button" class="krds-btn medium" th:text="#{comCopCmy.commuMasterVO.title}+''+#{button.list}" th:onclick="communityList()"></button>
+                <div class="page-btn-wrap">
+                    <button type="button" class="krds-btn medium" th:text="#{button.create}" th:onclick="bbsMasterCreate()"></button>
+                    <button type="button" class="krds-btn medium tertiary" th:text="#{comCopCmy.commuMasterVO.title}+''+#{button.list}" th:onclick="communityList()"></button>
+                </div>
             </div>
         </div>
     </form>

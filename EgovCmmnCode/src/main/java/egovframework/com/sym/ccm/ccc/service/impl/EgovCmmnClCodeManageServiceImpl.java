@@ -33,36 +33,36 @@ public class EgovCmmnClCodeManageServiceImpl extends EgovAbstractServiceImpl imp
         Specification<CmmnClCode> spec = (root, query, criteriaBuilder) -> null;
         if (!ObjectUtils.isEmpty(cmmnClCodeVO.getSearchKeyword()) && "1".equals(cmmnClCodeVO.getSearchCondition())) {
             spec = spec.and(EgovCmmnClCodeManageSpecification.clCodeContains(cmmnClCodeVO.getSearchKeyword()));
-            return repository.findAll(spec, pageable).map(EgovCmmnClCodeUtility::CmmnClCodeEntityToVO);
+            return repository.findAll(spec, pageable).map(EgovCmmnClCodeUtility::cmmnClCodeEntityToVO);
         } else if (!ObjectUtils.isEmpty(cmmnClCodeVO.getSearchKeyword()) && "2".equals(cmmnClCodeVO.getSearchCondition())) {
             spec = spec.and(EgovCmmnClCodeManageSpecification.clCodeNmContains(cmmnClCodeVO.getSearchKeyword()));
-            return repository.findAll(spec, pageable).map(EgovCmmnClCodeUtility::CmmnClCodeEntityToVO);
+            return repository.findAll(spec, pageable).map(EgovCmmnClCodeUtility::cmmnClCodeEntityToVO);
         } else {
-            return repository.findAll(pageable).map(EgovCmmnClCodeUtility::CmmnClCodeEntityToVO);
+            return repository.findAll(pageable).map(EgovCmmnClCodeUtility::cmmnClCodeEntityToVO);
         }
     }
 
     @Override
     public CmmnClCodeVO detail(CmmnClCodeVO cmmnClCodeVO) {
         String clCode = cmmnClCodeVO.getClCode();
-        return repository.findById(clCode).map(EgovCmmnClCodeUtility::CmmnClCodeEntityToVO).orElse(null);
+        return repository.findById(clCode).map(EgovCmmnClCodeUtility::cmmnClCodeEntityToVO).orElse(null);
     }
 
     @Transactional
     @Override
     public CmmnClCodeVO insert(CmmnClCodeVO cmmnClCodeVO, Map<String, String> userInfo) {
-        CmmnClCode cmmnClCode = EgovCmmnClCodeUtility.CmmnClCodeVOToEntity(cmmnClCodeVO);
+        CmmnClCode cmmnClCode = EgovCmmnClCodeUtility.cmmnClCodeVOToEntity(cmmnClCodeVO);
         cmmnClCode.setFrstRegistPnttm(LocalDateTime.now());
         cmmnClCode.setFrstRegisterId(userInfo.get("uniqId"));
         cmmnClCode.setLastUpdtPnttm(LocalDateTime.now());
         cmmnClCode.setLastUpdusrId(userInfo.get("uniqId"));
-        return EgovCmmnClCodeUtility.CmmnClCodeEntityToVO(repository.save(cmmnClCode));
+        return EgovCmmnClCodeUtility.cmmnClCodeEntityToVO(repository.save(cmmnClCode));
     }
 
     @Transactional
     @Override
     public CmmnClCodeVO update(CmmnClCodeVO cmmnClCodeVO, Map<String, String> userInfo) {
-        CmmnClCode cmmnClCode = EgovCmmnClCodeUtility.CmmnClCodeVOToEntity(cmmnClCodeVO);
+        CmmnClCode cmmnClCode = EgovCmmnClCodeUtility.cmmnClCodeVOToEntity(cmmnClCodeVO);
         return repository.findById(cmmnClCode.getClCode())
                 .map(result -> {
                     result.setClCodeNm(cmmnClCode.getClCodeNm());
@@ -72,13 +72,13 @@ public class EgovCmmnClCodeManageServiceImpl extends EgovAbstractServiceImpl imp
                     result.setLastUpdusrId(userInfo.get("uniqId"));
                     return repository.save(result);
                 })
-                .map(EgovCmmnClCodeUtility::CmmnClCodeEntityToVO).orElse(null);
+                .map(EgovCmmnClCodeUtility::cmmnClCodeEntityToVO).orElse(null);
     }
 
     @Transactional
     @Override
     public CmmnClCodeVO delete(CmmnClCodeVO cmmnClCodeVO, Map<String, String> userInfo) {
-        CmmnClCode cmmnClCode = EgovCmmnClCodeUtility.CmmnClCodeVOToEntity(cmmnClCodeVO);
+        CmmnClCode cmmnClCode = EgovCmmnClCodeUtility.cmmnClCodeVOToEntity(cmmnClCodeVO);
         return repository.findById(cmmnClCode.getClCode())
                 .map(result -> {
                     result.setUseAt("N");
@@ -86,7 +86,7 @@ public class EgovCmmnClCodeManageServiceImpl extends EgovAbstractServiceImpl imp
                     result.setLastUpdusrId(userInfo.get("uniqId"));
                     return repository.save(result);
                 })
-                .map(EgovCmmnClCodeUtility::CmmnClCodeEntityToVO).orElse(null);
+                .map(EgovCmmnClCodeUtility::cmmnClCodeEntityToVO).orElse(null);
     }
 
 }

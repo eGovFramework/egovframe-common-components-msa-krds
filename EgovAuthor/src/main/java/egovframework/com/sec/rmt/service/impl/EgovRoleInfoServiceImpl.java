@@ -7,7 +7,6 @@ import egovframework.com.sec.rmt.service.RoleInfoDTO;
 import egovframework.com.sec.rmt.service.RoleInfoVO;
 import egovframework.com.sec.rmt.util.EgovRoleInfoUtility;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -50,21 +49,26 @@ public class EgovRoleInfoServiceImpl extends EgovAbstractServiceImpl implements 
 
     @Transactional
     @Override
-    public RoleInfoVO insert(RoleInfoVO roleInfoVO) throws FdlException {
-        String roleTy = roleInfoVO.getRoleTy();
-        if("method".equals(roleTy)) {
-            roleInfoVO.setRoleCode("mtd-".concat(idgenService.getNextStringId()));
-            roleInfoVO.setRoleCreatDe(LocalDateTime.now().format(formatter));
-        } else if("pointcut".equals(roleTy)) {
-            roleInfoVO.setRoleCode("pct-".concat(idgenService.getNextStringId()));
-            roleInfoVO.setRoleCreatDe(LocalDateTime.now().format(formatter));
-        } else {
-            roleInfoVO.setRoleCode("web-".concat(idgenService.getNextStringId()));
-            roleInfoVO.setRoleCreatDe(LocalDateTime.now().format(formatter));
-        }
+    public RoleInfoVO insert(RoleInfoVO roleInfoVO) {
+        try {
+            String roleTy = roleInfoVO.getRoleTy();
+            if ("method".equals(roleTy)) {
+                roleInfoVO.setRoleCode("mtd-".concat(idgenService.getNextStringId()));
+                roleInfoVO.setRoleCreatDe(LocalDateTime.now().format(formatter));
+            } else if ("pointcut".equals(roleTy)) {
+                roleInfoVO.setRoleCode("pct-".concat(idgenService.getNextStringId()));
+                roleInfoVO.setRoleCreatDe(LocalDateTime.now().format(formatter));
+            } else {
+                roleInfoVO.setRoleCode("web-".concat(idgenService.getNextStringId()));
+                roleInfoVO.setRoleCreatDe(LocalDateTime.now().format(formatter));
+            }
 
-        RoleInfo roleInfo = EgovRoleInfoUtility.roleVOToEntity(roleInfoVO);
-        return EgovRoleInfoUtility.roleEntityToVO(repository.save(roleInfo));
+            RoleInfo roleInfo = EgovRoleInfoUtility.roleVOToEntity(roleInfoVO);
+            return EgovRoleInfoUtility.roleEntityToVO(repository.save(roleInfo));
+        } catch (Exception ex) {
+            leaveaTrace("fail.common.insert");
+            return null;
+        }
     }
 
     @Transactional

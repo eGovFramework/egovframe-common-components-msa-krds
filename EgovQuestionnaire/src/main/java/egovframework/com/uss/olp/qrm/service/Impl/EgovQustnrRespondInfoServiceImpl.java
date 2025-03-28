@@ -1,4 +1,4 @@
-package egovframework.com.uss.olp.qrm.service.Impl;
+package egovframework.com.uss.olp.qrm.service.impl;
 
 import egovframework.com.uss.olp.qrm.entity.QustnrRespondInfo;
 import egovframework.com.uss.olp.qrm.entity.QustnrRespondInfoId;
@@ -8,7 +8,6 @@ import egovframework.com.uss.olp.qrm.service.QustnrRespondInfoDTO;
 import egovframework.com.uss.olp.qrm.service.QustnrRespondInfoVO;
 import egovframework.com.uss.olp.qrm.util.EgovQustnrRespondInfoUtility;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -47,15 +46,20 @@ public class EgovQustnrRespondInfoServiceImpl extends EgovAbstractServiceImpl im
 
     @Transactional
     @Override
-    public QustnrRespondInfoVO insert(QustnrRespondInfoVO qustnrRespondInfoVO) throws FdlException {
-        String qustnrRespondId = idgenService.getNextStringId();
-        qustnrRespondInfoVO.setQustnrRespondId(qustnrRespondId);
+    public QustnrRespondInfoVO insert(QustnrRespondInfoVO qustnrRespondInfoVO) {
+        try {
+            String qustnrRespondId = idgenService.getNextStringId();
+            qustnrRespondInfoVO.setQustnrRespondId(qustnrRespondId);
 
-        QustnrRespondInfo qustnrRespondInfo = EgovQustnrRespondInfoUtility.QustnrRespondInfoVOTOEntity(qustnrRespondInfoVO);
-        qustnrRespondInfo.setFrstRegistPnttm(LocalDateTime.now());
-        qustnrRespondInfo.setLastUpdtPnttm(LocalDateTime.now());
+            QustnrRespondInfo qustnrRespondInfo = EgovQustnrRespondInfoUtility.qustnrRespondInfoVOTOEntity(qustnrRespondInfoVO);
+            qustnrRespondInfo.setFrstRegistPnttm(LocalDateTime.now());
+            qustnrRespondInfo.setLastUpdtPnttm(LocalDateTime.now());
 
-        return EgovQustnrRespondInfoUtility.QustnrRespondInfoEntityToVO(repository.save(qustnrRespondInfo));
+            return EgovQustnrRespondInfoUtility.qustnrRespondInfoEntityToVO(repository.save(qustnrRespondInfo));
+        } catch (Exception ex) {
+            leaveaTrace("fail.common.insert");
+            return null;
+        }
     }
 
     @Transactional
@@ -69,7 +73,7 @@ public class EgovQustnrRespondInfoServiceImpl extends EgovAbstractServiceImpl im
         return repository.findById(qustnrRespondInfoId)
                 .map(item -> updateItem(item, qustnrRespondInfoVO))
                 .map(repository::save)
-                .map(EgovQustnrRespondInfoUtility::QustnrRespondInfoEntityToVO)
+                .map(EgovQustnrRespondInfoUtility::qustnrRespondInfoEntityToVO)
                 .orElse(null);
     }
 

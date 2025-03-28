@@ -1,10 +1,10 @@
 package egovframework.com.ext.ops.service.impl;
 
-import com.google.gson.Gson;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.OnnxEmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.PoolingMode;
+import egovframework.com.config.ConfigUtils;
 import egovframework.com.config.EgovSearchConfig;
 import egovframework.com.ext.ops.service.BoardVO;
 import egovframework.com.ext.ops.service.BoardVectorVO;
@@ -25,8 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,14 +51,11 @@ public class EgovBbsSearchServiceImpl extends EgovAbstractServiceImpl implements
     @Value("${egov.vectorsearch.page.size}")
     private int vectorSearchPageSize;
 
-    @Value("${app.search-config-path}")
-    private String configPath;
-
-    private String modelPath;
-    private String tokenizerPath;
     private EmbeddingModel embeddingModel;
     private final OpenSearchClient client;
     private static final Map<String, String> SEARCH_FIELD_MAP;
+    
+    private final ConfigUtils configUtils;
 
     static {
         Map<String, String> map = new HashMap<>();
@@ -72,21 +67,12 @@ public class EgovBbsSearchServiceImpl extends EgovAbstractServiceImpl implements
 
     @Override
     public void afterPropertiesSet() {
-        loadConfig();
-        this.embeddingModel = new OnnxEmbeddingModel(modelPath, tokenizerPath, PoolingMode.MEAN);
-    }
-
-    private void loadConfig() {
-        try {
-            String jsonStr = new String(Files.readAllBytes(Paths.get(configPath)));
-            EgovSearchConfig config = new Gson().fromJson(jsonStr, EgovSearchConfig.class);
-
-            this.modelPath = config.getModelPath();
-            this.tokenizerPath = config.getTokenizerPath();
-
-        } catch (IOException e) {
-            log.error("Failed to load search config: " + e.getMessage());
-        }
+    	EgovSearchConfig config = configUtils.loadConfig();
+    	if (config != null) {
+            String modelPath = config.getModelPath();
+            String tokenizerPath = config.getTokenizerPath();
+            this.embeddingModel = new OnnxEmbeddingModel(modelPath, tokenizerPath, PoolingMode.MEAN);
+        } 
     }
 
     private <T> Page<T> executeSearch(String indexName, int searchCount, int pageSize,
@@ -108,7 +94,7 @@ public class EgovBbsSearchServiceImpl extends EgovAbstractServiceImpl implements
             return createPagedResult(searchResults, pageIndex, pageSize, searchCount, searchResponse.hits().total().value());
 
         } catch (IOException | OpenSearchException e) {
-            log.error("Error occurred during search process:", e.getMessage());
+            log.error("Error occurred during search process : {}", e.getMessage());
             return null;
         }
     }

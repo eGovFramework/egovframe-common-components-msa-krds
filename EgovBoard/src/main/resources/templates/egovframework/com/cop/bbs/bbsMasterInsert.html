@@ -237,7 +237,9 @@
             let html = '';
             html += '<option value="">'+defaultText+'</option>';
             cmmnDetailCodeList.forEach(function (cmmnDetailCode, index) {
-                html += '<option value="'+cmmnDetailCode.code+'">'+cmmnDetailCode.codeNm+'</option>';
+                if (cmmnDetailCode.code !== 'BBST02') {
+                    html += '<option value="'+cmmnDetailCode.code+'">'+cmmnDetailCode.codeNm+'</option>';
+                }
             });
 
             document.getElementById('bbsTyCodes').innerHTML = html;

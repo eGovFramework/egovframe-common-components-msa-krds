@@ -1,4 +1,4 @@
-package egovframework.com.uss.olp.qqm.service.Impl;
+package egovframework.com.uss.olp.qqm.service.impl;
 
 import egovframework.com.uss.olp.qqm.repository.EgovCmmnDetailCodeRepository;
 import egovframework.com.uss.olp.qqm.service.CmmnDetailCodeVO;

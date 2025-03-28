@@ -21,7 +21,6 @@ public class EgovBoardWeb implements WebMvcConfigurer {
         registry.addResourceHandler("/cop/bls/**").addResourceLocations("classpath:/static/");
         registry.addResourceHandler("/cop/brd/**").addResourceLocations("classpath:/static/");
         registry.addResourceHandler("/cop/cmy/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/cop/tpl/**").addResourceLocations("classpath:/static/");
     }
 
     @Override

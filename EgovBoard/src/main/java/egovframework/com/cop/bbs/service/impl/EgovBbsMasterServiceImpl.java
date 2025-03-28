@@ -10,7 +10,6 @@ import egovframework.com.cop.bbs.service.EgovBbsMasterService;
 import egovframework.com.cop.bbs.util.EgovBbsMasterUtility;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
-import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -54,22 +53,27 @@ public class EgovBbsMasterServiceImpl extends EgovAbstractServiceImpl implements
 
     @Transactional
     @Override
-    public BbsMasterVO insert(BbsMasterVO bbsMasterVO, Map<String, String> userInfo) throws FdlException {
-        String bbsId = idgenService.getNextStringId() + RandomStringUtils.randomAlphabetic(10);
+    public BbsMasterVO insert(BbsMasterVO bbsMasterVO, Map<String, String> userInfo) {
+        try {
+            String bbsId = idgenService.getNextStringId() + RandomStringUtils.randomAlphabetic(10);
 
-        BbsMasterOptnVO bbsMasterOptnVO = getBbsMasterOptnVO(bbsMasterVO, bbsId, userInfo.get("uniqId"));
-        if (!"1".equals(bbsMasterVO.getBbsOption())) {
-            optionRepository.save(EgovBbsMasterUtility.bbsMasterOptnVOEntity(bbsMasterOptnVO));
+            BbsMasterOptnVO bbsMasterOptnVO = getBbsMasterOptnVO(bbsMasterVO, bbsId, userInfo.get("uniqId"));
+            if (!"1".equals(bbsMasterVO.getBbsOption())) {
+                optionRepository.save(EgovBbsMasterUtility.bbsMasterOptnVOEntity(bbsMasterOptnVO));
+            }
+
+            bbsMasterVO.setBbsId(bbsId);
+            bbsMasterVO.setFrstRegistPnttm(LocalDateTime.now());
+            bbsMasterVO.setFrstRegisterId(userInfo.get("uniqId"));
+            bbsMasterVO.setLastUpdtPnttm(LocalDateTime.now());
+            bbsMasterVO.setLastUpdusrId(userInfo.get("uniqId"));
+            BbsMaster bbsMaster = repository.save(EgovBbsMasterUtility.bbsMasterVOTOEntity(bbsMasterVO));
+
+            return EgovBbsMasterUtility.bbsMasterEntityTOVO(bbsMaster);
+        } catch (Exception ex) {
+            leaveaTrace("fail.common.insert");
+            return null;
         }
-
-        bbsMasterVO.setBbsId(bbsId);
-        bbsMasterVO.setFrstRegistPnttm(LocalDateTime.now());
-        bbsMasterVO.setFrstRegisterId(userInfo.get("uniqId"));
-        bbsMasterVO.setLastUpdtPnttm(LocalDateTime.now());
-        bbsMasterVO.setLastUpdusrId(userInfo.get("uniqId"));
-        BbsMaster bbsMaster = repository.save(EgovBbsMasterUtility.bbsMasterVOTOEntity(bbsMasterVO));
-
-        return EgovBbsMasterUtility.bbsMasterEntityTOVO(bbsMaster);
     }
 
     @Transactional

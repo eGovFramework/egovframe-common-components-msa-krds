@@ -58,7 +58,6 @@
         .then(response => response.json())
         .then(response => {
             const qestnrInfo = response.qestnrInfo;
-            console.log(response);
             document.getElementById('qustnrSj').textContent = qestnrInfo.qustnrSj;
             document.getElementById('qustnrPurps').textContent = qestnrInfo.qustnrPurps;
             document.getElementById('qustnrWritingGuidanceCn').textContent = qestnrInfo.qustnrWritingGuidanceCn;

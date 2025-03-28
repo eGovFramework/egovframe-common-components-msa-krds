@@ -19,7 +19,6 @@ public class EgovLoginWeb implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uat/uap/**").addResourceLocations("classpath:/static/");
         registry.addResourceHandler("/uat/uia/**").addResourceLocations("classpath:/static/");
     }
 
