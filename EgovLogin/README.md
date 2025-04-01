@@ -13,15 +13,14 @@
     │   │       ├ filter
     │   │       ├ pagination
     │   │       ├ uat
-    │   │       │  ├ uap
     │   │       │  └ uia
     │   │       └ EgovLoginApplication
     │   │
     │   └ resources
     │       ├ messages.egovframework.com
+    │       │   └ uat.uia
     │       ├ static
-    │       ├ templates.egovframework.com.sym.ccm
-    │       │   ├ uap
+    │       ├ templates.egovframework.com.uat
     │       │   └ uia
     │       └ application.yml
     └ pom.xml
@@ -35,9 +34,35 @@
 ### 1. 로그인
   - userID와 userPW를 이용해 로그인
    ![login](https://github.com/user-attachments/assets/68eaa87f-d9b1-4278-b445-1346bb502d75)
-     - 일반(GNR), 기업(ENT), 업무(USR) 회원별 로그인 가능
 
-   - 로그인 정보를 이용해 AccessToken을 발급
+  - 일반(GNR), 기업(ENT), 업무(USR) 회원별 로그인 가능
+
+  - 사용자의 권한 및 역할(Role) 정보를 조회
+      ```java
+          // 사용자의 ID와 비밀번호로 인증 토큰을 생성
+          Authentication authentication = new UsernamePasswordAuthenticationToken(loginDTO.getId(), loginDTO.getPassword());
+
+          //WebApplicationContextUtils를 통해 현재 웹 애플리케이션의 Spring ApplicationContext를 가져옴
+          ApplicationContext act = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getSession().getServletContext());
+
+          // Security 간소화 서비스를 통해 설정한 AuthenticationManager 빈을 가져옴
+          AuthenticationManager authenticationManager = act.getBean("authenticationManager", AuthenticationManager.class);
+
+          // SecurityContextHolder 설정
+          SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(authentication));
+
+          // 권한 및 Role 정보 조회
+          List<Map.Entry<String, String>> rolePatternList = EgovUserDetailsHelper.getRoleAndPatternList();
+          List<String> authorList = EgovUserDetailsHelper.getAuthorities();
+
+          // 권한에 해당하는 Role 정보를 문자열 형태로 설정 >> token에서 사용
+          String accessiblePatterns = EgovUserDetailsHelper.getAccessiblePatterns(rolePatternList, authorList);
+
+          // SecurityContextHolder 삭제
+          new SecurityContextLogoutHandler().logout(request, response, authentication);     
+      ```
+   
+  - 로그인 정보를 이용해 AccessToken을 발급
       ```java
           @PostMapping("/actionLogin")
           public ResponseEntity<?> actionLogin(@RequestBody LoginVO loginVO, HttpServletRequest request, HttpServletResponse response) {
