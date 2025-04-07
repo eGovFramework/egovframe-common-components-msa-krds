@@ -51,34 +51,34 @@
 ### 1. 설문템플릿관리
 
   1. 설문 템플릿 목록
-  ![Tmplat_list](https://github.com/user-attachments/assets/3b77a2d4-321b-496e-982b-70cd9a4cb747)
+  ![Tmplat_list](https://github.com/user-attachments/assets/f1668e34-0699-4c6c-98ca-45eca51aed72)   
   <br/>
   *설문템플릿의 경우 템플릿으로서의 기능은 현재 제공하고있지 않음
   
 ### 2. 설문관리
 
   1. 설문관리 등록   
-    ![qmc_insert](https://github.com/user-attachments/assets/a800ce48-7551-4b78-87ee-097e3356a82d)
+    ![qmc_insert](https://github.com/user-attachments/assets/4b4b59c3-ed84-469c-aeef-20f20e3a7348)   
     <br/><br/>
      - 등록된 설문으로 설문 질문과 항목을 연관하여 생성
      - 설문기간의 경우 시작일이 '오늘'보다 빠를 수 없고 종료일은 '시작일'보다 빠를 수 없음
      - 수정 시 '템플릿 유형'은 변경 불가능   
     <br/>
   2. 설문관리 상세
-    ![qmc_detail](https://github.com/user-attachments/assets/dd4add06-ad02-4299-8ebc-52c5711adcda)   
+    ![qmc_detail](https://github.com/user-attachments/assets/cccc9aad-dbd3-4d87-a995-8568b11d19bb)   
     <br/><br/>
   3. 설문관리 목록
      - 등록한 설문들에 대한 목록이 출력되는 페이지
-      ![qmc_list](https://github.com/user-attachments/assets/8979a6cb-2ef4-4a6d-a3d5-bec613cedad2)
+      ![qmc_list](https://github.com/user-attachments/assets/c67ef833-ff40-4cd5-9fdf-df64d77dd740)   
        <br/><br/>
      - 연관된 설문 문항이 있는 경우 버튼 클릭시 모달창 오픈   
-        ![qim_list](https://github.com/user-attachments/assets/ae5d3a3d-3102-4db8-a1ec-87d34e81d107)
+        ![qim_list](https://github.com/user-attachments/assets/8e7bb5bd-1145-412d-9b81-95bd4baa2cc5)   
        <br/><br/>
      - 등록된 설문조사를 참여한 사람이 있는 경우 '응답자 정보'에 표시   
-        ![qrm_list](https://github.com/user-attachments/assets/67d2dc6b-e918-43c1-bae4-e76aa1d3dc77)
+        ![qrm_list](https://github.com/user-attachments/assets/3b8239be-d88f-463a-924f-91ae67bad646)   
        <br/><br/>
      - 통계는 설문조사에 대한 결과 표시   
-        ![result_list](https://github.com/user-attachments/assets/87777233-fec0-47e0-9f5b-2b993a72e31a)   
+        ![result_list](https://github.com/user-attachments/assets/1f14e117-3b80-4597-b87d-b6f0b3cccdd5)   
 
 ### 3. 질문관리
 
