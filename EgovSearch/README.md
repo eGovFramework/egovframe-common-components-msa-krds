@@ -40,7 +40,7 @@ export OPENSEARCH_INITIAL_ADMIN_PASSWORD=<custom-admin-password>
 
 docker-compose up
 ```
-![capture01](https://github.com/user-attachments/assets/fe4361d5-0664-42e9-a0f3-1bbe1295103c)
+![capture01](https://github.com/user-attachments/assets/0dfa4dd1-096d-4ae4-86ab-29d914d94f40)
 
 ### Dashboard
 
@@ -48,13 +48,13 @@ docker-compose up
 - `http://localhost:5601/app/login?`
 - `Docker-compose.yml` 에 설정하였던 패스워드로 로그인하여 Open Search 관리자 메뉴를 확인 가능하다.   
 
-![capture02](https://github.com/user-attachments/assets/7d1fd695-3f7e-4426-8016-96a68a6201e2)
+![capture02](https://github.com/user-attachments/assets/4b8c6712-03f2-464e-83ea-7b6e9955282a)
 
 ### SSL 환경 KeyStore 설정
 
 - 클라이언트 측, 즉 개발자가 본인 PC의 KeyStore에 SSL인증서를 등록해야 한다.
 - usr/share/opensearch/config 내의 root-ca.pem을 서버로부터 `jdk 내부 lib > security`에 복사한다.
-![capture03](https://github.com/user-attachments/assets/b27c407e-47d0-4fa1-b9eb-4628e2c904be)
+![capture03](https://github.com/user-attachments/assets/e01eaae9-7e5b-4a09-8898-541786a564b4)
 
 - CMD를 관리자 권한으로 열고 해당 폴더로 접근 후 KeyStore 등록 및 확인 절차를 진행한다.
 
@@ -96,12 +96,12 @@ ls
 
 # 설치 후 각 노드를 재시작한다
 ```
-![capture04](https://github.com/user-attachments/assets/471d8dec-4169-443d-9c97-175290f9a69d)
+![capture04](https://github.com/user-attachments/assets/db8e5220-17e9-48dc-a4a5-3403f2d0f3e1)
 
 - 설치가 완료되었다면 Open Search Dash Board 페이지의 `좌측 메뉴 > Management > Dev Tools` 에서 `GET _cat/plugins`으로 설치된 플러그인 리스트를 확인 가능하다.
 
-![capture05](https://github.com/user-attachments/assets/b380f6b7-97df-431b-ab93-9a6dc3614076)   
-![capture06](https://github.com/user-attachments/assets/1a1cd29a-c742-481e-af2f-f47042b59c26)
+![capture05](https://github.com/user-attachments/assets/fdcba6dd-c518-431e-bad7-cff240999a36)
+![capture06](https://github.com/user-attachments/assets/107d442a-72aa-4791-b9c9-3c3e5799a3c0)
 
 
 ### 기타 파일 설정
@@ -117,11 +117,11 @@ ls
 3. stoptags.txt : 한글 검색에서는 보통 명사, 동명사 정도만을 검색하고 조사, 형용사 등은 제거하는 것이 바람직하므로 제거할 품사를 해당 파일에 명시해 준다. 품사의 코드 정보는 [해당 페이지](https://esbook.kimjmin.net/06-text-analysis/6.7-stemming/6.7.2-nori)를 참고한다.
 
 - `동해물과`라는 단어를 분해하는 예시   
-![capture07](https://github.com/user-attachments/assets/4bac6e74-f595-4a01-a011-f5b3928bb296)   
+![capture07](https://github.com/user-attachments/assets/9f67c754-57ce-4647-a9d5-b8cbb67c53b4)   
 - 일반적으로 형태소 분해를 수행한 경우  
-![capture08](https://github.com/user-attachments/assets/07a891e1-fbc9-4812-831c-3bab67af5401)   
+![capture08](https://github.com/user-attachments/assets/a4e1eee8-6e4f-4f3a-85d6-6945130f4b84)   
 - `해물`이라는 단어를 분해 금지 설정한 경우, 분해되지 않는 것을 확인 가능하다   
-![capture09](https://github.com/user-attachments/assets/33c7894c-5719-4d3c-bfa3-c49c20476e29)  
+![capture09](https://github.com/user-attachments/assets/94ca5f5f-c7bf-4df1-929e-24c30ff17534)   
 
 - config 디렉토리 내에 위치한 `searchConfig.json` 에는 상기한 파일 및 Embedding 작업에 필요한 모델의 경로가 기재되어 있다. 기본적으로 `사용자 계정/EgovSearch-Config` 로 설정되어 있으므로 `EgovSearch-Config` 폴더를 `사용자 계정/EgovSearch-Config`에 복사한 후 `application.yml` 의 `app.search-config-path` 속성과 일치 여부를 확인 후 설정을 진행하면 된다.
 
@@ -180,7 +180,7 @@ optimum-cli export onnx -m jhgan/ko-sroberta-multitask .
 - 기능 확인 및 테스트 편의를 위해, Open Search의 Index 생성 및 삭제, 초기 데이터 입력을 수행하는 API를 Springdoc (구 Swagger)로 제공한다.
 - 초기 설정 기준으로 `http://localhost:9992/swagger-ui/index.html#/` 에서 확인 및 실행이 가능하다.
 
-![capture10](https://github.com/user-attachments/assets/638c7935-c4b1-4746-a40b-61d7274a3b8f)
+![capture10](https://github.com/user-attachments/assets/6345f923-fbc0-4e20-9a82-c850d692d599)
 
 1. `/createVectorIndex` : Vector 필드가 포함된 Index 를 생성한다. Index 자체만 생성하므로 실행 완료 시점에서는 Index 내 문서 데이터는 존재하지 않는다. 인덱스 명은 `application.yml` 파일에 정의된 `opensearch.vector.indexname` 값을 따른다.
 2. `/createTextIndex` : 텍스트 필드만 존재하는 Index 를 생성한다. 초기 설정 기준으로 두 Index를 모두 만들어 줘야 한다. 인덱스 명은 `application.yml` 파일에 정의된 `opensearch.text.indexname` 값을 따른다.
@@ -264,7 +264,7 @@ optimum-cli export onnx -m jhgan/ko-sroberta-multitask .
 - `http://localhost:5601/app/login?`에서 로그인하여 Open Search DashBoard에 접속하였다면 좌측 메뉴의 `Management - Index Management` 에서 만들어진 Index의 항목 및 정보를 확인 가능하다.
 -  `Management - Dev Tools`에서는 JSON에 기반한 Query DSL로 Index 내 데이터의 검색 및 수정이 가능하다.
 
-![capture11](https://github.com/user-attachments/assets/f146c5ff-ff93-4797-b9be-468749381305)
+![capture11](https://github.com/user-attachments/assets/de61796c-dd13-42b7-9330-6d388698793d)
 
 - `Match Query`를 사용하여 인덱스 내 데이터를 단순 조회하는 예시는 다음과 같다.
 - 제시한 예시 외에도 Open Search 에서는 굉장히 많은 검색 방식을 지원한다. 더 자세한 예시는 공식 문서의 [Query DSL](https://opensearch.org/docs/latest/query-dsl/) 페이지를 참고한다.
@@ -357,20 +357,20 @@ GET /text-bbs-index/_search
 - 화면의 `통합 검색` 버튼은 Open Search 의 Index에서 full-text 검색을 수행한 결과를 제공한다.
 - 화면의 `벡터 검색` 버튼은 질의어를 Vector 값으로 변환하여 가장 근접한 결과를 제공한다.
 
-![capture12](https://github.com/user-attachments/assets/443c0cc1-a04a-4fd0-9cbb-388668a47fec)
+![capture12](https://github.com/user-attachments/assets/e696e3f4-bd81-4391-8823-13cea61084d1)
 
 - Open Search Index의 데이터는 `COMTNBBS`(게시판 데이터) 테이블의 전체 데이터를 기준으로 한다.
 - 게시판의 작성 글 데이터는 MSA 공통 컴포넌트 메인 좌측 메뉴의 `협업 - 180.게시판 관리`에서 각 게시판들의 목록을 확인 가능하다.   
   
-![capture13](https://github.com/user-attachments/assets/0e3fd57d-3a60-49d4-8098-a7c4060ab5e2)
+![capture13](https://github.com/user-attachments/assets/56cc80e0-0a6d-4693-b6b8-285e211dfd75)
 
 - 목록을 클릭한 후 게시판 주소를 클릭하면 각 게시판으로 이동 가능하다.   
   
-![capture14](https://github.com/user-attachments/assets/0ab46889-4877-46cf-aa09-44ac243c2f8f)   
+![capture14](https://github.com/user-attachments/assets/20eba083-1a1a-4b61-bd59-eb56488e9c93)   
 
 - Open Search에서의 검색 범위는 `게시판 관리`메뉴에 등록된 모든 게시판의 게시글이다.   
   
-![capture15](https://github.com/user-attachments/assets/54f31428-6b91-4807-890a-a89ebd6140a2)
+![capture15](https://github.com/user-attachments/assets/bf180726-638b-4f20-aa6d-8c2bdd2f3fb2)
 
 ## 검색 방식
 
