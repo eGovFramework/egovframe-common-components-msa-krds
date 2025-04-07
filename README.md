@@ -104,7 +104,7 @@ KRDS의 컴포넌트 일부를 사용하였으며 용도에 따라 패턴 등을
 
 #### 1. 메인 화면
 
-![메인레이아웃 화면](https://github.com/user-attachments/assets/92397fdd-f3d3-4051-bce3-72b0521d34cb)    
+![메인레이아웃 화면](https://github.com/user-attachments/assets/36b0c623-f957-4586-a8bd-e9502828e52b)   
 ※ 1,2,3 번의 경우 KRDS의 컴포넌트 사용
 
 1. 헤더(Header)
@@ -117,29 +117,29 @@ KRDS의 컴포넌트 일부를 사용하였으며 용도에 따라 패턴 등을
 
 #### 2. 로그인 화면
 
-![로그인](https://github.com/user-attachments/assets/54508fe5-765d-40a3-b069-ed50d0adb0fc)
+![로그인](https://github.com/user-attachments/assets/460b906e-ebe5-42d7-ad82-d0d9a6a17b14)   
 - DB에 저장된 USER 정보를 이용해 로그인
 - 각 유저가 가진 권한마다 접근할 수 있는 컴포넌트의 URL이 다르므로 USER의 role과 ConfigServer의 roles 설정값 확인
   - 해당 프로젝트에서는 ConfigServer의 설정파일(applicaiton-local.yml)에서 일반사용자와 업무사용자의 접근권한을 나누고있음.
 
 - 로그인 성공   
-![로그인 성공 화면](https://github.com/user-attachments/assets/a5069303-7dc3-48e2-a222-1ba24e6f006c)
+![로그인 성공 화면](https://github.com/user-attachments/assets/0e001527-a628-45aa-a273-9e826ab2dd40)   
 
 - 로그인 실패 시 다른 컴포넌트 페이지 접근 불가 (인증 토큰 부재)
 
 - Token 발급 확인   
-![accessToken](https://github.com/user-attachments/assets/bb033acc-26e1-4f42-9c2f-78679fc23021)
+![accessToken](https://github.com/user-attachments/assets/4c89d01b-06a0-461d-8ab4-bc79568ea4f3)   
   - AccessToken과 RefreshToken이 발급된 상태   
   - token설정의 경우 ConfigServer/src/main/resources/config/application-local.yml에서 설정 가능   
     - 샘플의 AccessToken은 1분(120000ms), RefreshToken은 5분(3600000ms)으로 지정되어있음
     - token의 Secret값은 예시로 'egovframework'를 암호화하여 사용하고 있으므로 사용 시 수정 필요
 
 - 접근권한이 없는 페이지에 접근한 경우   
-![403error](https://github.com/user-attachments/assets/d6b096fd-b6f6-48ef-8163-efa03be428ee)   
+![403error](https://github.com/user-attachments/assets/ea7fdfa9-56ec-4ac5-9050-49aa9add8012)   
 로그인은 성공하였으나 로그인한 계정이 ConfigServer의 role에서 권한이 부여되지 않은 경로인 경우
 
 - 프로젝트가 서버에 올라가지 못한 경우
-![Image](https://github.com/user-attachments/assets/303da487-18d2-4cda-a929-8279c06ad978)
+![Image](https://github.com/user-attachments/assets/a5a0113d-dd20-4f15-bfb5-a45673f11d31)   
   - 서비스가 실행되지 않은 상태에서 접근한 경우 나타나는 에러
   - 서비스를 실행 후 5 ~ 10초가 지나도 실행되지 않는 경우 서비스가 에러없이 제대로 실행되었는지 확인 필요요
 
