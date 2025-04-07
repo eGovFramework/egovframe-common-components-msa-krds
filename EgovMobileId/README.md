@@ -200,7 +200,7 @@ Error creating bean with name 'verifyManager' (중략) Invocation of init method
 
 ### VP(신원정보) 검증 방식 : 라이브러리 방식
 
-![image-egovmobileid-architecture-library](https://github.com/user-attachments/assets/de18001f-188f-4817-9cbe-fa2e7b63e6bd)
+![image-01-egovmobileid-architecture-library](https://github.com/user-attachments/assets/751763bc-0724-4682-bbb7-2c2489496044)
 
 VP 검증 방식에 대한 아키텍처는 **블록체인과 통신하고 VP를 검증하는 주체가 누구인가**에 관한 것이다.
 
@@ -231,7 +231,7 @@ VP 검증 방식에 대한 아키텍처는 **블록체인과 통신하고 VP를 
 
 ### 인터페이스 및 통신 방식 : QR-MPM / Direct-Mode
 
-![image-egovmobileid-architecture-qrmpm-direct](https://github.com/user-attachments/assets/3f0a646a-0462-4980-a9bb-9ecee8e74b98)
+![image-02-egovmobileid-architecture-qrmpm-direct](https://github.com/user-attachments/assets/ac4e381d-fc39-4a48-9ccf-e290fd1e5f4a)
 
 인터페이스 방식에 대한 아키텍처는 사용자가 VP를 제출하기 위해 모바일 신분증 앱의 **어떠한 인터페이스(기능)를 사용하는지**, 그리고 사용자의 모바일 신분증 앱이 SP서버로 데이터를 발송할 때 **SP 서버가 데이터를 직접 수신하는지**에 관한 것이다.
 
@@ -884,48 +884,48 @@ EgovMobileId 내 AuthorizeFilter 클래스를 다음과 같이 수정한다.
 	- ID : USER
 	- PW : rhdxhd12
 
-![image-egovmobileid-main](https://github.com/user-attachments/assets/f3a614ad-8318-41c1-9256-e2dd7da5ce6b)
+![image-11-egovmobileid-web-login](https://github.com/user-attachments/assets/5b0a2a02-89ce-4e56-b144-0af4c35184f2)
 
 - 사이드 메뉴에서 "모바일신분증"을 클릭 후, 테스트 하려는 신분증을 선택한다.
 
-![image-egovmobileid-driver](https://github.com/user-attachments/assets/6b3f6a53-cce9-4bb3-aa1e-7a8a327f2a28)
+![image-12-egovmobileid-web-choose-license](https://github.com/user-attachments/assets/0b2872bc-1ef5-43b1-a77e-d8ab339a2c16)
 
 - "QR정보요청" 버튼을 클릭한다.
 
-![egovmobileid-qr_btn](https://github.com/user-attachments/assets/63d7748a-4b95-448b-bc91-24ab5aec85d8)
+![image-13-egovmobileid-web-click-request_qr_btn](https://github.com/user-attachments/assets/545cc17b-e670-4e0b-8d15-78af1ceed0fd)
 
 - QR 이미지가 생성되는 것을 확인한다.
 
-![image-egovmobileid-qr](https://github.com/user-attachments/assets/9f60af6e-c71e-48f7-bf50-346bdb77fc54)
+![image-14-egovmobileid-web-qr-image](https://github.com/user-attachments/assets/08347b0b-03af-4c51-9c43-d62dc4cac169)
 
 - 모바일 신분증 어플에서 좌측 상단의 설정 버튼을 클릭한다.
 
-<img width="400" alt="image-mobile_app-setting" src="https://github.com/user-attachments/assets/9985f1e5-17b6-473f-a6a6-94a2ad0fd1ee" />
+<img width="400" alt="image-15-egovmobileid-mobile-setting" src="https://github.com/user-attachments/assets/93fa16af-096d-4874-bfe6-38633229533e" />
 
 - "내 신분증 관리"를 클릭한다.
 
-<img width="400" alt="image-mobile_app-management" src="https://github.com/user-attachments/assets/ef02bc81-235e-4604-9c6d-907e462d738f" />
+<img width="400" alt="image-16-egovmobileid-mobile-management" src="https://github.com/user-attachments/assets/d9138e19-1876-4ddc-be48-2588732025b9" />
 
 - 대표신분증을 테스트 대상 신분증에 맞춰 변경한다.
 
-<img width="400" alt="image-mobile_app-represent" src="https://github.com/user-attachments/assets/d61101ec-7a8d-4793-9d1f-9424da9e265f" />
+<img width="400" alt="image-17-egovmobileid-mobile-represent" src="https://github.com/user-attachments/assets/dc7813c5-7067-46ae-a328-12655c426858" />
 
 - 모바일 신분증 앱의 시작화면으로 돌아와서, "QR 촬영" 버튼을 클릭하고, PC Browser에 생성된 QR을 촬영한다.
 
-<img width="400" alt="image-mobile_app-qr" src="https://github.com/user-attachments/assets/a1562510-9c5d-4705-8cd0-79778aba9337" />
+<img width="400" alt="image-18-egovmobileid-mobile-picture-qr" src="https://github.com/user-attachments/assets/73ddc612-cdee-4836-9d0a-68a16168c85a" />
 
 - "정보 보내기" 버튼을 클릭하고, 인증을 진행한다. 
 
-<img width="400" alt="image-mobile_app-verify" src="https://github.com/user-attachments/assets/74ac5b61-58f6-4b97-982f-46cdfbbcaccf" />
+<img width="400" alt="image-19-egovmobileid-mobile-verify" src="https://github.com/user-attachments/assets/76caed82-d77a-4db5-a038-e1e439f4ab89" />
 
 - 아래 화면이 뜬다면, 정상적으로 처리가 된 것이다.
 
-<img width="400" alt="image-mobile_app-result" src="https://github.com/user-attachments/assets/d665d628-3542-48e0-857e-a645376a403d" />
+<img width="400" alt="image-20-egovmobileid-mobile-result" src="https://github.com/user-attachments/assets/64a8389e-515b-4ca1-ad3a-5be959a85538" />
 
 - PC로 돌아와서, "결과조회" 버튼을 클릭한다.
 
-![image-egovmobileid-result_btn](https://github.com/user-attachments/assets/5f89742c-2ad3-4786-b703-04551653687b)
+![image-21-egovmobileid-web-inquiry_result_btn](https://github.com/user-attachments/assets/fdb7d5f4-6fe7-4c46-8236-77f2ab3633c2)
 
 - 화면을 스크롤하여 아래로 내리면, "거래상태"와 "개인정보"를 확인할 수 있다.
 
-![image-egovmobileid-result](https://github.com/user-attachments/assets/29ebb80f-de30-47f8-9d1b-5c23af061048)
+![image-22-egovmobileid-web-result](https://github.com/user-attachments/assets/2ac10306-24d8-4ae8-9c02-b7164184a1b1)
