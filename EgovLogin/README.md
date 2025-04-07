@@ -33,7 +33,7 @@
 
 ### 1. 로그인
   - userID와 userPW를 이용해 로그인
-   ![login](https://github.com/user-attachments/assets/68eaa87f-d9b1-4278-b445-1346bb502d75)
+   ![login](https://github.com/user-attachments/assets/1253495b-7a9d-485a-82f2-e45da880ff4d)
 
   - 일반(GNR), 기업(ENT), 업무(USR) 회원별 로그인 가능
 
