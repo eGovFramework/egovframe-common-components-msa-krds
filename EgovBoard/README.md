@@ -47,11 +47,11 @@ Ckeditor를 이용해 editor 형태로 게시글을 작성하거나 파일첨부
 ※ 블로그와 커뮤니티의 형태는 같으나 다른 아이디로 구분   
 
 - 블로그의 목록
-  ![blog_list](https://github.com/user-attachments/assets/b34d58b7-d91a-4c15-892e-8ef1a4eb7915)
+  ![blog_list](https://github.com/user-attachments/assets/4b05d147-8d8b-479b-a011-0a06c552484d)    
   *이때 블로그/커뮤니티에서 생성된 게시판은 게시판관리의 게시판 목록에는 포함되지 않음
 
 - 등록된 블로그의 정보가 담긴 상세화면
-  ![blog_detail](https://github.com/user-attachments/assets/968f1084-2510-4163-8e1a-7c6e36ed806c)
+  ![blog_detail](https://github.com/user-attachments/assets/50ba211c-cb1e-4664-aecb-faa3d1cef0e0)     
   - '블로그 주소'로 들어가면 해당 블로그 아이디를 참조하는 게시판을 생성할 수 있다.
   - 블로그 생성 후 참조되는 게시판은 블로그의 메뉴 역할을 함
 
@@ -61,23 +61,23 @@ Ckeditor를 이용해 editor 형태로 게시글을 작성하거나 파일첨부
 ※ 블로그/커뮤니티 관리의 게시판과 게시판관리의 게시판의 형태는 동일하지만 각 참조하는 아이디가 다르므로 목록을 공유하지는 않는다.   
 
 #### 1) 게시판 목록    
-  ![bbs_list](https://github.com/user-attachments/assets/254afc85-0fcd-4d6a-b1b2-2a3574c35260)   
+  ![bbs_list](https://github.com/user-attachments/assets/f225ce64-706a-4d99-9b49-10e3732fbcd1)     
   *블로그 / 커뮤니티 게시판의 경우 해당되는 블로그/커뮤니티가 제목에 포함되어있음   
   예시) 블로그에서 등록한 게시판
-  ![blog_bbs_list](https://github.com/user-attachments/assets/2106d962-4ded-4a15-9f34-10cfcf393d29)   
+  ![blog_bbs_list](https://github.com/user-attachments/assets/aa98da7e-ab97-4c56-a7b1-0e38b90203df)   
   
 #### 2) 게시판 등록   
-  ![bbs_insert](https://github.com/user-attachments/assets/d6dafa93-1aae-45ff-8802-90c9907df24a)
+  ![bbs_insert](https://github.com/user-attachments/assets/96f42304-03c6-4e6d-8d20-3b87d4468b76)   
   - 게시판 등록 기능
     - 게시판 유형
       - 통합게시판 / 방명록 : 방명록 선택 시 아래 기능은 전부 미포함되고 게시글만 작성할 수 있는 게시판 형태로 생성됨
     - 답장(답글)가능여부
       - 답글 등록시 '화살표' 아이콘으로 표현
-      ![bbs_reply](https://github.com/user-attachments/assets/e53f5dd6-fe74-475a-9996-a413d528fa7b)
+      ![bbs_reply](https://github.com/user-attachments/assets/e1e09936-4c12-44da-b58f-bc1be0096a2a)   
       - 답글 미사용 / 방명록 게시판의 경우 게시글의 '답글버튼' 비활성화(disabled)
         
     - 파일첨부 가능 여부 / 첨부파일 가능 숫자   
-      ![bbs_fileUpload](https://github.com/user-attachments/assets/3fd9c9c8-4142-4c75-9131-34254e05b085)   
+      ![bbs_fileUpload](https://github.com/user-attachments/assets/6c3a1bb4-55dc-4035-bd3a-b0c71f547951)   
       - 파일 첨부 기능을 추가하는지, 최대 몇 개의 파일까지 첨부할 수 있는지 설정
       - 첨부가능한 파일에 대한 정보는 '게시글 등록'에서 설정함
 
@@ -85,12 +85,12 @@ Ckeditor를 이용해 editor 형태로 게시글을 작성하거나 파일첨부
        ※ 게시판 등록시 comtnbbsmaster 테이블에 등록되지만 추가선택사항의 경우 comtnbbsmasteroptn 테이블에 저장   
       - 선택사항으로 처음부터 추가할 필요 없이 추후에 수정해도 되지만 한번이라도 선택 시 추후 수정 불가
       - 댓글(answerAt)
-        ![bbs_comment](https://github.com/user-attachments/assets/4897d4d1-b6b8-4adf-9dbb-8ad3664b2fe7)   
+        ![bbs_comment](https://github.com/user-attachments/assets/37c67cfe-ee5f-4cdf-9071-335e16f11ca5)      
       - 만족도조사   
-        ![bbs_stsfdg](https://github.com/user-attachments/assets/e948d668-80f7-4320-9eb1-2469fea1104e)
+        ![bbs_stsfdg](https://github.com/user-attachments/assets/db64c06c-fb6e-4ed1-8d19-468d99e1aba5)   
         
   #### 3) 게시판 상세
-  ![bbs_detail](https://github.com/user-attachments/assets/b0ffe928-bff8-48f2-abf7-f45dfeff9f5d)    
+  ![bbs_detail](https://github.com/user-attachments/assets/bb5c416a-d88c-4d31-816d-a7b45ce87aee)   
   '통합게시판' 으로 생성되어 게시판의 모든 특성을 추가한 게시판
   
 <br/>
@@ -98,7 +98,7 @@ Ckeditor를 이용해 editor 형태로 게시글을 작성하거나 파일첨부
 ### 3. 게시글 관리
 
 #### 1) 게시글 목록
-![brd_insert](https://github.com/user-attachments/assets/cabdf32e-bf17-485c-af91-df68b73c054e)
+![brd_insert](https://github.com/user-attachments/assets/cc430d6b-89f0-453f-a6f8-f56635423570)   
 - 게시글 등록 시 익명/비밀글/공지 등록 시 목록에서 표시됨
   - 공지의 경우 등록 순서, 페이지 번호에 관계없이 게시글 최상단에 위치
   - 비밀글의 경우 작성자 본인만 상세내역 확인 가능
@@ -111,15 +111,15 @@ Ckeditor를 이용해 editor 형태로 게시글을 작성하거나 파일첨부
 #### 2) 게시글 등록
 
 - 게시글 및 옵션 설정
-  ![brd_optionType](https://github.com/user-attachments/assets/91f4b8fd-4cd0-42c1-a41a-2d7ea160e49a)
+  ![brd_optionType](https://github.com/user-attachments/assets/7204edee-f001-4fe9-952e-9369e155aa38)   
   - 공지 / 비밀글 / 익명은 1개만 선택 할 수 있음   
-    ![brd_option_check](https://github.com/user-attachments/assets/d8d14837-3f36-4b1d-b6b3-044c8036be82)   
+    ![brd_option_check](https://github.com/user-attachments/assets/c5e6a7ac-2bb2-45b6-bd96-ce4938afe5dd)   
     1개 선택 시 나머지 버튼 disabled 처리   
        
   - 제목진하게 설정 시 비밀글 설정 불가
    
 - 게시글 내용(Ckeditor)
-  ![bbs_editor](https://github.com/user-attachments/assets/7b2a0dac-62d6-48af-a0eb-a2d69754c1bc)   
+  ![bbs_editor](https://github.com/user-attachments/assets/a32876e1-0b2d-4cb9-a2df-c9591095b9a1)   
   - Ckeditor5 사용
   - resources/static 하위 ckedtior 항목은 ckeditor에서 제공한 코드
   - js/ckEditor_simple-main.js를 이용해 Ckeditor 설정
@@ -307,10 +307,10 @@ Ckeditor를 이용해 editor 형태로 게시글을 작성하거나 파일첨부
         
   
 - 게시글 날짜
-  ![bbs_date](https://github.com/user-attachments/assets/9612b36c-ff87-42a5-8a02-771ee2281296)   
+  ![bbs_date](https://github.com/user-attachments/assets/9cfea933-6aba-456b-a930-c26dbadb154e)   
   
 - 파일 첨부
-  ![bbs_fileUpload](https://github.com/user-attachments/assets/31443d11-9cfa-4bad-bc15-8377a9e87e4f)   
+  ![bbs_fileUpload](https://github.com/user-attachments/assets/f91ae719-6e23-441e-be4d-c22c0d8b2200)   
 
   ```yml
   file:
