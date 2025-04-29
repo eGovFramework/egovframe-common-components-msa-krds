@@ -20,6 +20,7 @@
 		<groupId>org.egovframe.boot</groupId>
 		<artifactId>org.egovframe.boot.starter.parent</artifactId>
 		<version>4.3.0</version>
+		<relativePath/>
 	</parent>
 
 	<properties>
