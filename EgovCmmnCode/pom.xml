@@ -15,11 +15,11 @@
 		</license>
 	</licenses>
 
+	<!-- eGovFramework Boot Parent 설정 -->
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.18</version>
-		<relativePath/>
+		<groupId>org.egovframe.boot</groupId>
+		<artifactId>org.egovframe.boot.starter.parent</artifactId>
+		<version>4.3.0</version>
 	</parent>
 
 	<properties>
