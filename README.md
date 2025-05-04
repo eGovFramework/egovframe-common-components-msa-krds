@@ -20,6 +20,7 @@
 | Java   | 1.8 이상 <br> 단, 검색엔진(EgovSearch)는 11 이상 |
 | Spring Boot | 2.7.18                                |
 | Spring Cloud | 2021.0.9                              |
+| MySQL | 5.7 |
 | Docker Desktop | 4.39.0 |
 | Open Search | 2.15.0 |
 | Python | 3.11.5 (Embedding 용 Model export 시 사용) |
@@ -75,6 +76,7 @@
   - OpenSearch 검색엔진
  
 ## 프로젝트 구동 방법
+0. docker-compose/mysql 실행 `docker-compose up -d`
 1. EurekaService 실행
 2. ConfigServer
    - `ConfigServer/src/main/resources/config/application-local.yml`
