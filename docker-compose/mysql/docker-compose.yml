@@ -11,6 +11,7 @@ services:
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
+      - --lower_case_table_names=1
     volumes:
       - "./init/:/docker-entrypoint-initdb.d/"
     platform: linux/x86_64 #m1에서 플랫폼을 명시해주지 않으면 에러남
