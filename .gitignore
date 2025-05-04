@@ -39,3 +39,4 @@ sonar-project.properties
 
 model/
 target/
+.factorypath
