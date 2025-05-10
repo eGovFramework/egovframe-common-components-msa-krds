@@ -120,7 +120,7 @@ KRDS의 컴포넌트 일부를 사용하였으며 용도에 따라 패턴 등을
 ![로그인](https://github.com/user-attachments/assets/460b906e-ebe5-42d7-ad82-d0d9a6a17b14)   
 - DB에 저장된 USER 정보를 이용해 로그인
 - 각 유저가 가진 권한마다 접근할 수 있는 컴포넌트의 URL이 다르므로 USER의 role과 ConfigServer의 roles 설정값 확인
-  - 해당 프로젝트에서는 ConfigServer의 설정파일(applicaiton-local.yml)에서 일반사용자와 업무사용자의 접근권한을 나누고있음.
+  - 해당 프로젝트에서는 ConfigServer의 설정파일(application-local.yml)에서 일반사용자와 업무사용자의 접근권한을 나누고있음.
 
 - 로그인 성공   
 ![로그인 성공 화면](https://github.com/user-attachments/assets/0e001527-a628-45aa-a273-9e826ab2dd40)   
