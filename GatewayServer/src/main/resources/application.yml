@@ -14,19 +14,6 @@ spring:
 
   cloud:
     gateway:
-      default-filters:
-        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials # 헤더 중복 제거
-      globalcors:
-        cors-configurations: # 모든 경로(/**)에 대해 CORS 정책을 적용
-          '[/**]':
-            allowed-origins: # 해당 origin(도메인)에서 오는 요청을 허용
-              - http://localhost
-            allowedMethods: # 허용할 HTTP 메서드 지정(GET, POST 만 허용)
-              - GET
-              - POST
-            allowedHeaders: "*" # 요청에서 어떤 헤더든 허용함
-            allowCredentials: true # 클라이언트가 쿠키, 인증 정보, Authorization 헤더 등을 포함한 요청을 보낼 수 있도록 허용
-
       routes:
         - id: RedirectToMain
           uri: lb://GATEWAYSERVER
