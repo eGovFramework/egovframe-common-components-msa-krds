@@ -56,7 +56,7 @@ public class EntrprsMber implements CommonEntity {
     private String applcntIhidnum;
 
     @Column(name="SBSCRB_DE")
-    private String sbscrbDe;
+    private LocalDateTime sbscrbDe;
 
     @Column(name="ENTRPRS_MBER_STTUS")
     private String entrprsMberStus;

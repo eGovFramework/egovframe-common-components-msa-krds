@@ -50,7 +50,7 @@ public interface EgovBbsRepository extends JpaRepository<Bbs, BbsId> {
 			") " +
 			"FROM opsBbs a " +
 			"LEFT OUTER JOIN opsUserMaster b " +
-			"ON a.frstRegisterId = b.esnlId " +
+			"ON a.frstRegisterId = b.esntlId " +
 			"LEFT OUTER JOIN opsBbsMaster c " +
 			"ON a.bbsId.bbsId = c.bbsId " +
 			"WHERE a.useAt = 'Y' "
@@ -92,7 +92,7 @@ public interface EgovBbsRepository extends JpaRepository<Bbs, BbsId> {
 			") " +
 			"FROM opsBbs a " +
 			"LEFT OUTER JOIN opsUserMaster b " +
-			"ON a.frstRegisterId = b.esnlId " +
+			"ON a.frstRegisterId = b.esntlId " +
 			"LEFT OUTER JOIN opsBbsMaster c " +
 			"ON a.bbsId.bbsId = c.bbsId " +
 			"WHERE a.bbsId.nttId = :nttId "

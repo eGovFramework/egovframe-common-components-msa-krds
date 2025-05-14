@@ -1,7 +1,8 @@
 package egovframework.com.uat.uia.service.impl;
 
-import egovframework.com.uat.uia.entity.CommonEntity;
-import egovframework.com.uat.uia.entity.LoginPolicy;
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import egovframework.com.uat.uia.entity.*;
 import egovframework.com.uat.uia.repository.EgovEmployMemberRepository;
 import egovframework.com.uat.uia.repository.EgovEnterpriseMemberRepository;
 import egovframework.com.uat.uia.repository.EgovGeneralMemberRepository;
@@ -18,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -29,20 +31,101 @@ public class EgovLoginManageServiceImpl extends EgovAbstractServiceImpl implemen
     private final EgovGeneralMemberRepository genRepository; // 일반회원
     private final EgovEnterpriseMemberRepository entRepository; // 기업회원
     private final EgovEmployMemberRepository empRepository; // 업무사용자
-    private final EgovLoginPolicyRepository loginPolicyRepository; // 로그인정책관리
+	private final EgovLoginPolicyRepository loginPolicyRepository; // 로그인정책관리
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public LoginDTO actionLogin(LoginVO loginVO) {
         String userId = loginVO.getUserId();
         String userSe = loginVO.getUserSe();
         String encPassword = encryptPassword(loginVO.getUserPw(), loginVO.getUserId());
+
+        QGnrlMber gnrlMber = QGnrlMber.gnrlMber;
+        QEntrprsMber entrprsMber = QEntrprsMber.entrprsMber;
+        QEmplyrInfo emplyrInfo = QEmplyrInfo.emplyrInfo;
+        QEmplyrscrtyestbs emplyrscrtyestbs = QEmplyrscrtyestbs.emplyrscrtyestbs;
+
+        Tuple tuple = null;
+        Emplyrscrtyestbs es = null;
+        String authorCode = "";
+
         switch (userSe) {
             case "GNR":
-                return genRepository.findByIdAndPassword(userId, encPassword);
+                tuple = queryFactory
+                        .select(gnrlMber, emplyrscrtyestbs)
+                        .from(gnrlMber)
+                        .innerJoin(emplyrscrtyestbs)
+                        .on(gnrlMber.esntlId.eq(emplyrscrtyestbs.scrtyDtrmnTrgetId))
+                        .where(gnrlMber.mberId.eq(userId)
+                                .and(gnrlMber.password.eq(encPassword))
+                                .and(gnrlMber.mberStus.eq("P")))
+                        .fetchOne();
+                GnrlMber gm = Objects.requireNonNull(tuple).get(gnrlMber);
+                es = tuple.get(emplyrscrtyestbs);
+                authorCode = es != null && es.getAuthorCode() != null ? es.getAuthorCode() : "";
+
+                return new LoginDTO(
+                        Objects.requireNonNull(gm).getMberId(),
+                        gm.getMberNm(),
+                        gm.getPassword(),
+                        gm.getIhidNum(),
+                        gm.getMberEmailAdres(),
+                        "GNR",
+                        "",
+                        gm.getEsntlId(),
+                        "",
+                        authorCode
+                );
             case "ENT":
-                return entRepository.findByIdAndPassword(userId, encPassword);
+                tuple = queryFactory
+                        .select(entrprsMber,emplyrscrtyestbs)
+                        .from(entrprsMber)
+                        .innerJoin(emplyrscrtyestbs)
+                        .on(entrprsMber.esntlId.eq(emplyrscrtyestbs.scrtyDtrmnTrgetId))
+                        .where(entrprsMber.entrprsMberId.eq(loginVO.getUserId())
+                                .and(entrprsMber.entrprsMberPassword.eq(encPassword))
+                                .and(entrprsMber.entrprsMberStus.eq("P")))
+                        .fetchOne();
+                EntrprsMber em = Objects.requireNonNull(tuple).get(entrprsMber);
+                es = tuple.get(emplyrscrtyestbs);
+                authorCode = es != null && es.getAuthorCode() != null ? es.getAuthorCode() : "";
+                return new LoginDTO(
+                        Objects.requireNonNull(em).getEntrprsMberId(),
+                        em.getCmpnyNm(),
+                        em.getEntrprsMberPassword(),
+                        em.getBizrno(),
+                        em.getApplcntEmailAdres(),
+                        "ENT",
+                        "",
+                        em.getEsntlId(),
+                        "",
+                        authorCode
+                );
             case "USR":
-                return empRepository.findByIdAndPassword(userId, encPassword);
+                tuple = queryFactory
+                        .select(emplyrInfo,emplyrscrtyestbs)
+                        .from(emplyrInfo)
+                        .innerJoin(emplyrscrtyestbs)
+                        .on(emplyrInfo.esntlId.eq(emplyrscrtyestbs.scrtyDtrmnTrgetId))
+                        .where(emplyrInfo.emplyrId.eq(loginVO.getUserId())
+                                .and(emplyrInfo.password.eq(encPassword))
+                                .and(emplyrInfo.emplyrStusCode.eq("P")))
+                        .fetchOne();
+                EmplyrInfo ei = Objects.requireNonNull(tuple).get(emplyrInfo);
+                es = tuple.get(emplyrscrtyestbs);
+                authorCode = es != null && es.getAuthorCode() != null ? es.getAuthorCode() : "";
+                return new LoginDTO(
+                        Objects.requireNonNull(ei).getEmplyrId(),
+                        ei.getUserNm(),
+                        ei.getPassword(),
+                        ei.getIhidNum(),
+                        ei.getEmailAdres(),
+                        "USR",
+                        ei.getOrgnztId(),
+                        ei.getEsntlId(),
+                        "",
+                        authorCode
+                );
             default:
                 return null;
         }

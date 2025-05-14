@@ -123,7 +123,15 @@
                     html += '<td class="text-center">'+roleInfo.roleTy+'</td>';
                     html += '<td class="text-center">'+roleInfo.roleSort+'</td>';
                     html += '<td>'+roleInfo.roleDc+'</td>';
-                    html += '<td class="text-center">'+roleInfo.creatDt+'</td>';
+
+                    let creatDtValue;
+                    if (roleInfo.creatDt === '' || roleInfo.creatDt == null) {
+                        creatDtValue = '';
+                    } else {
+                        creatDtValue = roleInfo.creatDt;
+                    }
+                    html += '<td class="text-center">'+creatDtValue+'</td>';
+
                     html += '<td class="text-center"><select class="krds-form-select small" name="regYn"> ';
                     if (roleInfo.regYn === 'Y') {
                         html += '<option value="Y" selected>[(#{comCopSecRam.authorRoleList.regY})]</option>';

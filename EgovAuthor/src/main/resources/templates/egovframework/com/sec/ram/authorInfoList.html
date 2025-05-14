@@ -106,7 +106,7 @@
                     html += '<td>'+authorInfo.authorNm+'</td>';
 
                     let authorDcValue;
-                    if (authorInfo.authorDc === '') {
+                    if (authorInfo.authorDc === '' || authorInfo.authorDc == null) {
                         authorDcValue = authorInfo.authorNm.substring(0, 20);
                     } else {
                         authorDcValue = authorInfo.authorDc.substring(0, 20)

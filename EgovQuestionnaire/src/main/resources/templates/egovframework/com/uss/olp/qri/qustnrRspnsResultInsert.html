@@ -261,26 +261,29 @@
         const qesitmList = [];
         const idSet = new Set();
 
-        qesitmItemList.forEach(function(qesitm) {
-            if (!idSet.has(qesitm.qustnrQesitmId)) {
-                idSet.add(qesitm.qustnrQesitmId);
-                qesitmList.push({
-                    id: qesitm.qustnrQesitmId,
-                    type: qesitm.qestnTyCode,
-                    name: qesitm.qestnCn
-                });
-            }
-        });
-
-        return qesitmList;
+        if(qesitmItemList != null ){
+            qesitmItemList.forEach(function(qesitm) {
+                if (!idSet.has(qesitm.qustnrQesitmId)) {
+                    idSet.add(qesitm.qustnrQesitmId);
+                    qesitmList.push({
+                        id: qesitm.qustnrQesitmId,
+                        type: qesitm.qestnTyCode,
+                        name: qesitm.qestnCn
+                    });
+                }
+            });
+            return qesitmList;
+        }else{
+            return null;
+        }
     }
 
     // 설문항목 설정
     function renderGroupedData(groupedData, qesitmItemList) {
         let html = '';
 
-        let message = '[(#{comUssOlpQnn.alert.qustnrIem})]';
-        if (groupedData.length === 0) {
+        let message = '[(#{comUssOlpQri.regist.qestnrQesitmCn})][(#{comUssOlpQri.alert.input})]'
+        if (groupedData == null) {
             html += '<div class="form-conts"><span>'+message+'</span></div>';
         } else {
             groupedData.forEach(function(item, index) {

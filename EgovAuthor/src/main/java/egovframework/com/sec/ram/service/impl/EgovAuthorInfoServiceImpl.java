@@ -1,8 +1,9 @@
 package egovframework.com.sec.ram.service.impl;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import egovframework.com.sec.ram.entity.AuthorInfo;
+import egovframework.com.sec.ram.entity.QMenuCreateDetail;
 import egovframework.com.sec.ram.repository.EgovAuthorInfoRepository;
-import egovframework.com.sec.ram.repository.EgovMenuCreateDetailRepository;
 import egovframework.com.sec.ram.service.AuthorInfoVO;
 import egovframework.com.sec.ram.service.EgovAuthorManageService;
 import egovframework.com.sec.ram.util.EgovAuthorInfoUtility;
@@ -19,14 +20,15 @@ import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Service("ramEgovAuthorInfoService")
 @RequiredArgsConstructor
 public class EgovAuthorInfoServiceImpl extends EgovAbstractServiceImpl implements EgovAuthorManageService {
 
     private final EgovAuthorInfoRepository repository;
-    private final EgovMenuCreateDetailRepository menuCreateDetailRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public Page<AuthorInfoVO> list(AuthorInfoVO authorInfoVO) {
@@ -71,8 +73,18 @@ public class EgovAuthorInfoServiceImpl extends EgovAbstractServiceImpl implement
     @Override
     public boolean delete(AuthorInfoVO authorInfoVO) {
         String authorCode = authorInfoVO.getOriginalAuthorCode();
-        long count = menuCreateDetailRepository.countByAuthorCode(authorCode);
-        if (count > 0) {
+
+        QMenuCreateDetail menuCreateDetail = QMenuCreateDetail.menuCreateDetail;
+
+        long count = Optional.ofNullable(
+                queryFactory
+                        .select(menuCreateDetail.count())
+                        .from(menuCreateDetail)
+                        .where(menuCreateDetail.menuCreateDetailId.authorCode.eq(authorCode))
+                        .fetchOne()
+        ).orElse(0L);
+
+        if (count > 0L) {
             return false;
         } else {
             repository.deleteById(authorCode);

@@ -65,7 +65,7 @@ public class GnrlMber implements CommonEntity {
     private String middleTelno;
 
     @Column(name="SBSCRB_DE")
-    private String sbscrbDe;
+    private LocalDateTime sbscrbDe;
 
     @Column(name="SEXDSTN_CODE")
     private String sexdstnCode;
