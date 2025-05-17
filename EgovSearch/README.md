@@ -24,7 +24,7 @@
 ## Open Search 설정
 
 - Open Search의 노드 구성 및 실행은 해당 프로젝트 `docker-compose/Opensearch` 내부의 `docker-compose.yml` 파일을 사용한다.
-- [Download & Get Started](https://opensearch.org/downloads.html) 페이지에서  페이지에서 `docker-compose.yml`을 다운로드 받아서 실행도 가능하지만, 이 경우 버전 설정에 유의하여 구성하도록 한다.
+- [Download & Get Started](https://opensearch.org/downloads.html) 페이지에서 `docker-compose.yml`을 다운로드 받아서 실행도 가능하지만, 이 경우 버전 설정에 유의하여 구성하도록 한다.
 - 기본적으로 opensearch-node1, opensearch-node2, opensearch-dashboard 의 3개 서비스로 구성되어 있다.
 - Java heap size는 `OPENSEARCH_JAVA_OPTS` 에서 설정 가능하며 ram의 50%까지는 설정하는 것을 추천한다.
 - Open Search DashBoard의 관리자 Password는 기본적으로 `yourStrongPassword123!`으로 설정되어 있으며 단순 문자열은 실행 시 오류가 발생하므로 대소문자 및 특문을 반드시 넣어 설정하여 주도록 한다.
@@ -390,5 +390,5 @@ GET /text-bbs-index/_search
 - Java Application 에서의 Embedding에는 `LangChain4j`가 사용되었다. 상세한 내용은 [공식 문서](https://github.com/langchain4j/langchain4j-examples/blob/main/other-examples/src/main/java/embedding/model/InProcessEmbeddingModelExamples.java) 를 참조 가능하다.
 - Vector로 간 거리를 계산하여 제일 가까운 값을 가진 문서를 제일 유사한 문서라고 판단한다.
 - 검색에 이용되는 알고리즘으로는 K-NN(K-최근접 이웃) 알고리즘을 사용한다.
-- 인덱스의 벡터 값과 검색어의 벡터 값 사이의 거리를 계산하는 데 사용되는 함수는 디폴트 값인 코사인 유사도(Cosine Similarity)를 사용하며 정에 따라 유클리드 거리(Euclidean Distance)나 맨해튼 거리(Manhattan Distance)와 같은 다른 거리 계산 방법도 지원한다.
+- 인덱스의 벡터 값과 검색어의 벡터 값 사이의 거리를 계산하는 데 사용되는 함수는 디폴트 값인 코사인 유사도(Cosine Similarity)를 사용하며 설정에 따라 유클리드 거리(Euclidean Distance)나 맨해튼 거리(Manhattan Distance)와 같은 다른 거리 계산 방법도 지원한다.
 - K-NN(K-최근접 이웃) 알고리즘에 대한 상세한 설명은 [해당 문서](https://aws.amazon.com/ko/blogs/tech/choose-the-k-nn-algorithm-for-your-billion-scale-use-case-with-opensearch/ ) 를 참고 가능하다.
