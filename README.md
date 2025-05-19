@@ -78,7 +78,7 @@
 1. EurekaService 실행
 2. ConfigServer
    - `ConfigServer/src/main/resources/config/application-local.yml`
-   - DB, Token, role 설정 확인
+   - DB, Token 설정 확인
    - 샘플 DB : ([공통컴포넌트 테이블 정보](https://www.egovframe.go.kr/wiki/doku.php?id=egovframework:com:v4.1:init_table#:~:text=%EC%9A%B4%EC%A0%84%EB%A9%B4%ED%97%88%EC%A6%9D%20SP%20%EA%B1%B0%EB%9E%98%EC%A0%95%EB%B3%B4-,%ED%85%8C%EC%9D%B4%EB%B8%94/%EC%B4%88%EA%B8%B0%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EC%83%9D%EC%84%B1%20%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8,-%EA%B3%B5%ED%86%B5%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EB%8A%94%20%EB%B0%B0%ED%8F%AC%ED%8C%8C%EC%9D%BC%EC%9D%84%20%ED%86%B5%ED%95%B4))
 3. GatewayServer 실행 (기본 포트 :9000)
 4. EgovMain 실행 (메인 레이아웃)
@@ -119,8 +119,6 @@ KRDS의 컴포넌트 일부를 사용하였으며 용도에 따라 패턴 등을
 
 ![로그인](https://github.com/user-attachments/assets/460b906e-ebe5-42d7-ad82-d0d9a6a17b14)   
 - DB에 저장된 USER 정보를 이용해 로그인
-- 각 유저가 가진 권한마다 접근할 수 있는 컴포넌트의 URL이 다르므로 USER의 role과 ConfigServer의 roles 설정값 확인
-  - 해당 프로젝트에서는 ConfigServer의 설정파일(applicaiton-local.yml)에서 일반사용자와 업무사용자의 접근권한을 나누고있음.
 
 - 로그인 성공   
 ![로그인 성공 화면](https://github.com/user-attachments/assets/0e001527-a628-45aa-a273-9e826ab2dd40)   
@@ -136,7 +134,7 @@ KRDS의 컴포넌트 일부를 사용하였으며 용도에 따라 패턴 등을
 
 - 접근권한이 없는 페이지에 접근한 경우   
 ![403error](https://github.com/user-attachments/assets/ea7fdfa9-56ec-4ac5-9050-49aa9add8012)   
-로그인은 성공하였으나 로그인한 계정이 ConfigServer의 role에서 권한이 부여되지 않은 경로인 경우
+로그인은 성공하였으나 권한이 부여되지 않은 경로인 경우
 
 - 프로젝트가 서버에 올라가지 못한 경우
 ![Image](https://github.com/user-attachments/assets/a5a0113d-dd20-4f15-bfb5-a45673f11d31)   
