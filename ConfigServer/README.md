@@ -51,16 +51,6 @@ refreshExpiration: 3600000 # TTL (millisecond, 5 Min)
 - Token의 SecretKey의 경우 'egovframework'를 암호화하여 사용한 값으로 실사용시에는 수정이 필요
 - accessExpiration 종료 후 refreshExpiration동안 refreshToken을 이용해 accessToken 재발급
 
-### 3. 인증 권한 설정
-
-``` yaml
-roleAdmin: "/uat/uap/**, /sec/ram/**, /sec/rgm/**, /sec/gmt/**, /sec/rmt/**, /cop/tpl/**, /uss/olp/qmc/**, /uss/olp/qtm/**, /uss/olp/qqm/**, /uss/olp/qim/**, /sym/ccm/cca/**, /sym/ccm/ccc/**, /sym/ccm/cde/**, /ext/ops/**"
-roleUser: "/cop/bls/**, /cop/bbs/**, /cop/cmy/**, /cop/brd/**, /mip/**, /uss/olp/qri/**, /uss/olp/qrm/**"
-```
-
-- roleAdmin : 업무사용자로 로그인한 경우
-- roleUser : 일반사용자로 로그인한 경우
-
 ## 유의사항
 
 구동 시 EurekaServer → ConfigServer → GatewayServer 순으로 실행

@@ -1,6 +1,9 @@
 package egovframework.com.cop.bbs.service.impl;
 
-import egovframework.com.cop.bbs.entity.BbsMaster;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import egovframework.com.cop.bbs.entity.*;
 import egovframework.com.cop.bbs.repository.EgovBbsMasterOptionRepository;
 import egovframework.com.cop.bbs.repository.EgovBbsMasterRepository;
 import egovframework.com.cop.bbs.service.BbsMasterDTO;
@@ -13,13 +16,19 @@ import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service("bbsEgovBbsMasterService")
 public class EgovBbsMasterServiceImpl extends EgovAbstractServiceImpl implements EgovBbsMasterService {
@@ -27,15 +36,18 @@ public class EgovBbsMasterServiceImpl extends EgovAbstractServiceImpl implements
     private final EgovBbsMasterRepository repository;
     private final EgovBbsMasterOptionRepository optionRepository;
     private final EgovIdGnrService idgenService;
+    private final JPAQueryFactory queryFactory;
 
     public EgovBbsMasterServiceImpl(
             EgovBbsMasterRepository repository,
             EgovBbsMasterOptionRepository optionRepository,
-            @Qualifier("egovBBSMstrIdGnrService") EgovIdGnrService idgenService
+            @Qualifier("egovBBSMstrIdGnrService") EgovIdGnrService idgenService,
+            JPAQueryFactory queryFactory
     ) {
         this.repository = repository;
         this.optionRepository = optionRepository;
         this.idgenService = idgenService;
+        this.queryFactory = queryFactory;
     }
 
     @Override
@@ -43,12 +55,159 @@ public class EgovBbsMasterServiceImpl extends EgovAbstractServiceImpl implements
         Pageable pageable = PageRequest.of(bbsMasterVO.getFirstIndex(), bbsMasterVO.getRecordCountPerPage());
         String searchCondition = bbsMasterVO.getSearchCondition();
         String searchKeyword = bbsMasterVO.getSearchKeyword();
-        return repository.bbsMasterList(searchCondition, searchKeyword, pageable);
+
+        QBbsMaster bbsMaster = QBbsMaster.bbsMaster;
+        QBbsMasterOptn bbsMasterOptn = QBbsMasterOptn.bbsMasterOptn;
+        QTmplatInfo tmplatInfo = QTmplatInfo.tmplatInfo;
+        QUserMaster userMaster = QUserMaster.userMaster;
+        QCmmnDetailCode cmmnDetailCode = QCmmnDetailCode.cmmnDetailCode;
+
+        BooleanBuilder where = new BooleanBuilder();
+        if ("1".equals(searchCondition) && searchKeyword != null && !searchKeyword.isEmpty()) {
+            where.and(bbsMaster.bbsNm.contains(searchKeyword));
+        } else if ("2".equals(searchCondition) && searchKeyword != null && !searchKeyword.isEmpty()) {
+            where.and(bbsMaster.bbsIntrcn.contains(searchKeyword));
+        }
+
+        List<Tuple> results = queryFactory
+                .select(bbsMaster,bbsMasterOptn,tmplatInfo,userMaster,cmmnDetailCode)
+                .from(bbsMaster)
+                .leftJoin(bbsMasterOptn)
+                .on(bbsMaster.bbsId.eq(bbsMasterOptn.bbsId))
+                .leftJoin(tmplatInfo)
+                .on(bbsMaster.tmplatId.eq(tmplatInfo.tmplatId))
+                .leftJoin(userMaster)
+                .on(bbsMaster.frstRegisterId.eq(userMaster.esntlId))
+                .leftJoin(cmmnDetailCode)
+                .on(bbsMaster.bbsTyCode.eq(cmmnDetailCode.cmmnDetailCodeId.code)
+                        .and(cmmnDetailCode.useAt.eq("Y"))
+                        .and(cmmnDetailCode.cmmnDetailCodeId.codeId.eq("COM101")))
+                .where(where.and(bbsMaster.blogId.isNull().or(bbsMaster.blogId.eq("")))
+                        .and(bbsMaster.cmmntyId.isNull().or(bbsMaster.cmmntyId.eq(""))))
+                .orderBy(bbsMaster.frstRegistPnttm.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+        long total = Optional.ofNullable(
+                queryFactory
+                        .select(bbsMaster.count())
+                        .from(bbsMaster)
+                        .leftJoin(bbsMasterOptn)
+                        .on(bbsMaster.bbsId.eq(bbsMasterOptn.bbsId))
+                        .leftJoin(tmplatInfo)
+                        .on(bbsMaster.tmplatId.eq(tmplatInfo.tmplatId))
+                        .leftJoin(userMaster)
+                        .on(bbsMaster.frstRegisterId.eq(userMaster.esntlId))
+                        .leftJoin(cmmnDetailCode)
+                        .on(bbsMaster.bbsTyCode.eq(cmmnDetailCode.cmmnDetailCodeId.code)
+                                .and(cmmnDetailCode.useAt.eq("Y"))
+                                .and(cmmnDetailCode.cmmnDetailCodeId.codeId.eq("COM101")))
+                        .where(where.and(bbsMaster.blogId.isNull().or(bbsMaster.blogId.eq("")))
+                                .and(bbsMaster.cmmntyId.isNull().or(bbsMaster.cmmntyId.eq(""))))
+                        .fetchOne()
+        ).orElse(0L);
+        List<BbsMasterDTO> content = results.stream().map(tuple -> {
+            BbsMaster bm = tuple.get(bbsMaster);
+            BbsMasterOptn bmop = tuple.get(bbsMasterOptn);
+            UserMaster user = tuple.get(userMaster);
+            TmplatInfo tmplat = tuple.get(tmplatInfo);
+            CmmnDetailCode code= tuple.get(cmmnDetailCode);
+
+            String answerAt = bmop != null && bmop.getAnswerAt() != null ? bmop.getAnswerAt() : "";
+            String stsfdgAt = bmop != null && bmop.getStsfdgAt() != null ? bmop.getStsfdgAt() : "";
+            String tmplatNm = tmplat != null && tmplat.getTmplatNm() != null ? tmplat.getTmplatNm() : "";
+            String userNm = user != null && user.getUserNm() != null ? user.getUserNm() : "";
+            String codeNm = code != null && code.getCodeNm() != null ? code.getCodeNm() : "";
+
+            return new BbsMasterDTO(
+                    Objects.requireNonNull(bm).getBbsId(),
+                    bm.getBbsNm(),
+                    bm.getBbsIntrcn(),
+                    bm.getBbsTyCode(),
+                    bm.getReplyPosblAt(),
+                    bm.getFileAtchPosblAt(),
+                    bm.getAtchPosblFileNumber(),
+                    bm.getAtchPosblFileSize(),
+                    bm.getUseAt(),
+                    bm.getTmplatId(),
+                    bm.getCmmntyId(),
+                    bm.getFrstRegisterId(),
+                    bm.getFrstRegistPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    bm.getLastUpdusrId(),
+                    bm.getLastUpdtPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    bm.getBlogId(),
+                    bm.getBlogAt(),
+                    answerAt,
+                    stsfdgAt,
+                    tmplatNm,
+                    userNm,
+                    codeNm
+            );
+        }).collect(Collectors.toList());
+        return new PageImpl<>(content, pageable, total);
     }
 
     @Override
     public BbsMasterDTO detail(BbsMasterVO bbsMasterVO) {
-        return repository.bbsMasterDetail(bbsMasterVO.getBbsId());
+
+        QBbsMaster bbsMaster = QBbsMaster.bbsMaster;
+        QBbsMasterOptn bbsMasterOptn = QBbsMasterOptn.bbsMasterOptn;
+        QTmplatInfo tmplatInfo = QTmplatInfo.tmplatInfo;
+        QUserMaster userMaster = QUserMaster.userMaster;
+        QCmmnDetailCode cmmnDetailCode = QCmmnDetailCode.cmmnDetailCode;
+
+        Tuple tuple = queryFactory
+                .select(bbsMaster,bbsMasterOptn,tmplatInfo,userMaster,cmmnDetailCode)
+                .from(bbsMaster)
+                .leftJoin(bbsMasterOptn)
+                .on(bbsMaster.bbsId.eq(bbsMasterOptn.bbsId))
+                .leftJoin(tmplatInfo)
+                .on(bbsMaster.tmplatId.eq(tmplatInfo.tmplatId))
+                .leftJoin(userMaster)
+                .on(bbsMaster.frstRegisterId.eq(userMaster.esntlId))
+                .leftJoin(cmmnDetailCode)
+                .on(bbsMaster.bbsTyCode.eq(cmmnDetailCode.cmmnDetailCodeId.code)
+                        .and(cmmnDetailCode.useAt.eq("Y"))
+                        .and(cmmnDetailCode.cmmnDetailCodeId.codeId.eq("COM101")))
+                .where(bbsMaster.bbsId.eq(bbsMasterVO.getBbsId()))
+                .fetchOne();
+
+        BbsMaster bm = tuple.get(bbsMaster);
+        BbsMasterOptn bmop = tuple.get(bbsMasterOptn);
+        UserMaster user = tuple.get(userMaster);
+        TmplatInfo tmplat = tuple.get(tmplatInfo);
+        CmmnDetailCode code= tuple.get(cmmnDetailCode);
+
+        String answerAt = bmop != null && bmop.getAnswerAt() != null ? bmop.getAnswerAt() : "";
+        String stsfdgAt = bmop != null && bmop.getStsfdgAt() != null ? bmop.getStsfdgAt() : "";
+        String tmplatNm = tmplat != null && tmplat.getTmplatNm() != null ? tmplat.getTmplatNm() : "";
+        String userNm = user != null && user.getUserNm() != null ? user.getUserNm() : "";
+        String codeNm = code != null && code.getCodeNm() != null ? code.getCodeNm() : "";
+
+        return new BbsMasterDTO(
+                Objects.requireNonNull(bm).getBbsId(),
+                bm.getBbsNm(),
+                bm.getBbsIntrcn(),
+                bm.getBbsTyCode(),
+                bm.getReplyPosblAt(),
+                bm.getFileAtchPosblAt(),
+                bm.getAtchPosblFileNumber(),
+                bm.getAtchPosblFileSize(),
+                bm.getUseAt(),
+                bm.getTmplatId(),
+                bm.getCmmntyId(),
+                bm.getFrstRegisterId(),
+                bm.getFrstRegistPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                bm.getLastUpdusrId(),
+                bm.getLastUpdtPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                bm.getBlogId(),
+                bm.getBlogAt(),
+                answerAt,
+                stsfdgAt,
+                tmplatNm,
+                userNm,
+                codeNm
+        );
     }
 
     @Transactional

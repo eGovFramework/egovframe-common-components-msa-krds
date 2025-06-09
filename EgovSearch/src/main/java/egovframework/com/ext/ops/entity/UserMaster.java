@@ -21,7 +21,7 @@ public class UserMaster {
     private String userId;
 
     @Column(name="ESNTL_ID")
-    private String esnlId;
+    private String esntlId;
 
     @Column(name="PASSWORD")
     private String password;

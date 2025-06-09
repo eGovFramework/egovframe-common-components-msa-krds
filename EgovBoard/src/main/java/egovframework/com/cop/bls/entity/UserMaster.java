@@ -21,7 +21,7 @@ public class UserMaster {
     private String userId;
 
     @Column(name="ESNTL_ID")
-    private String esnlId;
+    private String esntlId;
 
     @Column(name="PASSWORD")
     private String password;
@@ -32,19 +32,19 @@ public class UserMaster {
     @Column(name="USER_ZIP")
     private String userZip;
 
-    @Column(name="AUSER_ADRES")
+    @Column(name="USER_ADRES")
     private String userAdres;
 
     @Column(name="USER_EMAIL")
     private String userEmail;
 
-    @Column(name="AGROUP_ID")
+    @Column(name="GROUP_ID")
     private String groupId;
 
     @Column(name="USER_SE")
     private String userSe;
 
-    @Column(name="AORGNZT_ID")
+    @Column(name="ORGNZT_ID")
     private String orgNztId;
 
 }

@@ -1,7 +1,10 @@
 package egovframework.com.uss.olp.qqm.service.impl;
 
-import egovframework.com.uss.olp.qqm.entity.QustnrQesitm;
-import egovframework.com.uss.olp.qqm.entity.QustnrQesitmId;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import egovframework.com.uss.olp.qqm.entity.*;
 import egovframework.com.uss.olp.qqm.repository.EgovQustnrQesitmRepository;
 import egovframework.com.uss.olp.qqm.service.EgovQustnrQesitmService;
 import egovframework.com.uss.olp.qqm.service.QustnrQesitmDTO;
@@ -11,27 +14,35 @@ import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service("qqmEgovQustnrQesitmService")
 public class EgovQustnrQesitmServiceImpl extends EgovAbstractServiceImpl implements EgovQustnrQesitmService {
 
     private final EgovQustnrQesitmRepository repository;
     private final EgovIdGnrService idgenService;
+    private final JPAQueryFactory queryFactory;
 
     public EgovQustnrQesitmServiceImpl(
             EgovQustnrQesitmRepository repository,
-            @Qualifier("egovQustnrQestnManageIdGnrService") EgovIdGnrService idgenService
+            @Qualifier("egovQustnrQestnManageIdGnrService") EgovIdGnrService idgenService,
+            JPAQueryFactory queryFactory
     ) {
         this.repository = repository;
         this.idgenService = idgenService;
+        this.queryFactory = queryFactory;
     }
 
     @Override
@@ -39,12 +50,109 @@ public class EgovQustnrQesitmServiceImpl extends EgovAbstractServiceImpl impleme
         Pageable pageable = PageRequest.of(qustnrQesitmVO.getFirstIndex(), qustnrQesitmVO.getRecordCountPerPage());
         String searchCondition = qustnrQesitmVO.getSearchCondition();
         String searchKeyword = qustnrQesitmVO.getSearchKeyword();
-        return repository.qustnrQusitmList(searchCondition, searchKeyword, pageable);
+
+        QQustnrQesitm qustnrQesitm = QQustnrQesitm.qustnrQesitm;
+        QQestnrInfo qestnrInfo = QQestnrInfo.qestnrInfo;
+        QUserMaster userMaster = QUserMaster.userMaster;
+        QCmmnDetailCode cmmnDetailCode = QCmmnDetailCode.cmmnDetailCode;
+
+        BooleanBuilder where = new BooleanBuilder();
+        if ("1".equals(searchCondition) && searchKeyword != null && !searchKeyword.isEmpty()) {
+            where.and(qestnrInfo.qustnrSj.contains(searchKeyword));
+        } else if ("2".equals(searchCondition) && searchKeyword != null && !searchKeyword.isEmpty()) {
+            where.and(qustnrQesitm.qestnCn.contains(searchKeyword));
+        }
+
+        List<Tuple> results = qustnrQesitmQuery()
+                .where(where)
+                .orderBy(qustnrQesitm.qustnrQesitmId.qestnrId.desc(),
+                        qustnrQesitm.qustnrQesitmId.qustnrQesitmId.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = Optional.ofNullable(
+                queryFactory
+                        .select(qustnrQesitm.count())
+                        .from(qustnrQesitm)
+                        .leftJoin(qestnrInfo)
+                        .on(qustnrQesitm.qustnrQesitmId.qestnrId.eq(qestnrInfo.qestnrInfoId.qestnrId))
+                        .leftJoin(userMaster)
+                        .on(qustnrQesitm.frstRegisterId.eq(userMaster.esntlId))
+                        .leftJoin(cmmnDetailCode)
+                        .on(qustnrQesitm.qestnTyCode.eq(cmmnDetailCode.cmmnDetailCodeId.code)
+                                .and(cmmnDetailCode.cmmnDetailCodeId.codeId.eq("COM018")))
+                        .where(where)
+                        .fetchOne()
+        ).orElse(0L);
+
+        List<QustnrQesitmDTO> content = results.stream().map(tuple -> {
+
+            QustnrQesitm qqm = tuple.get(qustnrQesitm);
+            QestnrInfo qe = tuple.get(qestnrInfo);
+            UserMaster user = tuple.get(userMaster);
+            CmmnDetailCode code = tuple.get(cmmnDetailCode);
+
+            String qustnrSj = qe != null && qe.getQustnrSj() != null ? qe.getQustnrSj() : "";
+            String codeNm = code != null && code.getCodeNm() != null ? code.getCodeNm() : "";
+            String userNm = user != null && user.getUserNm() != null ? user.getUserNm() : "";
+
+            return new QustnrQesitmDTO(
+                    Objects.requireNonNull(qqm).getQustnrQesitmId().getQustnrTmplatId(),
+                    qqm.getQustnrQesitmId().getQestnrId(),
+                    qqm.getQustnrQesitmId().getQustnrQesitmId(),
+                    qustnrSj,
+                    qqm.getQestnSn(),
+                    qqm.getQestnTyCode(),
+                    codeNm,
+                    qqm.getQestnCn(),
+                    qqm.getMxmmChoiseCo(),
+                    qqm.getFrstRegistPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    qqm.getFrstRegisterId(),
+                    qqm.getLastUpdtPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    qqm.getLastUpdusrId(),
+                    userNm
+            );
+        }).collect(Collectors.toList());
+
+        return new PageImpl<>(content,pageable,total);
     }
 
     @Override
     public QustnrQesitmDTO detail(QustnrQesitmVO qustnrQesitmVO) {
-        return repository.qustnrQusitmDetail(qustnrQesitmVO.getQustnrQesitmId());
+
+        QQustnrQesitm qustnrQesitm = QQustnrQesitm.qustnrQesitm;
+        QQestnrInfo qestnrInfo = QQestnrInfo.qestnrInfo;
+        QUserMaster userMaster = QUserMaster.userMaster;
+        QCmmnDetailCode cmmnDetailCode = QCmmnDetailCode.cmmnDetailCode;
+
+        Tuple tuple = qustnrQesitmQuery().where(qustnrQesitm.qustnrQesitmId.qustnrQesitmId.eq(qustnrQesitmVO.getQustnrQesitmId())).fetchOne();
+
+        QustnrQesitm qqm = tuple.get(qustnrQesitm);
+        QestnrInfo qe = tuple.get(qestnrInfo);
+        UserMaster user = tuple.get(userMaster);
+        CmmnDetailCode code = tuple.get(cmmnDetailCode);
+
+        String qustnrSj = qe != null && qe.getQustnrSj() != null ? qe.getQustnrSj() : "";
+        String codeNm = code != null && code.getCodeNm() != null ? code.getCodeNm() : "";
+        String userNm = user != null && user.getUserNm() != null ? user.getUserNm() : "";
+
+        return new QustnrQesitmDTO(
+                Objects.requireNonNull(qqm).getQustnrQesitmId().getQustnrTmplatId(),
+                qqm.getQustnrQesitmId().getQestnrId(),
+                qqm.getQustnrQesitmId().getQustnrQesitmId(),
+                qustnrSj,
+                qqm.getQestnSn(),
+                qqm.getQestnTyCode(),
+                codeNm,
+                qqm.getQestnCn(),
+                qqm.getMxmmChoiseCo(),
+                qqm.getFrstRegistPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                qqm.getFrstRegisterId(),
+                qqm.getLastUpdtPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                qqm.getLastUpdusrId(),
+                userNm
+        );
     }
 
     @Transactional
@@ -112,7 +220,67 @@ public class EgovQustnrQesitmServiceImpl extends EgovAbstractServiceImpl impleme
     public List<QustnrQesitmDTO> qustnrQusitmList(QustnrQesitmVO qustnrQesitmVO) {
         String qustnrTmplatId = qustnrQesitmVO.getQustnrTmplatId();
         String qestnrId = qustnrQesitmVO.getQestnrId();
-        return repository.qustnrQusitmList(qustnrTmplatId, qestnrId);
+
+        QQustnrQesitm qustnrQesitm = QQustnrQesitm.qustnrQesitm;
+        QQestnrInfo qestnrInfo = QQestnrInfo.qestnrInfo;
+        QUserMaster userMaster = QUserMaster.userMaster;
+        QCmmnDetailCode cmmnDetailCode = QCmmnDetailCode.cmmnDetailCode;
+
+        List<Tuple> results = qustnrQesitmQuery()
+                .where(qustnrQesitm.qustnrQesitmId.qustnrTmplatId.eq(qustnrTmplatId)
+                        .and(qustnrQesitm.qustnrQesitmId.qestnrId.eq(qestnrId)))
+                .orderBy(qustnrQesitm.qestnSn.asc())
+                .fetch();
+
+        List<QustnrQesitmDTO> content = results.stream().map(tuple -> {
+
+            QustnrQesitm qqm = tuple.get(qustnrQesitm);
+            QestnrInfo qe = tuple.get(qestnrInfo);
+            UserMaster user = tuple.get(userMaster);
+            CmmnDetailCode code = tuple.get(cmmnDetailCode);
+
+            String qustnrSj = qe != null && qe.getQustnrSj() != null ? qe.getQustnrSj() : "";
+            String codeNm = code != null && code.getCodeNm() != null ? code.getCodeNm() : "";
+            String userNm = user != null && user.getUserNm() != null ? user.getUserNm() : "";
+
+            return new QustnrQesitmDTO(
+                    Objects.requireNonNull(qqm).getQustnrQesitmId().getQustnrTmplatId(),
+                    qqm.getQustnrQesitmId().getQestnrId(),
+                    qqm.getQustnrQesitmId().getQustnrQesitmId(),
+                    qustnrSj,
+                    qqm.getQestnSn(),
+                    qqm.getQestnTyCode(),
+                    codeNm,
+                    qqm.getQestnCn(),
+                    qqm.getMxmmChoiseCo(),
+                    qqm.getFrstRegistPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    qqm.getFrstRegisterId(),
+                    qqm.getLastUpdtPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    qqm.getLastUpdusrId(),
+                    userNm
+            );
+        }).collect(Collectors.toList());
+
+        return content;
+    }
+
+    private JPAQuery<Tuple> qustnrQesitmQuery(){
+
+        QQustnrQesitm qustnrQesitm = QQustnrQesitm.qustnrQesitm;
+        QQestnrInfo qestnrInfo = QQestnrInfo.qestnrInfo;
+        QUserMaster userMaster = QUserMaster.userMaster;
+        QCmmnDetailCode cmmnDetailCode = QCmmnDetailCode.cmmnDetailCode;
+
+        return queryFactory
+                .select(qustnrQesitm, qestnrInfo, userMaster, cmmnDetailCode)
+                .from(qustnrQesitm)
+                .leftJoin(qestnrInfo)
+                .on(qustnrQesitm.qustnrQesitmId.qestnrId.eq(qestnrInfo.qestnrInfoId.qestnrId))
+                .leftJoin(userMaster)
+                .on(qustnrQesitm.frstRegisterId.eq(userMaster.esntlId))
+                .leftJoin(cmmnDetailCode)
+                .on(qustnrQesitm.qestnTyCode.eq(cmmnDetailCode.cmmnDetailCodeId.code)
+                        .and(cmmnDetailCode.cmmnDetailCodeId.codeId.eq("COM018")));
     }
 
 }

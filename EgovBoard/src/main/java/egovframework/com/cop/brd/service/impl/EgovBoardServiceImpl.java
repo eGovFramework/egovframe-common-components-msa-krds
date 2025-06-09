@@ -1,9 +1,12 @@
 package egovframework.com.cop.brd.service.impl;
 
-import egovframework.com.cop.brd.entity.Bbs;
-import egovframework.com.cop.brd.entity.BbsId;
-import egovframework.com.cop.brd.entity.BbsSyncLog;
-import egovframework.com.cop.brd.entity.Comment;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import egovframework.com.cop.brd.entity.*;
 import egovframework.com.cop.brd.event.BoardEvent;
 import egovframework.com.cop.brd.event.BoardEventType;
 import egovframework.com.cop.brd.repository.EgovBbsSyncLogRepository;
@@ -21,6 +24,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,9 +34,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("brdEgovBoardService")
 @Slf4j
@@ -48,6 +52,7 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
     @Qualifier("egovBbsSyncLogIdGnrService")
     private final EgovIdGnrService bbsSyncLogIdGnrService;
     private final StreamBridge streamBridge;
+    private final JPAQueryFactory queryFactory;
 
     @Value("${opensearch.synclog.enabled}")
     private boolean syncLogEnabled;
@@ -60,7 +65,8 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
             EgovFileService egovFileService,
             @Qualifier("egovBoardIdGnrService") EgovIdGnrService boardIdGnrService,
             @Qualifier("egovBbsSyncLogIdGnrService") EgovIdGnrService bbsSyncLogIdGnrService,
-            StreamBridge streamBridge
+            StreamBridge streamBridge,
+            JPAQueryFactory queryFactory
     ) {
         this.repository = repository;
         this.bbsSyncLogRepository = bbsSyncLogRepository;
@@ -70,24 +76,140 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
         this.boardIdGnrService = boardIdGnrService;
         this.bbsSyncLogIdGnrService = bbsSyncLogIdGnrService;
         this.streamBridge = streamBridge;
+        this.queryFactory = queryFactory;
     }
 
     @Override
     public List<BoardDTO> noticeList(BbsVO bbsVO) {
-        String searchCondition = bbsVO.getSearchCondition();
-        String searchKeyword = bbsVO.getSearchKeyword();
-        String bbsId = bbsVO.getBbsId();
-        return repository.boardNoticeList(searchCondition, searchKeyword, bbsId);
+
+        QBbs bbs = QBbs.bbs;
+        QUserMaster userMaster = QUserMaster.userMaster;
+        QBbsMaster bbsMaster = QBbsMaster.bbsMaster;
+        QComment comment = QComment.comment;
+
+        List<Tuple> results = boardListQuery(bbsVO,"notice").fetch();
+
+        List<BoardDTO> content = results.stream().map(tuple -> {
+
+            Bbs b = tuple.get(bbs);
+            UserMaster user =tuple.get(userMaster);
+            BbsMaster bm = tuple.get(bbsMaster);
+            Comment c = tuple.get(comment);
+
+            String userNm = (user != null && user.getUserNm() != null) ? user.getUserNm() : b.getNtcrNm();
+            String bbsNm = bm != null && bm.getBbsNm() != null ? bm.getBbsNm() : "";
+
+            return new BoardDTO(
+                    Objects.requireNonNull(b).getBbsId().getNttId(),
+                    b.getBbsId().getBbsId(),
+                    b.getNttNo(),
+                    b.getNttSj(),
+                    b.getNttCn(),
+                    b.getFrstRegisterId(),
+                    userNm,
+                    b.getFrstRegistPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    b.getRdcnt(),
+                    b.getParntscttNo(),
+                    b.getAnswerAt(),
+                    b.getAnswerLc(),
+                    b.getSortOrdr(),
+                    b.getUseAt(),
+                    b.getAtchFileId(),
+                    b.getNtceBgnde(),
+                    b.getNtceEndde(),
+                    b.getNtcrId(),
+                    b.getNtcrNm(),
+                    b.getSjBoldAt(),
+                    b.getNoticeAt(),
+                    b.getSecretAt(),
+                    0,
+                    bbsNm
+            );
+        }).collect(Collectors.toList());
+        return content;
     }
 
     @Override
     public Map<String, Object> list(BbsVO bbsVO) {
         Pageable pageable = PageRequest.of(bbsVO.getPageIndex() > 0 ? bbsVO.getFirstIndex() : 0, bbsVO.getPageUnit());
-
         String searchCondition = bbsVO.getSearchCondition();
         String searchKeyword = bbsVO.getSearchKeyword();
-        String bbsId = bbsVO.getBbsId();
-        Page<BoardDTO> list = repository.boardList(searchCondition, searchKeyword, bbsId, pageable);
+
+        QBbs bbs = QBbs.bbs;
+        QUserMaster userMaster = QUserMaster.userMaster;
+        QBbsMaster bbsMaster = QBbsMaster.bbsMaster;
+        QComment comment = QComment.comment;
+
+        BooleanBuilder where = new BooleanBuilder();
+        if ("1".equals(searchCondition) && searchKeyword != null && !searchKeyword.isEmpty()) {
+            where.and(bbs.nttSj.contains(searchKeyword));
+        } else if ("2".equals(searchCondition) && searchKeyword != null && !searchKeyword.isEmpty()) {
+            where.and(bbs.nttCn.contains(searchKeyword));
+        } else if ("3".equals(searchCondition) && searchKeyword != null && !searchKeyword.isEmpty()) {
+            where.and(userMaster.userNm.eq(searchKeyword));
+        }
+        where.and(bbs.useAt.eq("Y")).and(bbs.noticeAt.isNull());
+
+        JPAQuery<Tuple> query = boardListQuery(bbsVO,"list");
+
+        List<Tuple> results = query.offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch();
+
+        long total = Optional.ofNullable(
+                queryFactory
+                        .select(bbs.count()).
+                        from(bbs)
+                        .leftJoin(userMaster)
+                        .on(bbs.frstRegisterId.eq(userMaster.esntlId))
+                        .leftJoin(bbsMaster)
+                        .on(bbs.bbsId.bbsId.eq(bbsMaster.bbsId))
+                        .leftJoin(comment)
+                        .on(bbs.bbsId.nttId.eq(comment.commentId.nttId)
+                                .and(bbs.bbsId.bbsId.eq(comment.commentId.bbsId)))
+                        .where(bbs.bbsId.bbsId.eq(bbsVO.getBbsId())
+                                .and(bbs.useAt.eq("Y")).and(bbs.noticeAt.isNull())
+                                .and(where))
+                        .fetchOne()
+        ).orElse(0L);
+
+        List<BoardDTO> content = results.stream().map(tuple -> {
+
+            Bbs b = tuple.get(bbs);
+            UserMaster user =tuple.get(userMaster);
+            BbsMaster bm = tuple.get(bbsMaster);
+            Comment c = tuple.get(comment);
+
+            String userNm = (user != null && user.getUserNm() != null) ? user.getUserNm() : b.getNtcrNm();
+            String bbsNm = bm != null && bm.getBbsNm() != null ? bm.getBbsNm() : "";
+
+            return new BoardDTO(
+                    Objects.requireNonNull(b).getBbsId().getNttId(),
+                    b.getBbsId().getBbsId(),
+                    b.getNttNo(),
+                    b.getNttSj(),
+                    b.getNttCn(),
+                    b.getFrstRegisterId(),
+                    userNm,
+                    b.getFrstRegistPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    b.getRdcnt(),
+                    b.getParntscttNo(),
+                    b.getAnswerAt(),
+                    b.getAnswerLc(),
+                    b.getSortOrdr(),
+                    b.getUseAt(),
+                    b.getAtchFileId(),
+                    b.getNtceBgnde(),
+                    b.getNtceEndde(),
+                    b.getNtcrId(),
+                    b.getNtcrNm(),
+                    b.getSjBoldAt(),
+                    b.getNoticeAt(),
+                    b.getSecretAt(),
+                    0,
+                    bbsNm
+            );
+        }).collect(Collectors.toList());
+
+        Page<BoardDTO> list = new PageImpl<>(content,pageable,total);
 
         Map<String, Object> response = new HashMap<>();
         response.put("content", list.getContent());
@@ -102,12 +224,38 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
     @Transactional
     @Override
     public BoardDTO detail(BbsVO bbsVO, Map<String, String> userInfo) {
-        bbsVO.setRdcnt(repository.selectRdcntMax(bbsVO.getBbsId(), bbsVO.getNttId()));
+
+        QBbs bbs = QBbs.bbs;
+
+        NumberTemplate<Integer> percentageExpr =Expressions.numberTemplate(Integer.class,
+                "COALESCE(MAX({0}), 0) + 1",
+                bbs.rdcnt);
+
+        int count = Optional.ofNullable(
+                queryFactory
+                        .select(percentageExpr).
+                        from(bbs).
+                        where(bbs.bbsId.bbsId.eq(bbsVO.getBbsId())
+                                .and(bbs.bbsId.nttId.eq(bbsVO.getNttId()))).fetchOne()
+        ).orElse(0);
+
+        bbsVO.setRdcnt(count);
         bbsVO.setLastUpdusrId(userInfo.get("uniqId"));
         bbsVO.setLastUpdtPnttm(String.valueOf(LocalDateTime.now()));
-        repository.updataRdcnt(bbsVO.getRdcnt(), bbsVO.getLastUpdusrId(), LocalDateTime.parse(bbsVO.getLastUpdtPnttm()), bbsVO.getBbsId(), bbsVO.getNttId());
 
-        return repository.selectBbsDetail(bbsVO.getBbsId(), bbsVO.getNttId());
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        LocalDateTime formatdate = LocalDateTime.parse(bbsVO.getLastUpdtPnttm(), inputFormatter);
+        String formatted = formatdate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime date = LocalDateTime.parse(formatted, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        queryFactory.update(bbs)
+                .set(bbs.rdcnt,bbsVO.getRdcnt())
+                .set(bbs.lastUpdusrId,bbsVO.getLastUpdusrId())
+                .set(bbs.lastUpdtPnttm, date)
+                .where(bbs.bbsId.bbsId.eq(bbsVO.getBbsId()).and(bbs.bbsId.nttId.eq(bbsVO.getNttId())))
+                .execute();
+
+        return selectboardDetail(bbsVO);
     }
 
     @Transactional
@@ -128,7 +276,7 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
             /* 답글 처리 */
             if ("Y".equals(bbsVO.getAnswerAt())) {
                 bbsVO.setParntscttNo(Math.toIntExact(bbsVO.getNttId()));
-                BoardDTO boardDTO = repository.selectBbsDetail(bbsVO.getBbsId(), (long) bbsVO.getParntscttNo());
+                BoardDTO boardDTO = selectboardDetail(bbsVO);
 
                 long nttId = boardIdGnrService.getNextLongId();
                 bbsVO.setNttNo(boardDTO.getNttNo() + 1);
@@ -173,7 +321,8 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
                 egovFileService.insertFiles(filsVOList);
             }
 
-            BoardDTO dto = repository.selectBbsDetail(bbsVO.getBbsId(), bbsVO.getNttId());
+//            BoardDTO dto = repository.selectBbsDetail(bbsVO.getBbsId(), bbsVO.getNttId());
+            BoardDTO dto = selectboardDetail(bbsVO);
             dto.setNoticeAt(bbsVO.getNoticeAt());
             dto.setSecretAt(bbsVO.getSecretAt());
             dto.setSjBoldAt(bbsVO.getSjBoldAt());
@@ -281,6 +430,101 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
                 log.warn("Failed to send event to RabbitMQ. Event will be processed later via COMTNBBSSYNCLOG: {}", e.getMessage());
             }
         }
+    }
+
+    private JPAQuery<Tuple> boardListQuery(BbsVO bbsVO, String listNm){
+
+        String searchCondition = bbsVO.getSearchCondition();
+        String searchKeyword = bbsVO.getSearchKeyword();
+
+        QBbs bbs = QBbs.bbs;
+        QUserMaster userMaster = QUserMaster.userMaster;
+        QBbsMaster bbsMaster = QBbsMaster.bbsMaster;
+        QComment comment = QComment.comment;
+
+        BooleanBuilder where = new BooleanBuilder();
+        if ("1".equals(searchCondition) && searchKeyword != null && !searchKeyword.isEmpty()) {
+            where.and(bbs.nttSj.contains(searchKeyword));
+        } else if ("2".equals(searchCondition) && searchKeyword != null && !searchKeyword.isEmpty()) {
+            where.and(bbs.nttCn.contains(searchKeyword));
+        } else if ("3".equals(searchCondition) && searchKeyword != null && !searchKeyword.isEmpty()) {
+            where.and(userMaster.userNm.eq(searchKeyword));
+        }
+
+        if(listNm.equals("notice")){
+            where.and(bbs.useAt.eq("Y")).and(bbs.noticeAt.eq("Y"));
+        }else{
+            where.and(bbs.useAt.eq("Y")).and(bbs.noticeAt.isNull());
+        }
+
+        return queryFactory
+                .select(bbs, userMaster, bbsMaster, comment)
+                .from(bbs)
+                .leftJoin(userMaster)
+                .on(bbs.frstRegisterId.eq(userMaster.esntlId))
+                .leftJoin(bbsMaster)
+                .on(bbs.bbsId.bbsId.eq(bbsMaster.bbsId))
+                .leftJoin(comment)
+                .on(bbs.bbsId.nttId.eq(comment.commentId.nttId)
+                        .and(bbs.bbsId.bbsId.eq(comment.commentId.bbsId)))
+                .where(bbs.bbsId.bbsId.eq(bbsVO.getBbsId())
+                        .and(where))
+                .orderBy(bbs.sortOrdr.desc(), bbs.parntscttNo.asc(), bbs.answerLc.asc(), bbs.nttNo.asc(), bbs.frstRegistPnttm.desc());
+    }
+
+    private BoardDTO selectboardDetail(BbsVO bbsVO){
+
+        QBbs bbs = QBbs.bbs;
+        QUserMaster userMaster = QUserMaster.userMaster;
+        QBbsMaster bbsMaster = QBbsMaster.bbsMaster;
+
+        Tuple tuple = queryFactory
+                .select(bbs,userMaster,bbsMaster)
+                .from(bbs)
+                .leftJoin(userMaster)
+                .on(bbs.frstRegisterId.eq(userMaster.esntlId))
+                .leftJoin(bbsMaster)
+                .on(bbs.bbsId.bbsId.eq(bbsMaster.bbsId))
+                .where(bbs.bbsId.bbsId.eq(bbsVO.getBbsId())
+                        .and(bbs.bbsId.nttId.eq(bbsVO.getNttId()))
+                        .and(bbs.useAt.eq("Y")))
+                .fetchOne();
+
+        if (tuple == null) return null;
+
+        Bbs b = tuple.get(bbs);
+        UserMaster user =tuple.get(userMaster);
+        BbsMaster bm = tuple.get(bbsMaster);
+
+        String userNm = (user != null && user.getUserNm() != null) ? user.getUserNm() : b.getNtcrNm();
+        String bbsNm = bm != null && bm.getBbsNm() != null ? bm.getBbsNm() : "";
+
+        return new BoardDTO(
+                Objects.requireNonNull(b).getBbsId().getNttId(),
+                b.getBbsId().getBbsId(),
+                b.getNttNo(),
+                b.getNttSj(),
+                b.getNttCn(),
+                b.getFrstRegisterId(),
+                userNm,
+                b.getFrstRegistPnttm().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                b.getRdcnt(),
+                b.getParntscttNo(),
+                b.getAnswerAt(),
+                b.getAnswerLc(),
+                b.getSortOrdr(),
+                b.getUseAt(),
+                b.getAtchFileId(),
+                b.getNtceBgnde(),
+                b.getNtceEndde(),
+                b.getNtcrId(),
+                b.getNtcrNm(),
+                b.getSjBoldAt(),
+                b.getNoticeAt(),
+                b.getSecretAt(),
+                0,
+                bbsNm
+        );
     }
 
 }

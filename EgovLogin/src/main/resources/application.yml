@@ -1,5 +1,6 @@
 server:
   port: 0 # random port
+  forward-headers-strategy: native
 
 egov:
   login: # 로그인 인증 제한
@@ -70,7 +71,7 @@ org:
       excludeList: /css/**, /images/**, /js/**, /uat/** # 인증 제외 경로
       csrf: false                                           # CSRF 사용 여부
       xframeOptions: sameorigin                             # iframe 허용 정책 (sameorigin | deny | disable)
-      sniff: true                                           # X-Content-Type-Options 설정 여부
+      sniff: false                                          # X-Content-Type-Options 설정 여부
       xssProtection: true                                   # 브라우저 XSS 보호 활성화 여부
       cacheControl: false                                   # 캐시 방지 헤더 사용 여부
       concurrentMaxSessons: 1                               # 동시 로그인 허용 수 (1이면 1개 세션만 유지)

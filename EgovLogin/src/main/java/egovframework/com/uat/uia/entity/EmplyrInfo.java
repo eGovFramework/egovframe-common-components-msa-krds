@@ -95,7 +95,7 @@ public class EmplyrInfo implements CommonEntity {
     private String crtfcDnValue;
 
     @Column(name="SBSCRB_DE")
-    private String sbscrbDe;
+    private LocalDateTime sbscrbDe;
 
     @Column(name="LOCK_AT")
     private String lockAt;
