@@ -57,7 +57,7 @@ public class EgovBlogServiceImpl extends EgovAbstractServiceImpl implements Egov
         String searchCondition = blogVO.getSearchCondition();
         String searchKeyword = blogVO.getSearchKeyword();
 
-        QBlog blog =QBlog.blog;
+        QBlog blog = QBlog.blog;
         QUserMaster userMaster = QUserMaster.userMaster;
         QCmmnDetailCode cmmnDetailCode = QCmmnDetailCode.cmmnDetailCode;
 

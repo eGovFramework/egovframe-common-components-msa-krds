@@ -25,10 +25,6 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<org.egovframe.rte.version>4.3.0</org.egovframe.rte.version>
-		<org.egovframe.starter.version>1.0.0</org.egovframe.starter.version>
-		<spring.maven.artifact.version>5.3.37</spring.maven.artifact.version>
-		<spring-cloud.version>2021.0.9</spring-cloud.version>
 		<jwtt.version>0.12.6</jwtt.version>
 		<jaxb.version>2.3.1</jaxb.version>
 		<lombok.version>1.18.34</lombok.version>
@@ -90,7 +86,6 @@
 		<dependency>
 			<groupId>org.egovframe.boot</groupId>
 			<artifactId>org.egovframe.crypto.spring.boot.starter</artifactId>
-			<version>${org.egovframe.starter.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -125,7 +120,6 @@
 			<classifier>osx-aarch_64</classifier>
 			<scope>runtime</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -138,18 +132,6 @@
 			</exclusions>
 		</dependency>
 	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
