@@ -322,7 +322,7 @@ Ckeditor를 이용해 editor 형태로 게시글을 작성하거나 파일첨부
 ## 유의사항
 
 게시글 등록/수정 시 EgovSearch에서 사용할 수 있는 데이터를 함께 등록할 수 있다.   
-EgovSearch 서비스 이용이 가능한 상태여야하므로 사용 방법은 EgovSerach의 ReadMe를 참조.
+EgovSearch 서비스 이용이 가능한 상태여야하므로 사용 방법은 EgovSearch의 ReadMe를 참조.
 
 ## 참조
 

@@ -92,7 +92,7 @@
       2. 발급된 Token은 cookie에 저장   
           * 브라우저 > 개발자모드(F12) > 애플리케이션 > 쿠키 > 페이지 URL 에서 확인 가능   
         ![cookie_token](https://github.com/user-attachments/assets/aed367b1-b4da-423b-a600-2e260951b2e8)
-      3. accessToken의 지정된 시간이 종료되면 refreshToken에 의해 다시 aceessToken이 재발급된다.   
+      3. accessToken의 지정된 시간이 종료되면 refreshToken에 의해 다시 accessToken이 재발급된다.   
           
           ```java
             @GetMapping("/recreateAccessToken")

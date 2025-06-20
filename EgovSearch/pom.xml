@@ -25,10 +25,6 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<org.egovframe.rte.version>4.3.0</org.egovframe.rte.version>
-		<org.egovframe.starter.version>1.0.0</org.egovframe.starter.version>
-		<spring.maven.artifact.version>5.3.37</spring.maven.artifact.version>
-		<spring-cloud.version>2021.0.9</spring-cloud.version>
 		<mysql.connector.version>8.0.33</mysql.connector.version>
 		<apache.commons.lang3>3.14.0</apache.commons.lang3>
 		<apache.commons.io>2.16.1</apache.commons.io>
@@ -118,22 +114,18 @@
 		<dependency>
 			<groupId>org.egovframe.rte</groupId>
 			<artifactId>org.egovframe.rte.fdl.idgnr</artifactId>
-			<version>${org.egovframe.rte.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.egovframe.rte</groupId>
 			<artifactId>org.egovframe.rte.fdl.property</artifactId>
-			<version>${org.egovframe.rte.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.egovframe.rte</groupId>
 			<artifactId>org.egovframe.rte.psl.dataaccess</artifactId>
-			<version>${org.egovframe.rte.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.egovframe.rte</groupId>
 			<artifactId>org.egovframe.rte.ptl.mvc</artifactId>
-			<version>${org.egovframe.rte.version}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-logging</artifactId>
@@ -144,12 +136,10 @@
 		<dependency>
 			<groupId>org.egovframe.rte</groupId>
 			<artifactId>org.egovframe.rte.ptl.reactive</artifactId>
-			<version>${org.egovframe.rte.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.egovframe.boot</groupId>
 			<artifactId>org.egovframe.crypto.spring.boot.starter</artifactId>
-			<version>${org.egovframe.starter.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -239,7 +229,6 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-stream-binder-rabbit</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -252,18 +241,6 @@
 			</exclusions>
 		</dependency>
 	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
