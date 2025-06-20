@@ -119,8 +119,6 @@ KRDS의 컴포넌트 일부를 사용하였으며 용도에 따라 패턴 등을
 
 ![로그인](https://github.com/user-attachments/assets/460b906e-ebe5-42d7-ad82-d0d9a6a17b14)   
 - DB에 저장된 USER 정보를 이용해 로그인
-- 각 유저가 가진 권한마다 접근할 수 있는 컴포넌트의 URL이 다르므로 USER의 role 
-
 
 - 로그인 성공   
 ![로그인 성공 화면](https://github.com/user-attachments/assets/0e001527-a628-45aa-a273-9e826ab2dd40)   
