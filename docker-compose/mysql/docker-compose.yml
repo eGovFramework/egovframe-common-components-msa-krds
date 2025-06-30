@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8.0.33
+    environment:  # 환경변수
+      MYSQL_USER: com
+      MYSQL_DATABASE: com
+      MYSQL_PASSWORD: com01
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_HOST: "%"
+      TZ: Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      # 클라이언트에서 설정한 문자셋을 무시하고 character_set_server값으로 설정
+      - --skip-character-set-client-handshake
+      - --lower_case_table_names=1
+    volumes:
+      - "./init/:/docker-entrypoint-initdb.d/"
+    platform: linux/x86_64 #m1에서 플랫폼을 명시해주지 않으면 에러남
+    ports:
+      - "3306:3306"
+    container_name: mysql

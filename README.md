@@ -75,6 +75,7 @@
   - OpenSearch 검색엔진
  
 ## 프로젝트 구동 방법
+0. docker-compose/mysql 실행 `docker-compose up -d`
 1. EurekaService 실행
 2. ConfigServer
    - `ConfigServer/src/main/resources/config/application-local.yml`
