@@ -42,7 +42,6 @@ public class StrUtil {
                 .replace("<br>", "\n")
                 .replace("<br/>", "\n")
                 .replace("<br />", "\n")
-                .replace("\u00A0", " ")
                 .replace("<p>", "")
                 .replace("</p>", "");
     }
