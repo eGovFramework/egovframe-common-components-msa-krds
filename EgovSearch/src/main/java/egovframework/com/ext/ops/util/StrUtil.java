@@ -3,6 +3,7 @@ package egovframework.com.ext.ops.util;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -32,19 +33,16 @@ public class StrUtil {
             return null;
         }
 
-        return input.replace("\r", " ")
+        String unescapedString = StringEscapeUtils.unescapeHtml4(input);
+
+        return unescapedString.replace("\r", " ")
+                .replace("\u00A0", " ")
                 .replace("\n", " ")
                 .replace("\\", " ")
-                .replace("&lt;", "<")
-                .replace("&gt;", ">")
-                .replace("&amp;", "&")
-                .replace("&quot;", "\"")
-                .replace("&nbsp;", " ")
-                .replace("&#39;", "'")
-                .replace("&#34;", "\"")
                 .replace("<br>", "\n")
                 .replace("<br/>", "\n")
                 .replace("<br />", "\n")
+                .replace("\u00A0", " ")
                 .replace("<p>", "")
                 .replace("</p>", "");
     }
