@@ -1,6 +1,6 @@
 package egovframework.com.sym.ccm.cde.web;
 
-import egovframework.com.pagination.EgovPaginationFormat;
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
 import egovframework.com.sym.ccm.cde.service.CmmnDetailCodeVO;
 import egovframework.com.sym.ccm.cde.service.EgovCmmnDetailCodeManageService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +37,7 @@ public class EgovCmmnDetailCodeManageAPIController {
 
     private final EgovCmmnDetailCodeManageService service;
     private final EgovEnvCryptoServiceImpl egovEnvCryptoService;
+    private final EgovKrdsPaginationRenderer egovKrdsPaginationRenderer;
 
     @PostMapping(value = "/cmmnDetailCodeList")
     public ResponseEntity<?> cmmnDetailCodeList(@ModelAttribute CmmnDetailCodeVO cmmnDetailCodeVO) {
@@ -52,8 +53,7 @@ public class EgovCmmnDetailCodeManageAPIController {
         Page<CmmnDetailCodeVO> list = service.list(cmmnDetailCodeVO);
         paginationInfo.setTotalRecordCount((int) list.getTotalElements());
 
-        EgovPaginationFormat egovPaginationFormat = new EgovPaginationFormat();
-        String pagination = egovPaginationFormat.paginationFormat(paginationInfo, "linkPage");
+        String pagination = egovKrdsPaginationRenderer.renderPagination(paginationInfo, "linkPage");
 
         Map<String, Object> response = new HashMap<>();
         response.put("cmmnDetailCodeList", list.getContent());

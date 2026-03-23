@@ -6,9 +6,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
-import org.thymeleaf.spring5.view.ThymeleafViewResolver;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 @Configuration
@@ -16,7 +16,11 @@ public class EgovMainWeb implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/main/**").addResourceLocations("classpath:/static/");
+        // 정적 리소스만 구체적으로 지정 (API 호출은 컨트롤러로 라우팅되도록)
+        registry.addResourceHandler("/main/css/**").addResourceLocations("classpath:/static/css/");
+        registry.addResourceHandler("/main/js/**").addResourceLocations("classpath:/static/js/");
+        registry.addResourceHandler("/main/images/**").addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/main/fonts/**").addResourceLocations("classpath:/static/fonts/");
     }
 
     @Override

@@ -1,5 +1,6 @@
 package egovframework.com.config;
 
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
 import egovframework.com.pagination.EgovPaginationDialect;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,9 +8,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
-import org.thymeleaf.spring5.view.ThymeleafViewResolver;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 @Configuration
@@ -17,7 +18,11 @@ public class EgovLoginPolicyWeb implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uat/uap/**").addResourceLocations("classpath:/static/");
+        // 정적 리소스만 구체적으로 지정 (API 호출은 컨트롤러로 라우팅되도록)
+        registry.addResourceHandler("/uat/uap/css/**").addResourceLocations("classpath:/static/css/");
+        registry.addResourceHandler("/uat/uap/js/**").addResourceLocations("classpath:/static/js/");
+        registry.addResourceHandler("/uat/uap/images/**").addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/uat/uap/fonts/**").addResourceLocations("classpath:/static/fonts/");
     }
 
     @Override
@@ -43,19 +48,19 @@ public class EgovLoginPolicyWeb implements WebMvcConfigurer {
     }
 
     @Bean
-    public SpringTemplateEngine templateEngine() {
+    public SpringTemplateEngine templateEngine(EgovKrdsPaginationRenderer egovKrdsPaginationRenderer) {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(templateResolver());
         templateEngine.setEnableSpringELCompiler(true);
-        templateEngine.addDialect(new EgovPaginationDialect());
+        templateEngine.addDialect(new EgovPaginationDialect(egovKrdsPaginationRenderer));
         return templateEngine;
     }
 
     @Bean
-    public ThymeleafViewResolver thymeleafViewResolver() {
+    public ThymeleafViewResolver thymeleafViewResolver(EgovKrdsPaginationRenderer egovKrdsPaginationRenderer) {
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
         viewResolver.setCharacterEncoding("UTF-8");
-        viewResolver.setTemplateEngine(templateEngine());
+        viewResolver.setTemplateEngine(templateEngine(egovKrdsPaginationRenderer));
         return viewResolver;
     }
 

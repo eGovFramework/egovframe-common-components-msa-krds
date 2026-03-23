@@ -1,6 +1,6 @@
 package egovframework.com.sec.ram.web;
 
-import egovframework.com.pagination.EgovPaginationFormat;
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
 import egovframework.com.sec.ram.service.AuthorRoleRelatedVO;
 import egovframework.com.sec.ram.service.EgovAuthorRoleService;
 import egovframework.com.sec.ram.service.RoleInfoDTO;
@@ -35,6 +35,7 @@ public class EgovRoleInfoAPIController {
 
     private final EgovAuthorRoleService service;
     private final WebClient.Builder webClientBuilder;
+    private final EgovKrdsPaginationRenderer egovKrdsPaginationRenderer;
 
     @PostMapping(value="/roleInfoList")
     public ResponseEntity<?> roleInfoList(@ModelAttribute AuthorRoleRelatedVO authorRoleRelatedVO) {
@@ -50,8 +51,7 @@ public class EgovRoleInfoAPIController {
         Page<RoleInfoDTO> list = service.list(authorRoleRelatedVO);
         paginationInfo.setTotalRecordCount((int) list.getTotalElements());
 
-        EgovPaginationFormat egovPaginationFormat = new EgovPaginationFormat();
-        String pagination = egovPaginationFormat.paginationFormat(paginationInfo, "linkPage");
+        String pagination = egovKrdsPaginationRenderer.renderPagination(paginationInfo, "linkPage");
 
         Map<String, Object> response = new HashMap<>();
         response.put("roleInfoList", list.getContent());

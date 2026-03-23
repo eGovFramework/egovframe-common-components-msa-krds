@@ -13,6 +13,7 @@ import egovframework.com.uss.olp.qri.repository.EgovQustnrRspnsResultRepository;
 import egovframework.com.uss.olp.qri.service.*;
 import egovframework.com.uss.olp.qri.util.EgovQustnrRspnsResultUtility;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -182,7 +183,8 @@ public class EgovQustnrRspnsResultServiceImpl extends EgovAbstractServiceImpl im
                 repository.save(qustnrRspnsResult);
             }
             return true;
-        } catch (Exception e) {
+        //2026.02.28 KISA 보안취약점 조치
+        } catch (FdlException e) {
             return false;
         }
     }

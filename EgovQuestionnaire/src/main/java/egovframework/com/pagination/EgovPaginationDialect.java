@@ -10,8 +10,11 @@ import java.util.Set;
 
 public class EgovPaginationDialect extends AbstractDialect implements IExpressionObjectDialect {
 
-    public EgovPaginationDialect() {
+    private final EgovKrdsPaginationRenderer egovKrdsPaginationRenderer;
+
+    public EgovPaginationDialect(EgovKrdsPaginationRenderer egovKrdsPaginationRenderer) {
         super("EgovPaginationDialect");
+        this.egovKrdsPaginationRenderer = egovKrdsPaginationRenderer;
     }
 
     @Override
@@ -19,12 +22,12 @@ public class EgovPaginationDialect extends AbstractDialect implements IExpressio
         return new IExpressionObjectFactory() {
             @Override
             public Set<String> getAllExpressionObjectNames() {
-                return Collections.singleton("egovPaginationFormat");
+                return Collections.singleton("egovKrdsPaginationRenderer");
             }
 
             @Override
             public Object buildObject(IExpressionContext context, String expressionObjectName) {
-                return new EgovPaginationFormat();
+                return egovKrdsPaginationRenderer;
             }
 
             @Override

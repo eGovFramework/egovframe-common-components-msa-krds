@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 
 @Slf4j
@@ -66,8 +68,9 @@ public class ConfigUtils {
             log.debug("최종 dictionaryRulesPath: {}", config.getDictionaryRulesPath());
             
             return config;
-        } catch (Exception e) {
-            log.error("Failed to load search config: " + e.getMessage(), e);
+        //2026.02.28 KISA 보안취약점 조치
+        } catch (IOException e) {
+            log.error("Failed to load search config: {}", e.getMessage(), e);
             return null;
         }
     }
@@ -138,8 +141,11 @@ public class ConfigUtils {
         // 경로 정규화
         try {
             normalized = Paths.get(normalized).normalize().toString();
-        } catch (Exception e) {
-            log.warn("경로 정규화 중 오류 발생: {}", e.getMessage());
+        //2026.02.28 KISA 보안취약점 조치
+        } catch (InvalidPathException e) {
+            log.warn("경로 정규화 중 유효하지 않은 경로입니다. path={}", normalized, e);
+        } catch (SecurityException e) {
+            log.warn("경로 정규화 중 보안 예외가 발생했습니다. message={}", e.getMessage(), e);
         }
         
         return normalized;

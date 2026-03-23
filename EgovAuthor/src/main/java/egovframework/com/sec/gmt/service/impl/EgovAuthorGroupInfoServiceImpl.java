@@ -5,7 +5,9 @@ import egovframework.com.sec.gmt.repository.EgovAuthorGroupInfoRepository;
 import egovframework.com.sec.gmt.service.AuthorGroupInfoVO;
 import egovframework.com.sec.gmt.service.EgovAuthorGroupInfoService;
 import egovframework.com.sec.gmt.util.EgovAuthorGroupInfoUtility;
+import lombok.extern.slf4j.Slf4j;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -63,7 +65,8 @@ public class EgovAuthorGroupInfoServiceImpl extends EgovAbstractServiceImpl impl
             authorGroupInfo.setGroupId(idgenService.getNextStringId());
             authorGroupInfo.setGroupCreatDe(LocalDateTime.now().format(formatter));
             return EgovAuthorGroupInfoUtility.entityToVO(repository.save(authorGroupInfo));
-        } catch (Exception ex) {
+        //2026.02.28 KISA 보안취약점 조치
+        } catch (FdlException ex) {
             leaveaTrace("fail.common.insert");
             return null;
         }

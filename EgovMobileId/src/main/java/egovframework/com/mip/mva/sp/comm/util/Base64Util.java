@@ -1,6 +1,6 @@
 package egovframework.com.mip.mva.sp.comm.util;
 
-import org.springframework.util.Base64Utils;
+import java.util.Base64;
 
 /**
  * @Project 모바일 운전면허증 서비스 구축 사업
@@ -27,7 +27,7 @@ public class Base64Util {
 	 * @return Base64 String
 	 */
 	public static String encode(String text) {
-		return Base64Utils.encodeToUrlSafeString(text.getBytes());
+		return Base64.getUrlEncoder().encodeToString(text.getBytes());
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class Base64Util {
 	 * @return Base64 String
 	 */
 	public static String encode(byte[] data) {
-		return Base64Utils.encodeToUrlSafeString(data);
+		return Base64.getUrlEncoder().encodeToString(data);
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class Base64Util {
 	 * @return String
 	 */
 	public static String decode(String text) {
-		return new String(Base64Utils.decodeFromUrlSafeString(text));
+		return new String(Base64.getUrlDecoder().decode(text));
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class Base64Util {
 	 * @return byte[]
 	 */
 	public static byte[] decodeToByte(String text) {
-		return Base64Utils.decodeFromUrlSafeString(text);
+		return Base64.getUrlDecoder().decode(text);
 	}
 
 }

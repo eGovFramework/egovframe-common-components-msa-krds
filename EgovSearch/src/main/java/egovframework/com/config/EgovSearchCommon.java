@@ -13,7 +13,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
-import javax.validation.Validator;
+import jakarta.validation.Validator;
 
 @Configuration
 public class EgovSearchCommon {

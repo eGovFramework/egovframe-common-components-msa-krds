@@ -10,8 +10,10 @@ import egovframework.com.uss.olp.qmc.service.QestnrInfoDTO;
 import egovframework.com.uss.olp.qmc.service.QestnrInfoVO;
 import egovframework.com.uss.olp.qmc.util.EgovQestnrInfoUtility;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -153,7 +155,6 @@ public class EgovQestnrInfoServiceImpl extends EgovAbstractServiceImpl implement
         QUserMaster userMaster = QUserMaster.userMaster;
         QQustnrTmplat qustnrTmplat = QQustnrTmplat.qustnrTmplat;
         QCmmnDetailCode cmmnDetailCode = QCmmnDetailCode.cmmnDetailCode;
-
         Tuple query = queryFactory.select(qestnrInfo,userMaster,qustnrTmplat,cmmnDetailCode)
                 .from(qestnrInfo)
                 .leftJoin(userMaster)
@@ -209,7 +210,8 @@ public class EgovQestnrInfoServiceImpl extends EgovAbstractServiceImpl implement
             qestnrInfo.setLastUpdtPnttm(LocalDateTime.now());
             qestnrInfo.setLastUpdusrId(userInfo.get("uniqId"));
             return EgovQestnrInfoUtility.quesnrInfoEntityToVO(repository.save(qestnrInfo));
-        } catch (Exception ex) {
+        //2026.02.28 KISA 보안취약점 조치
+        } catch (FdlException ex) {
             leaveaTrace("fail.common.insert");
             return null;
         }

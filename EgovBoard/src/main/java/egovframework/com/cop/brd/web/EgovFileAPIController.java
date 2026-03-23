@@ -2,7 +2,10 @@ package egovframework.com.cop.brd.web;
 
 import egovframework.com.cop.brd.service.EgovFileService;
 import egovframework.com.cop.brd.service.FileVO;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.egovframe.boot.crypto.service.impl.EgovEnvCryptoServiceImpl;
 import org.springframework.http.ResponseEntity;
@@ -12,18 +15,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.List;
 
 @Controller("brdEgovFileAPIController")
 @RequiredArgsConstructor
+@Slf4j
 public class EgovFileAPIController {
 
     public final EgovFileService fileMngService;
@@ -56,7 +55,7 @@ public class EgovFileAPIController {
 
     @ResponseBody
     @GetMapping("/cop/brd/fileDownload")
-    public void fileDownload(FileVO fileVO,HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void fileDownload(FileVO fileVO,HttpServletRequest request, HttpServletResponse response) {
         String decodeId = egovEnvCryptoService.decrypt(fileVO.getAtchFileId());
         String decodeFileId = StringUtils.substringBefore(decodeId,"|");
         String decodeFileSn = StringUtils.substringAfterLast(decodeId, "|");
@@ -66,12 +65,16 @@ public class EgovFileAPIController {
         fileVO = fileMngService.detailFileInf(fileVO);
         File file = new File(fileVO.getFileStreCours(), fileVO.getStreFileNm());
 
-        if(!file.exists()){
-            return;
-        }
-
+        // 26.02.28 KISA 보안점검 조치
         try (InputStream in = new FileInputStream(file);
              OutputStream out = response.getOutputStream()) {
+            if (!file.exists()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                log.warn("요청한 파일이 존재하지 않습니다. atchFileId={}, fileSn={}, path={}",
+                        fileVO.getAtchFileId(), fileVO.getFileSn(), file.getAbsolutePath());
+                return;
+            }
+
             String contentType = Files.probeContentType(file.toPath());
             if (contentType == null) {
                 contentType = "application/octet-stream"; // 기본값
@@ -107,8 +110,15 @@ public class EgovFileAPIController {
                 out.write(buffer, 0, bytesRead);
             }
             out.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
+        // 26.02.28 KISA 보안점검 조치
+        } catch (FileNotFoundException e) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            log.warn("파일을 찾을 수 없습니다. atchFileId={}, fileSn={}, path={}",
+                    fileVO.getAtchFileId(), fileVO.getFileSn(), file.getAbsolutePath(), e);
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            log.error("파일 다운로드 처리 중 I/O 오류가 발생했습니다. atchFileId={}, fileSn={}, path={}",
+                    fileVO.getAtchFileId(), fileVO.getFileSn(), file.getAbsolutePath(), e);
         }
     }
 

@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title th:text="#{comUatUia.title}"></title>
-    <div th:replace="uat/uia/fragment/linkFragment"></div>
+    <div th:replace="~{uat/uia/fragment/linkFragment}"></div>
 </head>
 
 <body>
 <div id="container">
 <nav class="krds-breadcrumb-wrap" aria-label="브레드크럼" id="breadcrumb">
     <ol class="breadcrumb">
-        <li class="home"><a href="/" class="txt" th:text="#{comCmm.home.title}"></a></li>
+        <li class="home"><a href="/" th:target="_self" class="txt" th:text="#{comCmm.home.title}"></a></li>
         <li th:text="#{comCmm.uat.title}"></li>
     </ol>
 </nav>
@@ -77,9 +77,11 @@
 </form>
 
 <form id="loginContentForm" name="loginContentForm" th:object="${loginVO}">
-<input type="hidden" id="userInfo" name="userInfo"/>
+    <input type="hidden" id="userInfo" name="userInfo"/>
 </form>
+
 </div>
+
 <script th:inline="javascript" defer>
     function loginView() {
         const visibleOff = document.querySelector(".krds-btn.svg-icon.ico-pw-visible");
@@ -99,9 +101,9 @@
         let userPw = document.getElementById('userPw').value;
         let userSe;
         document.querySelectorAll(".tab-btn").forEach(tab =>{
-           if(tab.classList.contains("active")){
-               userSe = tab.querySelector("button").value;
-           }
+            if(tab.classList.contains("active")){
+                userSe = tab.querySelector("button").value;
+            }
         });
 
         if (userId.length === 0) {
@@ -111,12 +113,10 @@
             alert('[(#{comUatUia.validate.passCheck})]');
             return false;
         } else {
-            const param = {userId: userId, userPw: userPw, userSe: userSe};
+            const param = {userId: userId, userPw: userPw, userSe: userSe, username: userId, password: userPw};
             fetch('/uat/uia/actionLogin', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(param)
             })
             .then(response => response.json())

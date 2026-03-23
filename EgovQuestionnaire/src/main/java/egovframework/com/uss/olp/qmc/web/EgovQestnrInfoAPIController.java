@@ -1,6 +1,6 @@
 package egovframework.com.uss.olp.qmc.web;
 
-import egovframework.com.pagination.EgovPaginationFormat;
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
 import egovframework.com.uss.olp.qmc.service.*;
 import lombok.RequiredArgsConstructor;
 import org.egovframe.boot.crypto.service.impl.EgovEnvCryptoServiceImpl;
@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +41,7 @@ public class EgovQestnrInfoAPIController {
     private final EgovQustnrIemService qustnrIemService;
     private final EgovQustnrRspnsResultService qustnrRspnsResultService;
     private final EgovEnvCryptoServiceImpl egovEnvCryptoService;
+    private final EgovKrdsPaginationRenderer egovKrdsPaginationRenderer;
 
     @PostMapping("/qestnrInfoList")
     public ResponseEntity<?> qestnrInfoList(@ModelAttribute QestnrInfoVO qestnrInfoVO) {
@@ -56,8 +57,7 @@ public class EgovQestnrInfoAPIController {
         Page<QestnrInfoDTO> list = service.list(qestnrInfoVO);
         paginationInfo.setTotalRecordCount((int) list.getTotalElements());
 
-        EgovPaginationFormat egovPaginationFormat = new EgovPaginationFormat();
-        String pagination = egovPaginationFormat.paginationFormat(paginationInfo, "linkPage");
+        String pagination = egovKrdsPaginationRenderer.renderPagination(paginationInfo, "linkPage");
 
         Map<String, Object> response = new HashMap<>();
         response.put("qestnrInfoList", list.getContent());

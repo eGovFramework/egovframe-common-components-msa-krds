@@ -117,6 +117,8 @@ KRDS의 컴포넌트 일부를 사용하였으며 용도에 따라 패턴 등을
 
 
 #### 2. 로그인 화면
+- 로그인 Token 관리를 위해 Redis가 구성되어야합니다.</br>
+- [Redis 구성방법 참조](EgovLogin/README.md/#3-redis-구성방법---docker-이미지를-이용)
 
 ![로그인](https://github.com/user-attachments/assets/460b906e-ebe5-42d7-ad82-d0d9a6a17b14)   
 - DB에 저장된 USER 정보를 이용해 로그인
@@ -126,12 +128,10 @@ KRDS의 컴포넌트 일부를 사용하였으며 용도에 따라 패턴 등을
 
 - 로그인 실패 시 다른 컴포넌트 페이지 접근 불가 (인증 토큰 부재)
 
-- Token 발급 확인   
-![accessToken](https://github.com/user-attachments/assets/4c89d01b-06a0-461d-8ab4-bc79568ea4f3)   
-  - AccessToken과 RefreshToken이 발급된 상태   
-  - token설정의 경우 ConfigServer/src/main/resources/config/application-local.yml에서 설정 가능   
-    - 샘플의 AccessToken은 1분(120000ms), RefreshToken은 5분(3600000ms)으로 지정되어있음
-    - token의 Secret값은 예시로 'egovframework'를 암호화하여 사용하고 있으므로 사용 시 수정 필요
+- Token 발급 확인
+  - Redis를 이용해 Token 관리
+  - 페이지에서는 AccessToken만 관리하고 Redis에서 RefreshToken을 관리
+  - 토큰 갱신 필요 시 Redis의 RefreshToken을 이용해 AccessToken 재발급
 
 - 접근권한이 없는 페이지에 접근한 경우   
 ![403error](https://github.com/user-attachments/assets/ea7fdfa9-56ec-4ac5-9050-49aa9add8012)   

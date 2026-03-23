@@ -1,8 +1,9 @@
 package egovframework.com.sec.ram.web;
 
-import egovframework.com.pagination.EgovPaginationFormat;
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
 import egovframework.com.sec.ram.service.AuthorInfoVO;
 import egovframework.com.sec.ram.service.EgovAuthorManageService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +32,7 @@ public class EgovAuthorInfoAPIController {
     private int pageSize;
 
     private final EgovAuthorManageService service;
+    private final EgovKrdsPaginationRenderer egovKrdsPaginationRenderer;
 
     @PostMapping(value="/authorInfoList")
     public ResponseEntity<?> authorInfoList(@ModelAttribute AuthorInfoVO authorInfoVO) {
@@ -47,8 +48,7 @@ public class EgovAuthorInfoAPIController {
         Page<AuthorInfoVO> list = service.list(authorInfoVO);
         paginationInfo.setTotalRecordCount((int) list.getTotalElements());
 
-        EgovPaginationFormat egovPaginationFormat = new EgovPaginationFormat();
-        String pagination = egovPaginationFormat.paginationFormat(paginationInfo, "linkPage");
+        String pagination = egovKrdsPaginationRenderer.renderPagination(paginationInfo, "linkPage");
 
         Map<String, Object> response = new HashMap<>();
         response.put("authorInfoList", list.getContent());

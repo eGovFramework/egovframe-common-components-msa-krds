@@ -1,7 +1,9 @@
 package egovframework.com.cop.cmy.web;
 
 import egovframework.com.cop.cmy.service.*;
-import egovframework.com.pagination.EgovPaginationFormat;
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.egovframe.boot.crypto.service.impl.EgovEnvCryptoServiceImpl;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
@@ -16,8 +18,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +36,7 @@ public class EgovBbsMasterAPIController {
     private final EgovBbsMasterService service;
     private final EgovCmmnDetailCodeService cmmnDetailCodeService;
     private final EgovEnvCryptoServiceImpl egovEnvCryptoService;
+    private final EgovKrdsPaginationRenderer egovKrdsPaginationRenderer;
 
     @PostMapping(value="/bbsMasterList")
     public ResponseEntity<?> bbsMasterList(@ModelAttribute BbsMasterVO bbsMasterVO) {
@@ -51,8 +52,7 @@ public class EgovBbsMasterAPIController {
         Page<BbsMasterDTO> list = service.list(bbsMasterVO);
         paginationInfo.setTotalRecordCount((int) list.getTotalElements());
 
-        EgovPaginationFormat egovPaginationFormat = new EgovPaginationFormat();
-        String pagination = egovPaginationFormat.paginationFormat(paginationInfo, "linkPage");
+        String pagination = egovKrdsPaginationRenderer.renderPagination(paginationInfo, "linkPage");
 
         Map<String, Object> response = new HashMap<>();
         response.put("bbsMasterList", list.getContent());

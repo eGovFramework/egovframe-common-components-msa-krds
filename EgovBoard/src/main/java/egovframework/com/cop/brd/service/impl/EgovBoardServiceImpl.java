@@ -278,6 +278,11 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
                 bbsVO.setParntscttNo(Math.toIntExact(bbsVO.getNttId()));
                 BoardDTO boardDTO = selectboardDetail(bbsVO);
 
+                //2026.02.28 KISA 보안취약점 조치
+                if (boardDTO == null) {
+                    throw new IllegalStateException("답글 대상 원글을 찾을 수 없습니다.");
+                }
+
                 long nttId = boardIdGnrService.getNextLongId();
                 bbsVO.setNttNo(boardDTO.getNttNo() + 1);
                 bbsVO.setAnswerLc(boardDTO.getAnswerLc() + 1);
@@ -323,6 +328,10 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
 
 //            BoardDTO dto = repository.selectBbsDetail(bbsVO.getBbsId(), bbsVO.getNttId());
             BoardDTO dto = selectboardDetail(bbsVO);
+            //2026.02.28 KISA 보안취약점 조치
+            if (dto == null) {
+                throw new IllegalStateException("수정 대상 글을 찾을 수 없습니다.");
+            }
             dto.setNoticeAt(bbsVO.getNoticeAt());
             dto.setSecretAt(bbsVO.getSecretAt());
             dto.setSjBoldAt(bbsVO.getSjBoldAt());
@@ -426,7 +435,8 @@ public class EgovBoardServiceImpl extends EgovAbstractServiceImpl implements Ego
                         .build();
 
                 streamBridge.send("searchProducer-out-0", event);
-            } catch (Exception e) {
+            //2026.02.28 KISA 보안취약점 조치
+            } catch (FdlException e) {
                 log.warn("Failed to send event to RabbitMQ. Event will be processed later via COMTNBBSSYNCLOG: {}", e.getMessage());
             }
         }

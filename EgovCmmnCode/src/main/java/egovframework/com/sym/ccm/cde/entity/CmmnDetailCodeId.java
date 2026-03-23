@@ -2,8 +2,8 @@ package egovframework.com.sym.ccm.cde.entity;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 
 @Data

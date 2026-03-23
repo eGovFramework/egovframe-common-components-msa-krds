@@ -1,5 +1,8 @@
 package egovframework.com.cop.brd.web;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.egovframe.boot.crypto.service.impl.EgovEnvCryptoServiceImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,9 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -113,10 +113,13 @@ public class EgovBoardCKEditorController {
             log.warn("Failed to create image >>> {}", e.getMessage());
         }
     }
-
+    //2026.02.28 KISA 보안취약점 조치
     private String getFileName(MultipartFile uploadFile) {
         String originalFileName = uploadFile.getOriginalFilename();
-        String ext = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String ext = null;
+        if (originalFileName != null) {
+            ext = originalFileName.substring(originalFileName.lastIndexOf("."));
+        }
         String uniqueIdentifier = UUID.randomUUID().toString();
         String fileName = egovEnvCryptoService.encrypt(originalFileName + uniqueIdentifier);
         return fileName + ext;

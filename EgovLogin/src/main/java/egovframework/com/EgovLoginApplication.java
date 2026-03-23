@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@ComponentScan(basePackages={"egovframework.com","org.egovframe.boot"})
+@ComponentScan(basePackages = {"egovframework.com","org.egovframe.boot"})
 public class EgovLoginApplication {
 
 	public static void main(String[] args) {

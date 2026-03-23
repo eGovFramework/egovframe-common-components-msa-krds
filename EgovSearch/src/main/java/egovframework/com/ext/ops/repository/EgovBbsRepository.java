@@ -36,10 +36,10 @@ public interface EgovBbsRepository extends JpaRepository<Bbs, BbsId> {
 			"a.noticeAt, " +
 			"a.sjBoldAt, " +
 			"a.secretAt, " +
-			"COALESCE(FUNCTION('DATE_FORMAT', a.frstRegistPnttm, '%Y-%m-%d'), ''), " +
+			"CAST(COALESCE(FUNCTION('DATE_FORMAT', a.frstRegistPnttm, '%Y-%m-%d'), '') AS string), " +
 			"a.frstRegisterId, " +
-			"COALESCE(b.userNm, a.ntcrNm), " +
-			"COALESCE(FUNCTION('DATE_FORMAT', a.lastUpdtPnttm, '%Y-%m-%d'), ''), " +
+			"CAST(CASE WHEN b.userNm IS NOT NULL THEN b.userNm ELSE a.ntcrNm END AS string), " +
+			"CAST(COALESCE(FUNCTION('DATE_FORMAT', a.lastUpdtPnttm, '%Y-%m-%d'), '') AS string), " +
 			"a.lastUpdusrId, " +
 			"c.bbsNm, " +
 			"c.bbsIntrcn, " +
@@ -53,8 +53,8 @@ public interface EgovBbsRepository extends JpaRepository<Bbs, BbsId> {
 			"ON a.frstRegisterId = b.esntlId " +
 			"LEFT OUTER JOIN opsBbsMaster c " +
 			"ON a.bbsId.bbsId = c.bbsId " +
-			"WHERE a.useAt = 'Y' "
-	)
+			"WHERE a.useAt = 'Y' ")
+
 	Page<BbsDTO> findAllArticlesWithPaging(Pageable pageable);
 
 	@Query("SELECT new egovframework.com.ext.ops.service.BbsDTO( " +
@@ -78,10 +78,10 @@ public interface EgovBbsRepository extends JpaRepository<Bbs, BbsId> {
 			"a.noticeAt, " +
 			"a.sjBoldAt, " +
 			"a.secretAt, " +
-			"COALESCE(FUNCTION('DATE_FORMAT', a.frstRegistPnttm, '%Y-%m-%d'), ''), " +
+			"CAST(COALESCE(FUNCTION('DATE_FORMAT', a.frstRegistPnttm, '%Y-%m-%d'), '') AS string), " +
 			"a.frstRegisterId, " +
-			"COALESCE(b.userNm, a.ntcrNm), " +
-			"COALESCE(FUNCTION('DATE_FORMAT', a.lastUpdtPnttm, '%Y-%m-%d'), ''), " +
+			"CAST(CASE WHEN b.userNm IS NOT NULL THEN b.userNm ELSE a.ntcrNm END AS string), " +
+			"CAST(COALESCE(FUNCTION('DATE_FORMAT', a.lastUpdtPnttm, '%Y-%m-%d'), '') AS string), " +
 			"a.lastUpdusrId, " +
 			"c.bbsNm, " +
 			"c.bbsIntrcn, " +
@@ -95,8 +95,8 @@ public interface EgovBbsRepository extends JpaRepository<Bbs, BbsId> {
 			"ON a.frstRegisterId = b.esntlId " +
 			"LEFT OUTER JOIN opsBbsMaster c " +
 			"ON a.bbsId.bbsId = c.bbsId " +
-			"WHERE a.bbsId.nttId = :nttId "
-	)
+			"WHERE a.bbsId.nttId = :nttId ")
+			
 	Optional<BbsDTO> findBBSDTOByNttId(@Param("nttId") Long nttId);
 
 	@Query("SELECT COUNT(a) FROM opsBbs a WHERE a.useAt = 'Y'")

@@ -2,10 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>egovframework</groupId>
-	<artifactId>ncc</artifactId>
-	<version>4.3.0</version>
+	<artifactId>egovframe-msa-common-components</artifactId>
+	<version>5.0.0</version>
 	<packaging>pom</packaging>
-	<name>ncc</name>
+	<name>egovframe-msa-common-components</name>
+	<url>http://www.egovframe.go.kr</url>
 
 	<modules>
 		<module>ConfigServer</module>

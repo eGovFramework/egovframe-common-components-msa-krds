@@ -1,12 +1,12 @@
 package egovframework.com.cop.cmy.service;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.egovframe.rte.ptl.reactive.validation.EgovNullCheck;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 

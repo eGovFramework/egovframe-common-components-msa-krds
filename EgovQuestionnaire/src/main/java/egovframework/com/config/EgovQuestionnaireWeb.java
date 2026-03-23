@@ -1,5 +1,6 @@
 package egovframework.com.config;
 
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
 import egovframework.com.pagination.EgovPaginationDialect;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,9 +8,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
-import org.thymeleaf.spring5.view.ThymeleafViewResolver;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 @Configuration
@@ -17,12 +18,19 @@ public class EgovQuestionnaireWeb implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uss/olp/qim/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/uss/olp/qmc/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/uss/olp/qqm/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/uss/olp/qri/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/uss/olp/qrm/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/uss/olp/qtm/**").addResourceLocations("classpath:/static/");
+        // 정적 리소스만 구체적으로 지정 (API 호출은 컨트롤러로 라우팅되도록)
+        registry.addResourceHandler("/uss/olp/qim/css/**", "/uss/olp/qmc/css/**", "/uss/olp/qqm/css/**",
+                        "/uss/olp/qri/css/**", "/uss/olp/qrm/css/**", "/uss/olp/qtm/css/**")
+                .addResourceLocations("classpath:/static/css/");
+        registry.addResourceHandler("/uss/olp/qim/js/**", "/uss/olp/qmc/js/**", "/uss/olp/qqm/js/**",
+                        "/uss/olp/qri/js/**", "/uss/olp/qrm/js/**", "/uss/olp/qtm/js/**")
+                .addResourceLocations("classpath:/static/js/");
+        registry.addResourceHandler("/uss/olp/qim/images/**", "/uss/olp/qmc/images/**", "/uss/olp/qqm/images/**",
+                        "/uss/olp/qri/images/**", "/uss/olp/qrm/images/**", "/uss/olp/qtm/images/**")
+                .addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/uss/olp/qim/fonts/**", "/uss/olp/qmc/fonts/**", "/uss/olp/qqm/fonts/**",
+                        "/uss/olp/qri/fonts/**", "/uss/olp/qrm/fonts/**", "/uss/olp/qtm/fonts/**")
+                .addResourceLocations("classpath:/static/fonts/");
     }
 
     @Override
@@ -48,19 +56,19 @@ public class EgovQuestionnaireWeb implements WebMvcConfigurer {
     }
 
     @Bean
-    public SpringTemplateEngine templateEngine() {
+    public SpringTemplateEngine templateEngine(EgovKrdsPaginationRenderer egovKrdsPaginationRenderer) {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(templateResolver());
         templateEngine.setEnableSpringELCompiler(true);
-        templateEngine.addDialect(new EgovPaginationDialect());
+        templateEngine.addDialect(new EgovPaginationDialect(egovKrdsPaginationRenderer));
         return templateEngine;
     }
 
     @Bean
-    public ThymeleafViewResolver thymeleafViewResolver() {
+    public ThymeleafViewResolver thymeleafViewResolver(EgovKrdsPaginationRenderer egovKrdsPaginationRenderer) {
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
         viewResolver.setCharacterEncoding("UTF-8");
-        viewResolver.setTemplateEngine(templateEngine());
+        viewResolver.setTemplateEngine(templateEngine(egovKrdsPaginationRenderer));
         return viewResolver;
     }
 

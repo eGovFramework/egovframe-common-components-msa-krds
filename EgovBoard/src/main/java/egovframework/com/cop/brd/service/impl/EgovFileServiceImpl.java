@@ -8,6 +8,7 @@ import egovframework.com.cop.brd.repository.EgovFileRepository;
 import egovframework.com.cop.brd.service.EgovFileService;
 import egovframework.com.cop.brd.service.FileVO;
 import egovframework.com.cop.brd.util.EgovBoardUtility;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import org.egovframe.rte.fdl.cmmn.exception.FdlException;
@@ -16,7 +17,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

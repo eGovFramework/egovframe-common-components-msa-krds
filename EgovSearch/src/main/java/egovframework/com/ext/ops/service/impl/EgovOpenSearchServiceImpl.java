@@ -56,12 +56,8 @@ public class EgovOpenSearchServiceImpl extends EgovAbstractServiceImpl implement
 
     @Override
     public void processOpenSearchOperations(Long nttId, BoardVO boardVO) {
-        try {
-            performOpenSearchTextOperation(nttId, boardVO);
-            performOpenSearchVectorOperation(nttId, boardVO);
-        } catch (Exception e) {
-            log.warn("Error processing OpenSearch operations for nttId: {}", nttId, e);
-        }
+        performOpenSearchTextOperation(nttId, boardVO);
+        performOpenSearchVectorOperation(nttId, boardVO);
     }
 
     private void performOpenSearchTextOperation(Long nttId, BoardVO boardVO) {

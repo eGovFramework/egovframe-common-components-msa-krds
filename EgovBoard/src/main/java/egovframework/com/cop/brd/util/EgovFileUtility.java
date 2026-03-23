@@ -52,7 +52,11 @@ public class EgovFileUtility {
 
             boolean isValid = true;
             String originalFileName = file.getOriginalFilename();
-            Path targetPath = Paths.get(uploadDir).resolve(originalFileName).normalize();
+            Path targetPath = null;
+            //2026.02.28 KISA 보안취약점 조치
+            if (originalFileName != null) {
+                targetPath = Paths.get(uploadDir).resolve(originalFileName).normalize();
+            }
 
             if (file.isEmpty()) {
                 log.warn("##### Skipping empty file");

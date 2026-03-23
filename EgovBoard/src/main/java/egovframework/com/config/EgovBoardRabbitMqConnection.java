@@ -59,10 +59,13 @@ public class EgovBoardRabbitMqConnection {
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
 
-        // 🔹 메시지 전송 실패 시 예외 핸들링
+        // 메시지 전송 실패 시 예외 핸들링
         rabbitTemplate.setMandatory(true);
-        rabbitTemplate.setReturnCallback((message, replyCode, replyText, exchange, routingKey) ->
-                log.error("⚠️ Message returned: {}, Exchange: {}, RoutingKey: {}", replyText, exchange, routingKey)
+        rabbitTemplate.setReturnsCallback(returnedMessage ->
+                log.error("⚠️ Message returned: {}, Exchange: {}, RoutingKey: {}",
+                        returnedMessage.getReplyText(),
+                        returnedMessage.getExchange(),
+                        returnedMessage.getRoutingKey())
         );
 
         return rabbitTemplate;

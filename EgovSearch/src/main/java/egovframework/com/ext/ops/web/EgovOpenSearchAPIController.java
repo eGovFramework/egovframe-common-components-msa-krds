@@ -71,13 +71,9 @@ public class EgovOpenSearchAPIController {
     public ResponseEntity<?> insertTextData() {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            openSearchManageService.insertTotalData();
-            response.put("status", "success");
-        } catch (Exception e) {
-            response.put("status", "error");
-            return ResponseEntity.ok(response);
-        }
+        //2026.02.28 KISA 보안취약점 조치
+        openSearchManageService.insertTotalData();
+        response.put("status", "success");
 
         return ResponseEntity.ok(response);
     }
@@ -91,13 +87,9 @@ public class EgovOpenSearchAPIController {
     public ResponseEntity<?> insertVectorData() {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            openSearchManageService.insertTotalVectorData();
-            response.put("status", "success");
-        } catch (Exception e) {
-            response.put("status", "error");
-            return ResponseEntity.ok(response);
-        }
+        //2026.02.28 KISA 보안취약점 조치
+        openSearchManageService.insertTotalVectorData();
+        response.put("status", "success");
 
         return ResponseEntity.ok(response);
     }
@@ -114,7 +106,8 @@ public class EgovOpenSearchAPIController {
         try {
             openSearchManageService.deleteIndex(indexName);
             response.put("status", "success");
-        } catch (Exception e) {
+        //2026.02.28 KISA 보안취약점 조치
+        } catch (IOException e) {
             response.put("status", "error");
             return ResponseEntity.ok(response);
         }
@@ -130,12 +123,8 @@ public class EgovOpenSearchAPIController {
 
     @PostMapping("/reprocess/{syncSttusCode}")
     public ResponseEntity<String> reprocessFailedSync(@PathVariable String syncSttusCode) {
-        try {
-            openSearchManageService.reprocessFailedSync(syncSttusCode);
-            return ResponseEntity.ok("Reprocess completed successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to reprocess: " + e.getMessage());
-        }
+        //2026.02.28 KISA 보안취약점 조치
+        openSearchManageService.reprocessFailedSync(syncSttusCode);
+        return ResponseEntity.ok("Reprocess completed successfully");
     }
 }

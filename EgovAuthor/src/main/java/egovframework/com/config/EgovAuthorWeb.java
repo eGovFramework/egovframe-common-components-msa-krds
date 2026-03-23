@@ -1,5 +1,6 @@
 package egovframework.com.config;
 
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
 import egovframework.com.pagination.EgovPaginationDialect;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
@@ -9,9 +10,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
-import org.thymeleaf.spring5.view.ThymeleafViewResolver;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 @Configuration
@@ -19,10 +20,15 @@ public class EgovAuthorWeb implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/sec/gmt/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/sec/ram/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/sec/rgm/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/sec/rmt/**").addResourceLocations("classpath:/static/");
+        // 정적 리소스만 구체적으로 지정 (API 호출은 컨트롤러로 라우팅되도록)
+        registry.addResourceHandler("/sec/gmt/css/**", "/sec/ram/css/**", "/sec/rgm/css/**", "/sec/rmt/css/**")
+                .addResourceLocations("classpath:/static/css/");
+        registry.addResourceHandler("/sec/gmt/js/**", "/sec/ram/js/**", "/sec/rgm/js/**", "/sec/rmt/js/**")
+                .addResourceLocations("classpath:/static/js/");
+        registry.addResourceHandler("/sec/gmt/images/**", "/sec/ram/images/**", "/sec/rgm/images/**", "/sec/rmt/images/**")
+                .addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/sec/gmt/fonts/**", "/sec/ram/fonts/**", "/sec/rgm/fonts/**", "/sec/rmt/fonts/**")
+                .addResourceLocations("classpath:/static/fonts/");
     }
 
     @Override
@@ -48,19 +54,19 @@ public class EgovAuthorWeb implements WebMvcConfigurer {
     }
 
     @Bean
-    public SpringTemplateEngine templateEngine() {
+    public SpringTemplateEngine templateEngine(EgovKrdsPaginationRenderer egovKrdsPaginationRenderer) {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(templateResolver());
         templateEngine.setEnableSpringELCompiler(true);
-        templateEngine.addDialect(new EgovPaginationDialect());
+        templateEngine.addDialect(new EgovPaginationDialect(egovKrdsPaginationRenderer));
         return templateEngine;
     }
 
     @Bean
-    public ThymeleafViewResolver thymeleafViewResolver() {
+    public ThymeleafViewResolver thymeleafViewResolver(EgovKrdsPaginationRenderer egovKrdsPaginationRenderer) {
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
         viewResolver.setCharacterEncoding("UTF-8");
-        viewResolver.setTemplateEngine(templateEngine());
+        viewResolver.setTemplateEngine(templateEngine(egovKrdsPaginationRenderer));
         return viewResolver;
     }
 

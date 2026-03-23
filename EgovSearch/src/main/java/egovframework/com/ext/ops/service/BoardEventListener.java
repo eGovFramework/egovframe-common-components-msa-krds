@@ -7,7 +7,9 @@ import egovframework.com.ext.ops.repository.EgovBbsSyncLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.context.annotation.Bean;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
@@ -78,9 +80,9 @@ public class BoardEventListener {
                 }
                 
                 log.error("Board not found with id: {}, marked {} logs as failed", event.getNttId(), allPendingLogs.size());
-            }	
-    		
-    	} catch (Exception e) {
+            }
+        //2026.02.28 KISA 보안취약점 조치
+    	} catch (DataAccessException | BeansException e) {
     		log.error("Failed to process board event: " + event.getNttId(), e);
     		
     		Calendar calendar = Calendar.getInstance();

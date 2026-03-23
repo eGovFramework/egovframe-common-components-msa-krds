@@ -1,5 +1,6 @@
 package egovframework.com.config;
 
+import jakarta.validation.Validator;
 import org.egovframe.rte.fdl.cmmn.trace.LeaveaTrace;
 import org.egovframe.rte.fdl.cmmn.trace.handler.DefaultTraceHandler;
 import org.egovframe.rte.fdl.cmmn.trace.handler.TraceHandler;
@@ -12,8 +13,6 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
-
-import javax.validation.Validator;
 
 @Configuration
 public class EgovBoardCommon {

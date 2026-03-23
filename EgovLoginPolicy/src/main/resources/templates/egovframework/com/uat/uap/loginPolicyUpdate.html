@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title th:if="${loginPolicyVO.regYn == 'Y'}" th:text="#{comUatUap.loginPolicyUpdt.title}"></title>
     <title th:unless="${loginPolicyVO.regYn == 'Y'}" th:text="#{comUatUap.loginPolicyRegist.title}"></title>
-    <div th:replace="uat/uap/fragment/linkFragment"></div>
+    <div th:replace="~{uat/uap/fragment/linkFragment}"></div>
 </head>
 
 <body>

@@ -4,7 +4,10 @@ import egovframework.com.cop.brd.service.CommentVO;
 import egovframework.com.cop.brd.service.EgovCommentService;
 import egovframework.com.cop.brd.service.EgovStsfdgService;
 import egovframework.com.cop.brd.service.StsfdgVO;
-import egovframework.com.pagination.EgovPaginationFormat;
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.egovframe.boot.crypto.service.EgovEnvCryptoService;
@@ -20,9 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +41,7 @@ public class EgovCommentAPIController {
     private final EgovCommentService articleCommentService;
     private final EgovStsfdgService bbsStsfdgService;
     private final EgovEnvCryptoService egovEnvCryptoService;
+    private final EgovKrdsPaginationRenderer egovKrdsPaginationRenderer;
 
     @PostMapping("/selectCommentList")
     public ResponseEntity<?> selectCommentList(@RequestBody CommentVO commentVO) {
@@ -56,14 +57,13 @@ public class EgovCommentAPIController {
 
         Page<CommentVO> response = articleCommentService.selectArticleCommentList(commentVO);
         paginationInfo.setTotalRecordCount((int) response.getTotalElements());
-        EgovPaginationFormat egovPaginationFormat = new EgovPaginationFormat();
-        egovPaginationFormat.paginationFormat(paginationInfo, "linkPage");
+
+        egovKrdsPaginationRenderer.renderPagination(paginationInfo, "linkPage");
 
         Map<String, Object> result = new HashMap<>();
         result.put("response", response);
 
-        EgovPaginationFormat paginationFormat = new EgovPaginationFormat();
-        String paginationHtml = paginationFormat.paginationFormat(paginationInfo, "Comment_linkPage");
+        String paginationHtml = egovKrdsPaginationRenderer.renderPagination(paginationInfo, "Comment_linkPage");
 
         result.put("pagination", paginationHtml);
         result.put("lineNumber", (commentVO.getPageIndex() - 1) * commentVO.getPageSize());
@@ -121,15 +121,14 @@ public class EgovCommentAPIController {
         Map<String, Object> map = bbsStsfdgService.selectStsfdgList(stsfdgVO);
         Page<StsfdgVO> response = (Page<StsfdgVO>) map.get("sList");
         paginationInfo.setTotalRecordCount((int) response.getTotalElements());
-        EgovPaginationFormat egovPaginationFormat = new EgovPaginationFormat();
-        egovPaginationFormat.paginationFormat(paginationInfo, "linkPage");
+
+        egovKrdsPaginationRenderer.renderPagination(paginationInfo, "linkPage");
 
         Map<String, Object> result = new HashMap<>();
         result.put("response", response);
         result.put("satisAvr", map.get("stsfdgAverage"));
 
-        EgovPaginationFormat paginationFormat = new EgovPaginationFormat();
-        String paginationHtml = paginationFormat.paginationFormat(paginationInfo, "Satisfaction_linkPage");
+        String paginationHtml = egovKrdsPaginationRenderer.renderPagination(paginationInfo, "Satisfaction_linkPage");
 
         result.put("pagination", paginationHtml);
         result.put("lineNumber", (stsfdgVO.getPageIndex() - 1) * stsfdgVO.getPageSize());

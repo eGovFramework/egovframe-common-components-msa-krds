@@ -23,6 +23,7 @@ import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -105,11 +106,26 @@ public class AuthGatewayFilterFactory extends AbstractGatewayFilterFactory<AuthG
                 .uri("lb://EGOVLOGIN/uat/uia/recreateAccessToken")
                 .header("refreshToken", refreshToken)
                 .retrieve()
-                .bodyToMono(String.class)
-                .flatMap(token -> {
-                    log.debug("##### New access token received: {}", token);
+                .bodyToMono(Map.class)
+                .flatMap(response -> {
+                    if (ObjectUtils.isEmpty(response) || !response.containsKey("accessToken")) {
+                        log.debug("##### AuthGatewayFilterFactory recreateAccessToken response is invalid.");
+                        return onError(exchange);
+                    }
+                    
+                    String newAccessToken = (String) response.get("accessToken");
+                    log.debug("##### New access token received, validating and setting headers...");
+                    
+                    // 새로운 accessToken 유효성 검증
+                    int newAccessValidationStatus = gatewayJwtProvider.accessValidateToken(newAccessToken);
+                    if (newAccessValidationStatus == 400 || newAccessValidationStatus == 401) {
+                        log.debug("##### AuthGatewayFilterFactory new accessToken invalid.");
+                        return onError(exchange);
+                    }
+                    
+                    // 새로운 accessToken을 쿠키에 설정
                     long accessCookieMaxAge = Duration.ofMillis(Long.parseLong(gatewayJwtProvider.getAccessExpiration())).getSeconds();
-                    ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", token)
+                    ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", newAccessToken)
                             .httpOnly(true)
                             .secure(false)
                             .path("/")
@@ -117,7 +133,18 @@ public class AuthGatewayFilterFactory extends AbstractGatewayFilterFactory<AuthG
                             .sameSite("Strict")
                             .build();
                     exchange.getResponse().addCookie(accessTokenCookie);
-                    return chain.filter(exchange);
+                    
+                    // URL별로 접근 가능한 역할 확인 (새로운 accessToken으로)
+                    String path = exchange.getRequest().getURI().getPath();
+                    String authList = gatewayJwtProvider.extractAuthLs(newAccessToken);
+                    String param = getParamFromPath(path);
+                    if (!isPathAuthorized(path, authList)) {
+                        return onForbidden(exchange, param);
+                    }
+                    
+                    // 새로운 accessToken으로 헤더 설정
+                    ServerHttpRequest request = gatewayJwtProvider.headerSetting(exchange, newAccessToken);
+                    return chain.filter(exchange.mutate().request(request).build());
                 })
                 .onErrorResume(error -> {
                     log.error("##### Error while regenerating access token: ", error);

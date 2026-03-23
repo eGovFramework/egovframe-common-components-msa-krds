@@ -19,6 +19,11 @@ spring:
     import: optional:configserver:http://localhost:8888
   profiles:
     active: local
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: rhdxhd12
 
 logging:
   level:
@@ -51,7 +56,7 @@ management:
         include: health, info
 
 Globals:
-  auth: security
+  Auth: security
 
 org:
   egovframe:
@@ -61,26 +66,25 @@ org:
       algorithmKeyHash: gdyYs/IZqY86VcWhT8emCYfqY1ahw2vtLG+/FzNqtrQ=
 
     security:
-      loginUrl: /uat/uia/loginView                          # 로그인 페이지 URL
-      logoutSuccessUrl: /uat/uia/loginView                  # 로그아웃 후 이동 URL
-      loginFailureUrl: /uat/uia/loginFailure                # 로그인 실패 시 이동 URL
-      accessDeniedUrl: /uat/uia/accessDenied                # 접근 거부 시 URL
-      csrfAccessDeniedUrl: /uat/uia/csrfAccessDenied        # CSRF 거부 시 URL
-      defaultTargetUrl: /main                               # 로그인 성공 후 이동 URL
-      dataSource: dataSource
-      excludeList: /css/**, /images/**, /js/**, /uat/** # 인증 제외 경로
-      csrf: false                                           # CSRF 사용 여부
-      xframeOptions: sameorigin                             # iframe 허용 정책 (sameorigin | deny | disable)
-      sniff: false                                          # X-Content-Type-Options 설정 여부
-      xssProtection: true                                   # 브라우저 XSS 보호 활성화 여부
-      cacheControl: false                                   # 캐시 방지 헤더 사용 여부
-      concurrentMaxSessons: 1                               # 동시 로그인 허용 수 (1이면 1개 세션만 유지)
-      errorIfMaximumExceeded: false                         # 초과 세션 시 예외 발생 여부
-      concurrentExpiredUrl: /uat/uia/loginView              # 세션 만료 시 이동할 URL
-      hash: plaintext                                       # 비밀번호 인코딩 방식 (noop, md5, sha-256 등)
-      hashBase64: false                                     # Base64 인코딩 여부
-      requestMatcherType: ant                               # URL 패턴 방식 (ant, regex 등)
-      jdbcMapClass: org.egovframe.boot.security.userdetails.DefaultMapUserDetailsMapping
+      loginUrl: /uat/uia/loginView                    # 로그인 페이지 URL
+      loginFailureUrl: /uat/uia/loginFailure          # 로그인 실패 시 이동 URL
+      logoutSuccessUrl: /uat/uia/loginView            # 로그아웃 후 이동 URL
+      accessDeniedUrl: /uat/uia/accessDenied          # 접근 거부 시 URL
+      dataSource: dataSource                          # 데이터소스
+      requestMatcherType: ant                         # URL 패턴 방식 (ant, regex 등)
+      hash: plaintext                                 # 비밀번호 인코딩 방식 (plaintext, md5, sha-256 등)
+      hashBase64: true                                # Base64 인코딩 여부
+      concurrentMaxSessons: 1                         # 동시 로그인 허용 수 (1이면 1개 세션만 유지)
+      concurrentExpiredUrl: /uat/uia/loginView        # 세션 만료 시 이동할 URL
+      errorIfMaximumExceeded: false                   # 초과 세션 시 예외 발생 여부
+      defaultTargetUrl: /main                         # 로그인 성공 후 이동 URL
+      alwaysUseDefaultTargetUrl: true                 # 로그인 이후 설정한 페이지로 이동하게 하는 옵션
+      sniff: false                                    # X-Content-Type-Options 설정 여부
+      xframeOptions: sameorigin                       # iframe 허용 정책 (sameorigin | deny | disable)
+      xssProtection: true                             # 브라우저 XSS 보호 활성화 여부
+      cacheControl: false                             # 캐시 방지 헤더 사용 여부
+      csrf: false                                     # CSRF 사용 여부
+      csrfAccessDeniedUrl: /uat/uia/csrfAccessDenied  # CSRF 거부 시 URL
       jdbcUsersByUsernameQuery: >
         SELECT USER_ID, PASSWORD, 'TRUE' AS ENABLED
         FROM COMVNUSERMASTER
@@ -89,6 +93,7 @@ org:
         SELECT A.SCRTY_DTRMN_TRGET_ID USER_ID, A.AUTHOR_CODE AUTHORITY
         FROM MSATNEMPLYRSCRTYESTBS A, COMVNUSERMASTER B WHERE
         A.SCRTY_DTRMN_TRGET_ID = B.ESNTL_ID AND B.USER_ID = ?
+      jdbcMapClass: org.egovframe.boot.security.userdetails.DefaultMapUserDetailsMapping
       sqlRolesAndUrl: >
         SELECT A.ROLE_PTTRN URL, B.AUTHOR_CODE AUTHORITY
         FROM MSATNROLEINFO A, MSATNAUTHORROLERELATE B
@@ -97,3 +102,4 @@ org:
       sqlHierarchicalRoles: >
         SELECT A.CHLDRN_ROLE AS CHILD, A.PARNTS_ROLE PARENT
         FROM MSATNROLES_HIERARCHY A LEFT JOIN MSATNROLES_HIERARCHY B ON (A.CHLDRN_ROLE = B.PARNTS_ROLE)
+      permitAllList: /css/**, /images/**, /js/**, /uat/**   # 인증 제외 경로

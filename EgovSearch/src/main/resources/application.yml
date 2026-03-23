@@ -1,18 +1,27 @@
 server:
-    port: 9992 # random port
-    tomcat:
-      connection:
-        timeout: -1
+  port: 9992 # random port
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  tomcat:
+    connection:
+      timeout: -1
 
 spring:
   application:
-        name: EgovSearch
+    name: EgovSearch
   main:
     allow-bean-definition-overriding: true
   config:
     import: optional:configserver:http://localhost:8888
   profiles:
     active: local
+  thymeleaf:
+    encoding: UTF-8
+    mode: HTML
+    cache: false
   datasource:
     driver-class-name: ${datasource.driver-class-name:com.mysql.cj.jdbc.Driver}
     url: ${datasource.url:jdbc:mysql://localhost:3306/com}
@@ -80,6 +89,10 @@ management:
     web:
       exposure:
         include: health, info
+  jmx:
+    enabled: true
+    remote:
+      enabled: false  # RMI 연결만 비활성화
 
 springdoc:
   version: v4.3.0

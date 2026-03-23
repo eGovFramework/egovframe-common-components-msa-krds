@@ -1,7 +1,8 @@
 package egovframework.com.sec.rmt.web;
 
-import egovframework.com.pagination.EgovPaginationFormat;
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
 import egovframework.com.sec.rmt.service.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +33,7 @@ public class EgovRoleInfoAPIController {
 
     private final EgovRoleInfoService service;
     private final EgovCmmnDetailCodeService cmmnDetailCodeService;
+    private final EgovKrdsPaginationRenderer egovKrdsPaginationRenderer;
 
     @PostMapping(value="/roleInfoList")
     public ResponseEntity<?> roleInfoList(@ModelAttribute RoleInfoVO roleInfoVO) {
@@ -48,8 +49,7 @@ public class EgovRoleInfoAPIController {
         Page<RoleInfoDTO> list = service.list(roleInfoVO);
         paginationInfo.setTotalRecordCount((int) list.getTotalElements());
 
-        EgovPaginationFormat egovPaginationFormat = new EgovPaginationFormat();
-        String pagination = egovPaginationFormat.paginationFormat(paginationInfo, "linkPage");
+        String pagination = egovKrdsPaginationRenderer.renderPagination(paginationInfo, "linkPage");
 
         Map<String, Object> response = new HashMap<>();
         response.put("roleInfoList", list.getContent());

@@ -39,6 +39,7 @@ public class EgovLoginManageServiceImpl extends EgovAbstractServiceImpl implemen
         String userId = loginVO.getUserId();
         String userSe = loginVO.getUserSe();
         String encPassword = encryptPassword(loginVO.getUserPw(), loginVO.getUserId());
+        log.debug("userId = {}, userSe = {}, encPassword = {}", userId, userSe, encPassword);
 
         QGnrlMber gnrlMber = QGnrlMber.gnrlMber;
         QEntrprsMber entrprsMber = QEntrprsMber.entrprsMber;
@@ -60,7 +61,10 @@ public class EgovLoginManageServiceImpl extends EgovAbstractServiceImpl implemen
                                 .and(gnrlMber.password.eq(encPassword))
                                 .and(gnrlMber.mberStus.eq("P")))
                         .fetchOne();
-                GnrlMber gm = Objects.requireNonNull(tuple).get(gnrlMber);
+                if (tuple == null) {
+                    return null;
+                }
+                GnrlMber gm = tuple.get(gnrlMber);
                 es = tuple.get(emplyrscrtyestbs);
                 authorCode = es != null && es.getAuthorCode() != null ? es.getAuthorCode() : "";
 
@@ -86,7 +90,10 @@ public class EgovLoginManageServiceImpl extends EgovAbstractServiceImpl implemen
                                 .and(entrprsMber.entrprsMberPassword.eq(encPassword))
                                 .and(entrprsMber.entrprsMberStus.eq("P")))
                         .fetchOne();
-                EntrprsMber em = Objects.requireNonNull(tuple).get(entrprsMber);
+                if (tuple == null) {
+                    return null;
+                }
+                EntrprsMber em = tuple.get(entrprsMber);
                 es = tuple.get(emplyrscrtyestbs);
                 authorCode = es != null && es.getAuthorCode() != null ? es.getAuthorCode() : "";
                 return new LoginDTO(
@@ -111,7 +118,10 @@ public class EgovLoginManageServiceImpl extends EgovAbstractServiceImpl implemen
                                 .and(emplyrInfo.password.eq(encPassword))
                                 .and(emplyrInfo.emplyrStusCode.eq("P")))
                         .fetchOne();
-                EmplyrInfo ei = Objects.requireNonNull(tuple).get(emplyrInfo);
+                if (tuple == null) {
+                    return null;
+                }
+                EmplyrInfo ei = tuple.get(emplyrInfo);
                 es = tuple.get(emplyrscrtyestbs);
                 authorCode = es != null && es.getAuthorCode() != null ? es.getAuthorCode() : "";
                 return new LoginDTO(

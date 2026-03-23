@@ -4,6 +4,9 @@ import egovframework.com.uat.uia.service.LoginVO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import org.egovframe.boot.crypto.service.impl.EgovEnvCryptoServiceImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,14 +16,18 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.util.ObjectUtils;
 
 import javax.crypto.SecretKey;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Date;
 
 @Configuration
 @Getter
 public class EgovJwtProvider {
+
+    @Value("${org.egovframe.crypto.algorithm}")
+    private String cryptoAlgorithm;
 
     @Value("${token.accessSecret}")
     private String accessSecret;
@@ -128,6 +135,28 @@ public class EgovJwtProvider {
 
     public String decrypt(String s) {
         return egovEnvCryptoService.decrypt(s);
+    }
+
+    public String generateHash(String data) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance(cryptoAlgorithm);
+            // 2026.02.28 KISA 보안취약점 조치
+            messageDigest.update(generateSalt());
+            byte[] bytes = messageDigest.digest(data.getBytes(StandardCharsets.UTF_8));
+            for (byte b : bytes) {
+                sb.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
+            }
+        } catch (NoSuchAlgorithmException e) {
+            sb.setLength(0);
+        }
+        return sb.toString();
+    }
+
+    private static byte[] generateSalt() {
+        byte[] salt = new byte[16];
+        new SecureRandom().nextBytes(salt);
+        return salt;
     }
 
     public ResponseCookie createCookie(String tokenName, String tokenValue, long tokenMaxAge) {

@@ -1,6 +1,6 @@
 package egovframework.com.sec.rgm.web;
 
-import egovframework.com.pagination.EgovPaginationFormat;
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
 import egovframework.com.sec.rgm.service.AuthorGroupDTO;
 import egovframework.com.sec.rgm.service.AuthorGroupVO;
 import egovframework.com.sec.rgm.service.AuthorInfoVO;
@@ -32,6 +32,7 @@ public class EgovAuthorGroupAPIController {
     private int pageSize;
 
     private final EgovAuthorGroupService service;
+    private final EgovKrdsPaginationRenderer egovKrdsPaginationRenderer;
 
     @PostMapping(value="/authorGroupList")
     public ResponseEntity<?> authorGroupList(@ModelAttribute AuthorGroupVO authorGroupVO) {
@@ -49,8 +50,7 @@ public class EgovAuthorGroupAPIController {
 
         List<AuthorInfoVO> authorInfoList = service.authorInfoList();
 
-        EgovPaginationFormat egovPaginationFormat = new EgovPaginationFormat();
-        String pagination = egovPaginationFormat.paginationFormat(paginationInfo, "linkPage");
+        String pagination = egovKrdsPaginationRenderer.renderPagination(paginationInfo, "linkPage");
 
         Map<String, Object> response = new HashMap<>();
         response.put("authorGroupList", list.getContent());

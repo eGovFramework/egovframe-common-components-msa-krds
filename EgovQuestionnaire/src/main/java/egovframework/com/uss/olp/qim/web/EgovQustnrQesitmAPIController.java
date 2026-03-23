@@ -1,6 +1,6 @@
 package egovframework.com.uss.olp.qim.web;
 
-import egovframework.com.pagination.EgovPaginationFormat;
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
 import egovframework.com.uss.olp.qim.service.EgovQustnrQesitmService;
 import egovframework.com.uss.olp.qim.service.QustnrQesitmDTO;
 import egovframework.com.uss.olp.qim.service.QustnrQesitmVO;
@@ -22,6 +22,7 @@ import java.util.Map;
 public class EgovQustnrQesitmAPIController {
 
     private final EgovQustnrQesitmService service;
+    private final EgovKrdsPaginationRenderer egovKrdsPaginationRenderer;
 
     @PostMapping(value="/qustnrQesitmList")
     public ResponseEntity<?> qustnrQesitmList(@RequestBody QustnrQesitmVO qustnrQesitmVO) {
@@ -40,8 +41,7 @@ public class EgovQustnrQesitmAPIController {
         Page<QustnrQesitmDTO> list = service.list(qustnrQesitmVO);
         paginationInfo.setTotalRecordCount((int) list.getTotalElements());
 
-        EgovPaginationFormat egovPaginationFormat = new EgovPaginationFormat();
-        String pagination = egovPaginationFormat.paginationFormat(paginationInfo, "qustnrQesitmListLinkPage");
+        String pagination = egovKrdsPaginationRenderer.renderPagination(paginationInfo, "qustnrQesitmListLinkPage");
 
         Map<String, Object> response = new HashMap<>();
         response.put("qustnrQesitmList", list.getContent());

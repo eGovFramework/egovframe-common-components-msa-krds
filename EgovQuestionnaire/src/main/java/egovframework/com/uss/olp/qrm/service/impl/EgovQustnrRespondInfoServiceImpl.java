@@ -11,6 +11,7 @@ import egovframework.com.uss.olp.qrm.service.QustnrRespondInfoDTO;
 import egovframework.com.uss.olp.qrm.service.QustnrRespondInfoVO;
 import egovframework.com.uss.olp.qrm.util.EgovQustnrRespondInfoUtility;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -174,7 +175,9 @@ public class EgovQustnrRespondInfoServiceImpl extends EgovAbstractServiceImpl im
             qustnrRespondInfo.setLastUpdtPnttm(LocalDateTime.now());
 
             return EgovQustnrRespondInfoUtility.qustnrRespondInfoEntityToVO(repository.save(qustnrRespondInfo));
-        } catch (Exception ex) {
+
+        //2026.02.28 KISA 보안취약점 조치
+        } catch (FdlException ex) {
             leaveaTrace("fail.common.insert");
             return null;
         }

@@ -11,6 +11,7 @@ import egovframework.com.uss.olp.qqm.service.QustnrQesitmDTO;
 import egovframework.com.uss.olp.qqm.service.QustnrQesitmVO;
 import egovframework.com.uss.olp.qqm.util.EgovQustnrQesitmUtility;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -169,7 +170,8 @@ public class EgovQustnrQesitmServiceImpl extends EgovAbstractServiceImpl impleme
             qustnrQesitm.setLastUpdusrId(userInfo.get("uniqId"));
 
             return EgovQustnrQesitmUtility.qustnrQesitmEntityToVO(repository.save(qustnrQesitm));
-        } catch (Exception ex) {
+        //2026.02.28 KISA 보안취약점 조치
+        } catch (FdlException ex) {
             leaveaTrace("fail.common.insert");
             return null;
         }

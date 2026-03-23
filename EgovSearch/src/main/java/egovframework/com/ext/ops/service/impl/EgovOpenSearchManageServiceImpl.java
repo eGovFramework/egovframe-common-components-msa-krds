@@ -27,8 +27,10 @@ import org.opensearch.client.opensearch.indices.CreateIndexRequest;
 import org.opensearch.client.opensearch.indices.CreateIndexResponse;
 import org.opensearch.client.opensearch.indices.DeleteIndexRequest;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -287,8 +289,9 @@ public class EgovOpenSearchManageServiceImpl extends EgovAbstractServiceImpl imp
                 }
 
                 logPageProgress(page, totalPages, pageStartTime);
-            } catch (Exception e) {
-                log.error("Error processing page {}: {}", page, e.getMessage(), e);
+            //2026.02.28 KISA 보안취약점 조치
+            } catch (DataAccessException e) {
+                log.error("Error processing page {} due to data access issue: {}", page, e.getMessage(), e);
             }
         }
 
@@ -304,8 +307,9 @@ public class EgovOpenSearchManageServiceImpl extends EgovAbstractServiceImpl imp
                 Map<String, Object> dataMap = convertToMap(bbsArticleInfo, withVector);
                 bulkRequestBuilder.operations(ops -> ops
                         .index(idx -> idx.index(indexName).id(String.valueOf(dataMap.get("nttId"))).document(dataMap)));
-            } catch (Exception e) {
-                log.error("Error processing document {}: {}", bbsArticleInfo.getNttId(), e.getMessage());
+            //2026.02.28 KISA 보안취약점 조치
+            } catch (IllegalArgumentException | IllegalStateException | NullPointerException e) {
+                log.error("Error processing document {}: {}", bbsArticleInfo.getNttId(), e.getMessage(), e);
             }
         });
 
@@ -367,8 +371,9 @@ public class EgovOpenSearchManageServiceImpl extends EgovAbstractServiceImpl imp
             } else {
                 log.debug("Batch {}/{} completed successfully", currentPage + 1, totalPages);
             }
-        } catch (Exception e) {
-            log.error("Error executing bulk request for page {}: {}", currentPage + 1, e.getMessage());
+        //2026.02.28 KISA 보안취약점 조치
+        } catch (IOException | OpenSearchException e) {
+            log.error("Error executing bulk request for page {}: {}", currentPage + 1, e.getMessage(), e);
         }
     }
 
@@ -453,9 +458,10 @@ public class EgovOpenSearchManageServiceImpl extends EgovAbstractServiceImpl imp
 
                     log.error("Board not found with id: {}, marked {} logs as failed", nttId, logsForNttId.size());
                 }
-            } catch (Exception e) {
+            //2026.02.28 KISA 보안취약점 조치
+            } catch (DataAccessException | BeansException e) {
                 // 오류 발생 시 모든 로그를 실패로 표시
-                log.error("Failed to process nttId: {}", nttId, e);
+                log.error("Failed to process nttId due to data access or bean error: {}", nttId, e);
 
                 // 밀리초를 제거한 현재 시간 설정 (for문 밖에서 한 번만 생성)
                 Calendar calendar = Calendar.getInstance();

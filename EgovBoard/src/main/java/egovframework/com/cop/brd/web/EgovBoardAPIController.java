@@ -3,7 +3,9 @@ package egovframework.com.cop.brd.web;
 import egovframework.com.cop.brd.service.BbsVO;
 import egovframework.com.cop.brd.service.BoardDTO;
 import egovframework.com.cop.brd.service.EgovBoardService;
-import egovframework.com.pagination.EgovPaginationFormat;
+import egovframework.com.pagination.EgovKrdsPaginationRenderer;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -22,8 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +42,7 @@ public class EgovBoardAPIController {
 
     private final EgovBoardService service;
     private final EgovEnvCryptoServiceImpl egovEnvCryptoService;
+    private final EgovKrdsPaginationRenderer egovKrdsPaginationRenderer;
 
     @PostMapping(value = "/boardList")
     public ResponseEntity<?> boardList(@ModelAttribute BbsVO bbsVO, HttpServletRequest request) {
@@ -65,8 +66,7 @@ public class EgovBoardAPIController {
         paginationInfo.setPageSize(pageSize);
         paginationInfo.setTotalRecordCount(((Long) response.get("totalElements")).intValue());
 
-        EgovPaginationFormat egovPaginationFormat = new EgovPaginationFormat();
-        String pagination = egovPaginationFormat.paginationFormat(paginationInfo, "linkPage");
+        String pagination = egovKrdsPaginationRenderer.renderPagination(paginationInfo, "linkPage");
 
         response.put("noticeList", noticeList);
         response.put("pagination", pagination);

@@ -8,7 +8,7 @@
     <meta name="description" content=""/>
     <meta name="format-detection" content="telephone=no"/>
     <title>eGovFrame 공통 컴포넌트</title>
-    <div th:replace="fragment/linkFragment"></div>
+    <div th:replace="~{fragment/linkFragment}"></div>
     <style>
         .iframe-container{
             position: relative;
@@ -50,13 +50,13 @@
 <!-- //건너뛰기 링크 -->
 <!-- 헤더 영역 시작 -->
 <div class="wrapper">
-<header id="krds-header" th:replace="header.html"></header>
+<header id="krds-header" th:replace="~{header.html}"></header>
 <!-- 헤더 영역 끝 -->
 <main id="wrap">
     <div id="container" class="main-container">
         <div class="inner in-between layout">
             <nav class="krds-side-navigation">
-                <div th:replace="menu.html"></div>
+                <div th:replace="~{menu.html}"></div>
             </nav>
             <div class="contents">
                 <div class="conts-area iframe-container">
@@ -68,7 +68,7 @@
 </main>
 </div>
 <!-- 푸터 영역 시작 -->
-<footer id="krds-footer" th:replace="footer.html"></footer>
+<footer id="krds-footer" th:replace="~{footer.html}"></footer>
 <!-- 푸터 영역 끝 -->
 
 <script th:inline="javascript" defer>

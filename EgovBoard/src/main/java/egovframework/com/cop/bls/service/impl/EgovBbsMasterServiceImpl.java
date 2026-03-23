@@ -13,7 +13,9 @@ import egovframework.com.cop.bls.service.BbsMasterVO;
 import egovframework.com.cop.bls.service.EgovBbsMasterService;
 import egovframework.com.cop.bls.util.EgovBlogUtility;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import org.egovframe.rte.fdl.cmmn.exception.FdlException;
 import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -209,7 +211,8 @@ public class EgovBbsMasterServiceImpl extends EgovAbstractServiceImpl implements
             BbsMaster bbsMaster = repository.save(EgovBlogUtility.bbsMasterVOTOEntity(bbsMasterVO));
 
             return EgovBlogUtility.bbsMasterEntityTOVO(bbsMaster);
-        } catch (Exception ex) {
+        //2026.02.28 KISA 보안취약점 조치
+        } catch (FdlException ex) {
             leaveaTrace("fail.common.insert");
             return null;
         }
