@@ -21,7 +21,7 @@ public class EgovLoginPolicyWeb implements WebMvcConfigurer {
         // 정적 리소스만 구체적으로 지정 (API 호출은 컨트롤러로 라우팅되도록)
         registry.addResourceHandler("/uat/uap/css/**").addResourceLocations("classpath:/static/css/");
         registry.addResourceHandler("/uat/uap/js/**").addResourceLocations("classpath:/static/js/");
-        registry.addResourceHandler("/uat/uap/images/**").addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/uat/uap/img/**").addResourceLocations("classpath:/static/img/");
         registry.addResourceHandler("/uat/uap/fonts/**").addResourceLocations("classpath:/static/fonts/");
     }
 

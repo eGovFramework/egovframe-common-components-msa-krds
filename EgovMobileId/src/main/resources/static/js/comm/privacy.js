@@ -12,8 +12,7 @@ $(function() {
 });
 
 function getPrivacy(trxinfo) {
-    console.log("privacy.js - getPrivacy() - license(api로 보낼 pathvariable) : " + license);
-	
+
 	let errMsg = new StringBuffer();
 	if (errMsg.toString() != '') {
 		alert(errMsg.toString('\n'));

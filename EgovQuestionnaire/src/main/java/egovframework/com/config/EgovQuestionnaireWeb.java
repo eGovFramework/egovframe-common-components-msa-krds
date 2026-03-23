@@ -25,9 +25,9 @@ public class EgovQuestionnaireWeb implements WebMvcConfigurer {
         registry.addResourceHandler("/uss/olp/qim/js/**", "/uss/olp/qmc/js/**", "/uss/olp/qqm/js/**",
                         "/uss/olp/qri/js/**", "/uss/olp/qrm/js/**", "/uss/olp/qtm/js/**")
                 .addResourceLocations("classpath:/static/js/");
-        registry.addResourceHandler("/uss/olp/qim/images/**", "/uss/olp/qmc/images/**", "/uss/olp/qqm/images/**",
-                        "/uss/olp/qri/images/**", "/uss/olp/qrm/images/**", "/uss/olp/qtm/images/**")
-                .addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/uss/olp/qim/img/**", "/uss/olp/qmc/img/**", "/uss/olp/qqm/img/**",
+                        "/uss/olp/qri/img/**", "/uss/olp/qrm/img/**", "/uss/olp/qtm/img/**")
+                .addResourceLocations("classpath:/static/img/");
         registry.addResourceHandler("/uss/olp/qim/fonts/**", "/uss/olp/qmc/fonts/**", "/uss/olp/qqm/fonts/**",
                         "/uss/olp/qri/fonts/**", "/uss/olp/qrm/fonts/**", "/uss/olp/qtm/fonts/**")
                 .addResourceLocations("classpath:/static/fonts/");

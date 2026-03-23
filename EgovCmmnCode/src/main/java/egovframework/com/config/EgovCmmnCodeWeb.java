@@ -23,8 +23,8 @@ public class EgovCmmnCodeWeb implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/css/");
         registry.addResourceHandler("/sym/ccm/cca/js/**", "/sym/ccm/ccc/js/**", "/sym/ccm/cde/js/**")
                 .addResourceLocations("classpath:/static/js/");
-        registry.addResourceHandler("/sym/ccm/cca/images/**", "/sym/ccm/ccc/images/**", "/sym/ccm/cde/images/**")
-                .addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/sym/ccm/cca/img/**", "/sym/ccm/ccc/img/**", "/sym/ccm/cde/img/**")
+                .addResourceLocations("classpath:/static/img/");
         registry.addResourceHandler("/sym/ccm/cca/fonts/**", "/sym/ccm/ccc/fonts/**", "/sym/ccm/cde/fonts/**")
                 .addResourceLocations("classpath:/static/fonts/");
     }

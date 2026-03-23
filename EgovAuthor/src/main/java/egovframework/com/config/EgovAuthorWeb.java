@@ -25,8 +25,8 @@ public class EgovAuthorWeb implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/css/");
         registry.addResourceHandler("/sec/gmt/js/**", "/sec/ram/js/**", "/sec/rgm/js/**", "/sec/rmt/js/**")
                 .addResourceLocations("classpath:/static/js/");
-        registry.addResourceHandler("/sec/gmt/images/**", "/sec/ram/images/**", "/sec/rgm/images/**", "/sec/rmt/images/**")
-                .addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/sec/gmt/img/**", "/sec/ram/img/**", "/sec/rgm/img/**", "/sec/rmt/img/**")
+                .addResourceLocations("classpath:/static/img/");
         registry.addResourceHandler("/sec/gmt/fonts/**", "/sec/ram/fonts/**", "/sec/rgm/fonts/**", "/sec/rmt/fonts/**")
                 .addResourceLocations("classpath:/static/fonts/");
     }

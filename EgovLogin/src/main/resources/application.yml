@@ -102,4 +102,4 @@ org:
       sqlHierarchicalRoles: >
         SELECT A.CHLDRN_ROLE AS CHILD, A.PARNTS_ROLE PARENT
         FROM MSATNROLES_HIERARCHY A LEFT JOIN MSATNROLES_HIERARCHY B ON (A.CHLDRN_ROLE = B.PARNTS_ROLE)
-      permitAllList: /css/**, /images/**, /js/**, /uat/**   # 인증 제외 경로
+      permitAllList: /css/**, /img/**, /js/**, /uat/**   # 인증 제외 경로

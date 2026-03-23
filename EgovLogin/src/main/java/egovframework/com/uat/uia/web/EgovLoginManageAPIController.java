@@ -83,14 +83,12 @@ public class EgovLoginManageAPIController {
         }
 
         Map<String, Object> message = new HashMap<>();
-
         Map<String, Object> incorrect = loginIncorrect(loginVO, request);
         if (!incorrect.isEmpty()) {
             return ResponseEntity.ok(incorrect);
         }
 
         LoginDTO loginDTO = service.actionLogin(loginVO);
-
         if (ObjectUtils.isEmpty(loginDTO)) {
             message.put("status", "loginFailure");
             message.put("errors", messageSource.getMessage("fail.common.login", null, request.getLocale()));
@@ -197,11 +195,11 @@ public class EgovLoginManageAPIController {
         if (!Boolean.parseBoolean(this.lock)) {
             return message;
         }
-
         String clientIp = EgovClientIP.getClientIp();
         LoginPolicyVO loginPolicyVO = new LoginPolicyVO();
         loginPolicyVO.setEmployerId(loginVO.getUserId());
         loginPolicyVO = service.loginPolicy(loginPolicyVO);
+
         if (!ObjectUtils.isEmpty(loginPolicyVO)) {
             if ("Y".equals(loginPolicyVO.getLmttAt()) && clientIp.equals(loginPolicyVO.getIpInfo())) {
                 message.put("status", "loginFailure");

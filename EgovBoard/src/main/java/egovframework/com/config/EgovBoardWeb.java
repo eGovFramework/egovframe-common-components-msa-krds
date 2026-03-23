@@ -23,8 +23,8 @@ public class EgovBoardWeb implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/css/");
         registry.addResourceHandler("/cop/bbs/js/**", "/cop/bls/js/**", "/cop/brd/js/**", "/cop/cmy/js/**")
                 .addResourceLocations("classpath:/static/js/");
-        registry.addResourceHandler("/cop/bbs/images/**", "/cop/bls/images/**", "/cop/brd/images/**", "/cop/cmy/images/**")
-                .addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/cop/bbs/img/**", "/cop/bls/img/**", "/cop/brd/img/**", "/cop/cmy/img/**")
+                .addResourceLocations("classpath:/static/img/");
         registry.addResourceHandler("/cop/bbs/fonts/**", "/cop/bls/fonts/**", "/cop/brd/fonts/**", "/cop/cmy/fonts/**")
                 .addResourceLocations("classpath:/static/fonts/");
     }

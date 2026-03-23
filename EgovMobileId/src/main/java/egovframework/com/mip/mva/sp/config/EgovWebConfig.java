@@ -37,7 +37,7 @@ public class EgovWebConfig implements WebMvcConfigurer {
         // 정적 리소스만 구체적으로 지정 (API 호출은 컨트롤러로 라우팅되도록)
         registry.addResourceHandler("/mip/css/**").addResourceLocations("classpath:/static/css/");
         registry.addResourceHandler("/mip/js/**").addResourceLocations("classpath:/static/js/");
-        registry.addResourceHandler("/mip/images/**").addResourceLocations("classpath:/static/images/");
+        registry.addResourceHandler("/mip/img/**").addResourceLocations("classpath:/static/img/");
         registry.addResourceHandler("/mip/fonts/**").addResourceLocations("classpath:/static/fonts/");
     }
 
