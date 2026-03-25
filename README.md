@@ -129,11 +129,12 @@ KRDS의 컴포넌트 일부를 사용하였으며 용도에 따라 패턴 등을
 
 - 로그인 실패 시 다른 컴포넌트 페이지 접근 불가 (인증 토큰 부재)
 
-- Token 발급 확인   
-![accessToken](https://github.com/user-attachments/assets/4c89d01b-06a0-461d-8ab4-bc79568ea4f3)   
+- Token 발급 확인      
   - AccessToken과 RefreshToken이 발급된 상태   
-    - token 설정은 `ConfigServer/src/main/resources/config/application-local.yml` 의 `token` 항목에서 변경 (현재 샘플: access `7200000`ms, refresh `86400000`ms)
-    - token의 Secret값은 예시로 'egovframework'를 암호화하여 사용하고 있으므로 사용 시 수정 필요
+    - AccessToken : 개발자모드(F12) → Application → Storage → Cookies 에서 확인
+    - RefreshToken : [Redis 구성방법 참조](EgovLogin/README.md/#3-redis-구성방법---docker-이미지를-이용)을 참조하여 redis-cli를 통해 redis 내부에 저장된 값 확인
+   
+      
 
 - 접근권한이 없는 페이지에 접근한 경우   
 ![403error](https://github.com/user-attachments/assets/ea7fdfa9-56ec-4ac5-9050-49aa9add8012)   
