@@ -3,6 +3,17 @@
 블로그, 커뮤니티, 통합게시판, 방명록 등으로 사용하기 위한 게시판을 만들 수 있는 컴포넌트   
 Ckeditor를 이용해 editor 형태로 게시글을 작성하거나 파일첨부, 파일다운로드 등의 기능을 사용해 게시글을 작성할 수 있다.
 
+## 서비스 상태 (현재 모듈 기준)
+
+| 항목 | 내용 |
+|------|------|
+| **역할** | 협업(블로그·게시판·커뮤니티·게시글 등) |
+| **애플리케이션명** | `EgovBoard` → Eureka `EGOVBOARD` |
+| **포트** | `0`(랜덤). **Gateway** `http://localhost:9000/cop/...` |
+| **Config Server** | 사용 |
+| **Eureka** | 등록 |
+| **부가 인프라** | OpenSearch 연동 시 **RabbitMQ**(`application.yml`) — `EgovSearch` 와 이벤트 연동 |
+
 ## 프로젝트 구성
 
 ``` text
@@ -18,7 +29,7 @@ Ckeditor를 이용해 editor 형태로 게시글을 작성하거나 파일첨부
     │   │       │  ├ bls
     │   │       │  ├ brd
     │   │       │  └ cmy
-    │   │       └ EgovAuthorApplication
+    │   │       └ EgovBoardApplication
     │   │
     │   └ resources
     │       ├ messages.egovframework.com
@@ -320,6 +331,8 @@ Ckeditor를 이용해 editor 형태로 게시글을 작성하거나 파일첨부
   ```
 
 ## 유의사항
+
+- 본 모듈 `pom.xml` 기준 **Java 17**.
 
 게시글 등록/수정 시 EgovSearch에서 사용할 수 있는 데이터를 함께 등록할 수 있다.   
 EgovSearch 서비스 이용이 가능한 상태여야하므로 사용 방법은 EgovSearch의 ReadMe를 참조.

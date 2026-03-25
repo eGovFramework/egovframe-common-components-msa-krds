@@ -8,15 +8,27 @@
 ![rabbitmq](https://img.shields.io/badge/rabbitmq-ff6600?style=for-the-badge&logo=RABBITMQ&logoColor=white)
 ![workflow](https://github.com/eGovFramework/egovframe-template-simple-backend/actions/workflows/maven.yml/badge.svg)
 
+## 서비스 상태 (현재 모듈 기준)
+
+| 항목 | 내용 |
+|------|------|
+| **역할** | OpenSearch 연동 **통합·벡터 검색**, 게시판 이벤트(RabbitMQ) 인덱싱, Springdoc API |
+| **애플리케이션명** | `EgovSearch` → Eureka `EGOVSEARCH` |
+| **포트** | **`9992` 고정** — Swagger 예: `http://localhost:9992/swagger-ui/index.html` |
+| **Config Server** | 사용 |
+| **Eureka** | 등록 |
+| **브라우저(포털) 접근** | **Gateway** `http://localhost:9000/ext/ops/...` |
+| **선행 인프라** | MySQL, OpenSearch(`docker-compose/Opensearch`), RabbitMQ(`docker-compose/RabbitMQ`) 권장, `EgovSearch-Config` 경로·모델 |
+
 ## 기본 환경
 
 프로젝트에서 사용된 환경 프로그램 정보는 다음과 같다.
 
 | 프로그램 명 | 버전 명   |
 | :----- | :----- |
-| Java   | 11 이상 |
-| Spring Boot | 2.7.18 |
-| Spring Cloud | 2021.0.9 |
+| Java   | 17 이상 (본 모듈 `pom.xml` 기준) |
+| Spring Boot | 3.5.6 |
+| Spring Cloud | 2025.0.0 |
 | Docker Desktop | 4.39.0 |
 | Open Search | 2.15.0 |
 | Python | 3.11.5 (Embedding 용 Model export 시 사용) |

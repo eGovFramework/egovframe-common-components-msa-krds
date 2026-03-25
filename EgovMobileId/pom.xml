@@ -27,10 +27,14 @@
         <java.version>17</java.version>
         <mysql.connector.version>8.4.0</mysql.connector.version>
         <commons-configuration2.version>2.11.0</commons-configuration2.version>
-        <commons-lang3.version>3.19.0</commons-lang3.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
         <httpclient.version>4.5.14</httpclient.version>
         <logback.version>1.5.32</logback.version>
         <thoughtworks.xstream.version>1.4.21</thoughtworks.xstream.version>
+        <log4j2.version>2.25.3</log4j2.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <tomcat-embed.version>10.1.52</tomcat-embed.version>
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
     </properties>
 
     <repositories>
@@ -94,7 +98,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-
         <!-- Websocket Start -->
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
@@ -102,7 +105,6 @@
             <version>9.4.53.v20231009</version>
         </dependency>
         <!-- Websocket End -->
-
         <!-- MobileId Spring start -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -113,7 +115,6 @@
             <artifactId>spring-boot-devtools</artifactId>
         </dependency>
         <!-- MobileId Spring end -->
-
         <!-- MobileId external-libs repo for Omnione start -->
         <dependency>
             <groupId>com.raonsecure.license</groupId>
@@ -136,7 +137,6 @@
             <version>1.0.3.29</version>
         </dependency>
         <!-- MobileId external-libs repo for Omnione End -->
-
         <!-- MobileId Utility for Omnione Start -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -170,7 +170,6 @@
             <version>${commons-lang3.version}</version>
         </dependency>
         <!-- MobileId Utility for Omnione End -->
-
         <!-- MobileId Database Start -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
@@ -207,7 +206,6 @@
             <version>11.2.0.0035</version>
         </dependency>
         <!-- MobileId Database End -->
-
         <!-- MobileId ZXing Start -->
         <!-- QR코드로 바코드를 인식할 수 있게 하는 라이브러리 -->
         <dependency>
@@ -216,7 +214,6 @@
             <version>3.3.3</version>
         </dependency>
         <!-- MobileId ZXing end -->
-
         <dependency>
             <groupId>org.egovframe.rte</groupId>
             <artifactId>egovframe-rte-ptl-mvc</artifactId>
@@ -270,6 +267,60 @@
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
             <version>${thoughtworks.xstream.version}</version>
+        </dependency>
+        <!-- Logging -->
+        <!-- CVE-2025-68161: 취약점 보완용 업데이트 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <!-- CVE-2025-66614/CVE-2026-24734/CVE-2026-24733: 보안취약점 보완용 직접 주입 -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-annotations-api</artifactId>
+            <version>${tomcat-embed.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>${tomcat-embed.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-el</artifactId>
+            <version>${tomcat-embed.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <version>${tomcat-embed.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-websocket</artifactId>
+            <version>${tomcat-embed.version}</version>
+        </dependency>
+        <!-- CVE-2025-48734: 보안취약점 보완용 직접 주입 -->
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commons-beanutils.version}</version>
         </dependency>
     </dependencies>
 

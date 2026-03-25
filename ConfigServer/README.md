@@ -1,6 +1,19 @@
 # ConfigServer
 
+## 서비스 상태 (현재 모듈 기준)
+
+| 항목 | 내용 |
+|------|------|
+| **역할** | Spring Cloud Config **native** 저장소. JAR 내 `classpath:/config` 의 YAML을 각 비즈니스 서비스에 제공 |
+| **애플리케이션명** | `ConfigServer` |
+| **포트** | `8888` (고정) |
+| **Eureka** | 미등록 (디스커버리 대상 아님) |
+| **프로필** | `application.yml` 기준 `spring.profiles.active=native`, 검색 위치 `classpath:/config` |
+| **연동** | Gateway·대부분 마이크로서비스가 `optional:configserver:http://localhost:8888` 로 설정 로드 |
+
 ## 프로젝트 소개
+
+Spring Cloud Config Server로, 로컬·개발 시 Git 없이 **내장 설정 파일**(`src/main/resources/config/`)만으로 DB·JPA·JWT 등 공통 설정을 한곳에서 관리한다. 운영 환경에서는 저장소 방식·보안을 별도 검토한다.
 
 ## 프로젝트 구성
 
@@ -42,17 +55,18 @@ datasource:
 
 ``` yaml
 token:
-accessSecret: "7FB814B9D7FFB3D675EF1F525C1D61B254227B3B0A771DDDBDFE4112A1F42F66" # sha256(egovframework)
-refreshSecret: "7FB814B9D7FFB3D675EF1F525C1D61B254227B3B0A771DDDBDFE4112A1F42F66" # sha256(egovframework)
-accessExpiration: 1200000 # TTL (millisecond, 1 Min)
-refreshExpiration: 3600000 # TTL (millisecond, 5 Min)
+  accessSecret: "..."   # 예시값. 운영 시 반드시 교체
+  refreshSecret: "..."
+  accessExpiration: 7200000    # TTL(ms) — 현재 샘플 기준 약 2시간
+  refreshExpiration: 86400000  # TTL(ms) — 현재 샘플 기준 약 1일
 ```
 
-- Token의 SecretKey의 경우 'egovframework'를 암호화하여 사용한 값으로 실사용시에는 수정이 필요
-- accessExpiration 종료 후 refreshExpiration동안 refreshToken을 이용해 accessToken 재발급
+- Token Secret은 샘플용이므로 **실서비스에서는 반드시 변경**한다.
+- Access 만료 후 Refresh 유효 기간 내에 Access 토큰을 재발급받는 구조는 `EgovLogin` 과 연동된다.
 
 ## 유의사항
 
-구동 시 EurekaServer → ConfigServer → GatewayServer 순으로 실행
+- 기동 순서: **EurekaServer → ConfigServer → GatewayServer** 이후 비즈니스 서비스.
+- 본 모듈 `pom.xml` 기준 **Java 17**.
 
 ## 참조

@@ -2,13 +2,23 @@
 
 설문 문항,답변 등록 및 설문 조사를 실시할 수 있는 컴포넌트
 
+## 서비스 상태 (현재 모듈 기준)
+
+| 항목 | 내용 |
+|------|------|
+| **역할** | 설문 템플릿·설문·질문·항목·응답자·설문응시 |
+| **애플리케이션명** | `EgovQuestionnaire` → Eureka `EGOVQUESTIONNAIRE` |
+| **포트** | `0`(랜덤). **Gateway** `http://localhost:9000/uss/olp/...` |
+| **Config Server** | 사용 |
+| **Eureka** | 등록 |
+
 ## 프로젝트 구성
 
 ``` text
   EgovQuestionnaire
     ├ /src/main
     │   ├ java
-    │   │   └ egovframework.com.uss
+    │   │   └ egovframework.com
     │   │       ├ config
     │   │       ├ filter
     │   │       ├ pagination
@@ -19,7 +29,7 @@
     │   │       │  ├ qri
     │   │       │  ├ qrm
     │   │       │  └ qtm
-    │   │       └ EgovLoginApplication
+    │   │       └ EgovQuestionnaireApplication
     │   │
     │   └ resources
     │       ├ messages.egovframework.com
@@ -91,5 +101,7 @@
 
 
 ## 유의사항
+
+- 본 모듈 `pom.xml` 기준 **Java 17**.
 
 ## 참조

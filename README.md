@@ -17,9 +17,9 @@
 
 | 프로그램 명 | 버전 명                                  |
 | :----- |:--------------------------------------|
-| Java   | 1.8 이상 <br> 단, 검색엔진(EgovSearch)는 11 이상 |
-| Spring Boot | 2.7.18                                |
-| Spring Cloud | 2021.0.9                              |
+| Java   | 17 (각 모듈 `pom.xml` 기준) |
+| Spring Boot | 3.5.6                                |
+| Spring Cloud | 2025.0.0                              |
 | Docker Desktop | 4.39.0 |
 | Open Search | 2.15.0 |
 | Python | 3.11.5 (Embedding 용 Model export 시 사용) |
@@ -27,25 +27,26 @@
 ### 프로젝트 구성
 
 ```
-  NCC-Project
-    ├ ConfigServer
-    ├ EgovAuthor
-    ├ EgovBoard
-    ├ EgovCmmnCode
-    ├ EgovLogin
-    ├ EgovMobileId
-    ├ EgovQuestionnaire
-    ├ EgovSearch-Config
-    ├ EgovSearch
-    ├ EurekaServer
-    └ GatewayServer
+  egovframe-msa-common-components (멀티 모듈 Maven)
+    ├ ConfigServer      … 중앙 설정 (native, classpath:/config)
+    ├ EurekaServer      … 서비스 디스커버리
+    ├ GatewayServer     … API 게이트웨이 (기본 포트 9000)
+    ├ EgovMain         … 포털 메인 레이아웃·메뉴
+    ├ EgovLogin        … 로그인·JWT 쿠키 발급 (Redis 사용)
+    ├ EgovLoginPolicy  … 로그인 정책(IP 등)
+    ├ EgovAuthor       … 권한·롤·그룹
+    ├ EgovBoard        … 게시판·협업 (RabbitMQ: 검색 연동 시)
+    ├ EgovCmmnCode     … 공통코드
+    ├ EgovQuestionnaire … 설문
+    ├ EgovSearch       … OpenSearch·통합검색 (고정 포트 9992)
+    └ EgovMobileId     … 모바일 신분증 SP (고정 포트 9991, 외부 앱 직접 통신)
 ```
+※ OpenSearch·RabbitMQ용 `docker-compose`는 `EgovSearch/docker-compose/` 에 있음. 검색 설정 디렉터리 `EgovSearch-Config`는 별도 준비.
 
 ### 공통컴포넌트 목록
 
-- `EgovLogin` : 사용자 디렉토리/통합인증 (2종)
-  - 로그인
-  - 로그인정책관리
+- `EgovLogin` : 로그인·JWT 발급
+- `EgovLoginPolicy` : 로그인정책관리
 - `EgovAuthor` : 보안 (7종)
   - 권한관리
   - 권한그룹관리
@@ -128,10 +129,11 @@ KRDS의 컴포넌트 일부를 사용하였으며 용도에 따라 패턴 등을
 
 - 로그인 실패 시 다른 컴포넌트 페이지 접근 불가 (인증 토큰 부재)
 
-- Token 발급 확인
-  - Redis를 이용해 Token 관리
-  - 페이지에서는 AccessToken만 관리하고 Redis에서 RefreshToken을 관리
-  - 토큰 갱신 필요 시 Redis의 RefreshToken을 이용해 AccessToken 재발급
+- Token 발급 확인   
+![accessToken](https://github.com/user-attachments/assets/4c89d01b-06a0-461d-8ab4-bc79568ea4f3)   
+  - AccessToken과 RefreshToken이 발급된 상태   
+    - token 설정은 `ConfigServer/src/main/resources/config/application-local.yml` 의 `token` 항목에서 변경 (현재 샘플: access `7200000`ms, refresh `86400000`ms)
+    - token의 Secret값은 예시로 'egovframework'를 암호화하여 사용하고 있으므로 사용 시 수정 필요
 
 - 접근권한이 없는 페이지에 접근한 경우   
 ![403error](https://github.com/user-attachments/assets/ea7fdfa9-56ec-4ac5-9050-49aa9add8012)   
@@ -146,4 +148,4 @@ KRDS의 컴포넌트 일부를 사용하였으며 용도에 따라 패턴 등을
 
 1. [KRDS](https://www.krds.go.kr/)
 2. [Spring](https://spring.io/)
-3. [공통컴포넌트 테이블 구성 정보](https://www.egovframe.go.kr/wiki/doku.php?id=egovframework:com:v4.1:init_table)
+3. [공통컴포넌트 테이블 구성 정보](https://www.egovframe.go.kr/wiki/doku.php?id=egovframework:com:v4.3:init_table)

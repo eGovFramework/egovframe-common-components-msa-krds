@@ -27,13 +27,18 @@
         <java.version>17</java.version>
         <jwtt.version>0.12.6</jwtt.version>
         <jaxb.version>2.3.1</jaxb.version>
-        <netty-resolver.version>4.2.10.Final</netty-resolver.version>
         <commons-configuration2.version>2.11.0</commons-configuration2.version>
-        <commons-lang3.version>3.19.0</commons-lang3.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
         <guava.version>33.0.0-jre</guava.version>
         <httpclient.version>4.5.14</httpclient.version>
         <logback.version>1.5.32</logback.version>
         <thoughtworks.xstream.version>1.4.21</thoughtworks.xstream.version>
+        <netty-resolver.version>4.2.10.Final</netty-resolver.version>
+        <log4j2.version>2.25.3</log4j2.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <tomcat-embed.version>10.1.52</tomcat-embed.version>
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
+
     </properties>
 
     <repositories>
@@ -174,6 +179,81 @@
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
             <version>${thoughtworks.xstream.version}</version>
+        </dependency>
+        <!-- CVE-2025-67735: spring-boot-starter-webflux 에서 주입되는 netty-codec-http 4.1.127 취약점 보완용 직접 주입 -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+            <version>${netty-resolver.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
+            <version>${netty-resolver.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>${netty-resolver.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport</artifactId>
+            <version>${netty-resolver.version}</version>
+        </dependency>
+        <!-- Logging -->
+        <!-- CVE-2025-68161: 취약점 보완용 업데이트 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <!-- CVE-2025-66614/CVE-2026-24734/CVE-2026-24733: 보안취약점 보완용 직접 주입 -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-annotations-api</artifactId>
+            <version>${tomcat-embed.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>${tomcat-embed.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-el</artifactId>
+            <version>${tomcat-embed.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <version>${tomcat-embed.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-websocket</artifactId>
+            <version>${tomcat-embed.version}</version>
+        </dependency>
+        <!-- CVE-2025-48734: 보안취약점 보완용 직접 주입 -->
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commons-beanutils.version}</version>
         </dependency>
     </dependencies>
 

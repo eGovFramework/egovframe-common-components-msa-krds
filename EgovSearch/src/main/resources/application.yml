@@ -115,7 +115,7 @@ opensearch:
   username: admin
   password: yourStrongPassword123!
   keystore:
-    path: 
+    path:
     password: changeit
   text:
     indexname: text-bbs-index

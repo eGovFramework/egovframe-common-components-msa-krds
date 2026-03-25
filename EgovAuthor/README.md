@@ -1,5 +1,16 @@
 # 보안 - 권한관리
 
+## 서비스 상태 (현재 모듈 기준)
+
+| 항목 | 내용 |
+|------|------|
+| **역할** | 권한·권한그룹·그룹·롤 관리(Spring Security 연동) |
+| **애플리케이션명** | `EgovAuthor` → Eureka `EGOVAUTHOR` |
+| **포트** | `0`(랜덤). **Gateway** `http://localhost:9000/sec/...` |
+| **Config Server** | 사용 (`application-local.yml` 등) |
+| **Eureka** | 등록 |
+| **DB** | MySQL·JPA (Config Server 의 datasource 설정) |
+
 ## 프로젝트 소개
 
 시스템 구축시 스프링의 보안 메커니즘을 적용하기 위해 Spring Security 에서 관리하는 권한(Authority)을 정의하는 컴포넌트
@@ -74,5 +85,7 @@
 - 권한관리 때와 동일하게 수정 후 체크박스 체크 후 → 등록을 눌러야 저장이 됨   
 
 ## 유의사항
+
+- 본 모듈 `pom.xml` 기준 **Java 17**.
 
 ## 참조

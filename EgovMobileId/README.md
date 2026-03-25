@@ -1,4 +1,15 @@
-# Github-README
+# 모바일 신분증 (EgovMobileId)
+
+## 서비스 상태 (현재 모듈 기준)
+
+| 항목 | 내용 |
+|------|------|
+| **역할** | 모바일 신분증 **SP(Verifier)** 서버 — QR-MPM·Direct-Mode, VP 검증 |
+| **애플리케이션명** | `EgovMobileId` → Eureka `EGOVMOBILEID` |
+| **포트** | **`9991` 고정** (`verifyConfig.json` 의 `sp.serverDomain` 과 일치 필요) |
+| **Config Server** | 본 모듈 `application.yml` 에는 미연결. 설정은 주로 **로컬 YAML + `verifyConfig.json`·DID·Wallet** |
+| **Eureka** | 등록 (웹 UI는 Gateway `/mip/**` 경유 가능) |
+| **특이사항** | 모바일 앱 → SP는 **Gateway를 거치지 않고 9991로 직접** 접속. `/mip/profile`, `/mip/vp` 등은 JWT 대신 SP측 필터 정책 적용 |
 
 ---
 
@@ -46,9 +57,9 @@
 
 | 프로그램 명 | 버전 명   |
 | :----- | :----- |
-| Java   | 8 이상 |
-| Spring Boot | 2.7.18 |
-| Spring Cloud | 2021.0.9 |
+| Java   | 17 (본 저장소 `pom.xml` 기준). 검증모듈 요구사항은 별도 확인 |
+| Spring Boot | 3.5.6 |
+| Spring Cloud | 2025.0.0 |
 | 검증모듈(Spring Boot) | 3.0 |
 
 검증모듈은 다음 링크에서 다운받을 수 있다
@@ -856,7 +867,7 @@ public class AuthorizeFilter extends OncePerRequestFilter {
 }
 ```
 
-결론적으로, profile 검증(`/mip/propfile`)과 vp 검증(`/mip/vip`)은 GatewayServer를 거치지 않고 바로 EgovMobileId와 연결되므로,  "X-CODE-ID" 값 체크만 거치면 된다.
+결론적으로, profile 검증(`/mip/profile`)과 vp 검증(`/mip/vp`)은 GatewayServer를 거치지 않고 바로 EgovMobileId와 연결되므로,  "X-CODE-ID" 값 체크만 거치면 된다.
 
 하지만 이 경우 모바일 신분증 앱은 Header에 X-CODE-ID 값을 설정할 수 없다. 따라서 SP 서버는 모바일 신분증 앱과 통신하기 위해 반드시 두 URI에 대해 인증 예외를 설정해야 한다. 그 예외 설정은 위 AuthorizeFilter 코드를 살펴보면 확인 가능하다.
 

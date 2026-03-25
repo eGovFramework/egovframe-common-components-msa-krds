@@ -27,6 +27,8 @@ public class EgovBoardWeb implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/img/");
         registry.addResourceHandler("/cop/bbs/fonts/**", "/cop/bls/fonts/**", "/cop/brd/fonts/**", "/cop/cmy/fonts/**")
                 .addResourceLocations("classpath:/static/fonts/");
+        registry.addResourceHandler("/cop/bbs/ckeditor5_simple/**", "/cop/bls/ckeditor5_simple/**", "/cop/brd/ckeditor5_simple/**", "/cop/cmy/ckeditor5_simple/**")
+                .addResourceLocations("classpath:/static/ckeditor5_simple/");
     }
 
     @Override

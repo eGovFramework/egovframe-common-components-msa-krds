@@ -1,5 +1,15 @@
 # 공통코드관리
 
+## 서비스 상태 (현재 모듈 기준)
+
+| 항목 | 내용 |
+|------|------|
+| **역할** | 공통분류코드·공통코드·공통상세코드 |
+| **애플리케이션명** | `EgovCmmnCode` → Eureka `EGOVCMMNCODE` |
+| **포트** | `0`(랜덤). **Gateway** `http://localhost:9000/sym/ccm/...` |
+| **Config Server** | 사용 |
+| **Eureka** | 등록 |
+
 ## 프로젝트 소개
 
 공통코드는 동일한 특성을 가진 데이터들을 특성별로 분류하여 지정하는 기능이다.
@@ -18,7 +28,7 @@
     │   │       │  ├ cca
     │   │       │  ├ ccc
     │   │       │  └ cde
-    │   │       └ EgovAuthorApplication
+    │   │       └ EgovCmmnCodeApplication
     │   │
     │   └ resources
     │       ├ messages.egovframework.com
@@ -83,5 +93,7 @@
 3. 삭제 시 사용여부가 "N"으로 변경되고 다시 사용하고자하는 경우에는 '수정'페이지에서 사용여부 변경
 
 ## 유의사항
+
+- 본 모듈 `pom.xml` 기준 **Java 17**.
 
 ## 참조
