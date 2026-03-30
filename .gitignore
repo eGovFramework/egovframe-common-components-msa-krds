@@ -36,7 +36,16 @@ local.properties
 
 #sonar
 sonar-project.properties
-.scannerwork
+.scannerwork/
+
+# logs
+*.log
+logs/
+
+# Spring Boot
+HELP.md
+
+# VS Code
+.vscode/
 
 model/
-target/
